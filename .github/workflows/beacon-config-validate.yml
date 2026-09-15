@@ -1,0 +1,36 @@
+name: beacon-config-validate
+
+# Runs config/tools/apply.py in --check mode against the live Beacon API
+# on every PR touching config/. Read-only: it resolves and validates
+# vars/*.yaml (team_slug and channel_names references, env-var presence)
+# but performs no writes. Mirrors Upgreat-AI/zabbix's validate.yaml, which
+# runs the real playbook in --diff mode rather than a purely static lint.
+
+on:
+  pull_request:
+    paths:
+      - "config/**"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      BEACON_API_URL: ${{ secrets.BEACON_API_URL }}
+      BEACON_API_TOKEN: ${{ secrets.BEACON_API_TOKEN }}
+      PUSHOVER_APP_TOKEN: ${{ secrets.PUSHOVER_APP_TOKEN }}
+      PUSHOVER_TARGET_GROUP: ${{ secrets.PUSHOVER_TARGET_GROUP }}
+      ZABBIX_ACK_API_TOKEN: ${{ secrets.ZABBIX_ACK_API_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install config tooling deps
+        run: pip install --no-cache-dir -r config/requirements.txt
+
+      - name: Validate
+        run: python3 config/tools/apply.py --check

@@ -268,6 +268,19 @@ class Config:
     SMTP_FROM = settings.get("smtp", "from", "incidentrelay@example.com")
     SMTP_USE_TLS = settings.get_bool("smtp", "use_tls", True)
 
+    # Pushover application token, used when a "pushover" channel or a
+    # personal notification rule doesn't carry its own app_token. One
+    # Pushover "application" sends to many Pushover user/group keys, same
+    # relationship as one SMTP server (SMTP_* below) sending to many
+    # inboxes -- so this is app-wide config, not per-channel.
+    PUSHOVER_APP_TOKEN = settings.get("pushover", "app_token", "")
+    PUSHOVER_ACTION_SECRET = settings.get("pushover", "action_secret", SECRET_KEY) or SECRET_KEY
+    # Only used on priority=2 (emergency) sends. Pushover requires retry
+    # >= 30s and expire <= 10800s; PushoverNotifier clamps to that range
+    # regardless of what's configured here.
+    PUSHOVER_RETRY_SECONDS = settings.get_int("pushover", "retry_seconds", 60)
+    PUSHOVER_EXPIRE_SECONDS = settings.get_int("pushover", "expire_seconds", 3600)
+
     VOICE_PROVIDER = settings.get("voice", "provider", "stub")
     VOICE_CALLBACK_SECRET = settings.get("voice", "callback_secret", SECRET_KEY) or SECRET_KEY
     VOICE_TEXT_TEMPLATE = settings.get("voice", "text_template", "")

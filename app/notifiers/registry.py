@@ -5,6 +5,7 @@ from app.notifiers.plugins import (
 )
 from app.notifiers.mattermost.notifier import MattermostNotifier
 from app.notifiers.email.notifier import EmailNotifier
+from app.notifiers.pushover.notifier import PushoverNotifier
 from app.notifiers.telegram.notifier import TelegramNotifier
 from app.notifiers.slack.notifier import SlackNotifier
 from app.notifiers.types import (
@@ -12,6 +13,7 @@ from app.notifiers.types import (
     DISCORD_CHANNEL,
     EMAIL_CHANNEL,
     MATTERMOST_CHANNEL,
+    PUSHOVER_CHANNEL,
     SLACK_CHANNEL,
     TEAMS_CHANNEL,
     TELEGRAM_CHANNEL,
@@ -26,6 +28,7 @@ NOTIFIERS = {
     DISCORD_CHANNEL: DiscordNotifier(),
     TEAMS_CHANNEL: TeamsNotifier(),
     EMAIL_CHANNEL: EmailNotifier(),
+    PUSHOVER_CHANNEL: PushoverNotifier(),
 }
 
 

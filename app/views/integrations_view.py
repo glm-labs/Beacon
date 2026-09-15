@@ -37,10 +37,13 @@ from app.services.integrations.aws_sns import (
     validate_aws_sns_message,
 )
 from app.notifiers.mattermost.actions import verify_mattermost_action_signature
+from app.notifiers.pushover.actions import verify_pushover_action_signature
 from app.notifiers.slack.actions import (
     SlackActionError,
     handle_slack_action,
 )
+from app.notifiers.types import PUSHOVER_CHANNEL
+from app.services.notifications.rules import NOTIFICATION_METHOD_PUSHOVER
 from app.modules.common import utc_now
 from app.services.rbac import can_respond_team
 
@@ -707,6 +710,106 @@ def mattermost_action():
     return jsonify({
         "ephemeral_text": f"Alert #{alert.id} resolved",
         "skip_slack_parsing": True,
+    })
+
+
+@integrations_bp.route("/pushover/callback", methods=["POST"])
+def pushover_callback():
+    """Handle a Pushover emergency-priority acknowledge callback.
+
+    Pushover POSTs here once, the moment someone taps the Acknowledge
+    button built into a priority=2 notification -- see
+    app/notifiers/pushover/notifier.py for why that URL is signed rather
+    than secret-in-path like the voice callback above. Everything we act
+    on (kind/alert_id/target_id/signature) is in the query string we gave
+    Pushover; the POST body is Pushover's own receipt/ack fields, read
+    only to find out *who* tapped it and whether it really was an
+    acknowledge (Pushover can also call back on plain receipt lookups).
+    """
+    kind = str(request.args.get("kind") or "").strip()
+    signature = request.args.get("signature")
+
+    try:
+        alert_id = int(request.args.get("alert_id"))
+        target_id = int(request.args.get("target_id"))
+    except (TypeError, ValueError):
+        return jsonify({"error": "invalid pushover callback parameters"}), 400
+
+    if kind == "channel":
+        try:
+            channel = channels_repo.get_channel(target_id)
+        except (DoesNotExist, TypeError, ValueError):
+            return jsonify({"error": "pushover callback rejected"}), 403
+
+        if channel.channel_type != PUSHOVER_CHANNEL or not channel.enabled:
+            return jsonify({"error": "pushover callback rejected"}), 403
+
+        secret = (channel.config or {}).get("callback_secret") or Config.PUSHOVER_ACTION_SECRET
+        delivery = None
+    elif kind == "delivery":
+        delivery = UserNotificationDelivery.get_or_none(
+            UserNotificationDelivery.id == target_id
+        )
+
+        if not delivery or delivery.method != NOTIFICATION_METHOD_PUSHOVER:
+            return jsonify({"error": "pushover callback rejected"}), 403
+
+        secret = Config.PUSHOVER_ACTION_SECRET
+        channel = None
+    else:
+        return jsonify({"error": "invalid pushover callback parameters"}), 400
+
+    if not verify_pushover_action_signature(secret, signature, alert_id, target_id, kind):
+        return jsonify({"error": "pushover callback rejected"}), 403
+
+    try:
+        alert_group = alerts_repo.get_alert_group(alert_id)
+    except (DoesNotExist, TypeError, ValueError):
+        return jsonify({"error": "pushover callback alert was not found"}), 404
+
+    if kind == "channel" and (
+        not channel.team_id
+        or not alert_group.team_id
+        or int(channel.team_id) != int(alert_group.team_id)
+    ):
+        return jsonify({"error": "pushover callback rejected"}), 403
+
+    if kind == "delivery" and delivery.group_id != alert_group.id:
+        return jsonify({"error": "pushover callback rejected"}), 403
+
+    # Pushover's own POST body, not our query string: only present once
+    # someone actually acknowledges (not on every receipt ping), with the
+    # Pushover user key of whoever tapped it in acknowledged_by.
+    if str(request.form.get("acknowledged") or "") != "1":
+        return jsonify({"status": "ignored"})
+
+    acknowledged_by_key = str(request.form.get("acknowledged_by") or "").strip()
+    acting_user = users_repo.get_user_by_pushover_user_key(acknowledged_by_key)
+
+    if kind == "channel":
+        # A group-key channel pages a whole rotation from one shared
+        # Pushover key; not every member necessarily has their own key
+        # mapped to a Beacon user yet. Falling back to an unattributed
+        # acknowledge is deliberate -- see app/notifiers/pushover/notifier.py
+        # module docstring and docs/notifiers/pushover.md: a page that gets
+        # acknowledged by someone Beacon can't name still beats one that
+        # nags for a full hour because the tap didn't count.
+        if acting_user and not can_respond_team(acting_user, alert_group.team_id):
+            acting_user = None
+        user_id = acting_user.id if acting_user else None
+    else:
+        # A personal notification rule already names exactly one person;
+        # trust that binding even if acknowledged_by doesn't resolve (for
+        # example because the user never filled in their profile's
+        # Pushover key with the value Pushover reports back).
+        user_id = acting_user.id if acting_user else delivery.user_id
+
+    alert_group = acknowledge_alert(alert_id, user_id=user_id)
+
+    return jsonify({
+        "status": "acknowledged",
+        "alert_id": alert_group.id,
+        "user_id": user_id,
     })
 
 

@@ -41,6 +41,23 @@ def serialize_route_integration_config(route):
             }
         }
 
+    if route.source == "zabbix":
+        zabbix = dict(
+            config.get("zabbix") or {}
+        )
+
+        return {
+            "zabbix": {
+                "ack_writeback_enabled": bool(
+                    zabbix.get("ack_writeback_enabled")
+                ),
+                "api_url": zabbix.get("api_url"),
+                "has_api_token": bool(
+                    zabbix.get("api_token")
+                ),
+            }
+        }
+
     return {}
 
 

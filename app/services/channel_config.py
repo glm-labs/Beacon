@@ -12,6 +12,11 @@ _CHANNEL_SECRET_KEYS = {
     "webhook": {"webhook_url"},
     "discord": {"webhook_url"},
     "teams": {"webhook_url"},
+    # "target" (a Pushover user or delivery-group key) is left unmasked,
+    # same treatment as Slack's channel_id: it identifies a destination,
+    # not a credential. app_token is what actually lets someone send
+    # messages and burn the app's Pushover quota.
+    "pushover": {"app_token", "callback_secret"},
 }
 
 

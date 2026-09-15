@@ -1,7 +1,8 @@
-from app.modules.db import alerts_repo
+from app.modules.db import alerts_repo, users_repo
 from app.modules.db.models import AlertGroup
 from app.services.alerts.correlation import refresh_alert_group_correlations_safely
 from app.services.incidents.stakeholders import notify_stakeholders
+from app.services.integrations.writebacks.registry import notify_source_of_acknowledgement
 from app.services.notifications.delivery import update_alert_messages
 from app.services.notifications.rules import cancel_pending_group_deliveries
 from app.services.business_services.impact import refresh_business_impacts_safely_for_group
@@ -47,6 +48,11 @@ def acknowledge_alert(alert_id, user_id=None):
         event_type="acknowledged",
         message="Alert group acknowledged",
         user_id=user_id,
+    )
+
+    notify_source_of_acknowledgement(
+        group,
+        users_repo.get_user(user_id) if user_id else None,
     )
 
     refresh_alert_group_correlations_safely(group, reason="manual_acknowledge")

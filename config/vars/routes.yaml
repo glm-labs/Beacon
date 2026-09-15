@@ -1,0 +1,24 @@
+# Alert routes, one entry per (team_slug, name). channel_names are resolved
+# to channel ids by (team_slug, name) against config/vars/channels.yaml's
+# own entries -- keep names in sync between the two files.
+routes:
+  - team_slug: sre
+    name: "Zabbix - dc1-gnt"
+    source: zabbix
+    enabled: true
+    channel_names:
+      - "On-call Pushover"
+    # See docs/integrations/zabbix.md#acknowledge-writeback. Acknowledging
+    # this route's alerts in Beacon -- by any means, a Slack button, the
+    # UI, or the Pushover 1-tap acknowledge on the channel above -- also
+    # calls back into Zabbix's own event.acknowledge, so Zabbix's
+    # escalation (and its own Pushover mediatype's retry, if that event
+    # also pages there) stops nagging once Beacon has it.
+    integration_config:
+      zabbix:
+        ack_writeback_enabled: true
+        api_url: "http://zabbix-web.zabbix.svc.cluster.local"
+        # Use a purpose-built Zabbix API token scoped to exactly
+        # event.acknowledge -- see docs/integrations/zabbix.md. Never the
+        # config-bot/admin token.
+        api_token_env: ZABBIX_ACK_API_TOKEN

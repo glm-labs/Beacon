@@ -54,6 +54,39 @@ class RouteBaseSchema(ApiModel):
         return self
 
     @model_validator(mode="after")
+    def validate_zabbix_ack_writeback(self):
+        if self.source != "zabbix":
+            return self
+
+        config = self.integration_config or {}
+        zabbix = config.get("zabbix")
+
+        if not isinstance(zabbix, dict) or not zabbix.get("ack_writeback_enabled"):
+            return self
+
+        # api_token is deliberately NOT required here, same as Sentry's
+        # webhook_secret above: on an update the client echoes back a
+        # masked "***" (see routes_view.mask_route_integration_config),
+        # never the real value, and build_route_integration_config is what
+        # actually preserves the existing stored token when the incoming
+        # one is blank. Requiring a truthy value here would either reject
+        # a legitimate no-change update or, worse, accept "***" as if it
+        # were the real token and overwrite it. api_url has no such
+        # placeholder problem, so it's fine to require directly.
+        api_url = str(zabbix.get("api_url") or "").strip()
+
+        if not api_url:
+            raise ValueError(
+                "Zabbix acknowledge writeback requires api_url"
+            )
+
+        zabbix["api_url"] = api_url
+        config["zabbix"] = zabbix
+        self.integration_config = config
+
+        return self
+
+    @model_validator(mode="after")
     def validate_integration_config(self):
         if self.source != "aws_sns":
             return self

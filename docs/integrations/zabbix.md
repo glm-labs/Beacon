@@ -232,3 +232,70 @@ Zabbix severity values are normalized for IncidentRelay routing and filtering:
 | `Not classified` | `info` |
 
 The original Zabbix severity is kept in `labels.zabbix_severity`.
+
+## Acknowledge writeback
+
+The section above is intake-only: Zabbix pushes events in, and nothing
+flows back out by default. That means acknowledging a Zabbix-sourced alert
+in Beacon — a Slack button, a [Pushover](pushover.md#1-tap-acknowledge)
+tap, the UI, anything — does nothing on the Zabbix side. The event stays
+unacknowledged there, so Zabbix's own escalation (and, if the same event
+also pages through Zabbix's native Pushover mediatype somewhere, that
+mediatype's own retry-until-ack) keeps nagging as if nobody had looked at
+it.
+
+Enable writeback per route:
+
+```json
+{
+  "zabbix": {
+    "ack_writeback_enabled": true,
+    "api_url": "http://zabbix-web.zabbix.svc.cluster.local",
+    "api_token": "..."
+  }
+}
+```
+
+- `ack_writeback_enabled` — defaults to `false`. Off by default because
+  this is a new outbound side effect, not because it's unsafe to turn on.
+- `api_url` — the Zabbix frontend's base URL (no trailing `/api_jsonrpc.php`,
+  Beacon adds that). This is very often a private/internal address, which
+  means it also needs adding to `[security] outbound_private_network_allowlist`
+  — Beacon's outbound HTTP client refuses private-network destinations by
+  default (SSRF protection), the same way it would refuse any other
+  integration's private-network target.
+- `api_token` — a Zabbix API token. **Use a purpose-built token, not an
+  admin one.** The token only ever needs to call `event.acknowledge`;
+  create a dedicated Zabbix user/role scoped to exactly that one method,
+  so a leak of this token can do exactly one thing (acknowledge events)
+  and nothing else — it can't read your infrastructure, disable triggers,
+  or manage users. This mirrors how Beacon's own API tokens are scoped.
+
+What gets written back: `event.acknowledge` with action bits for
+"acknowledge" and "add message" only (`0x02 | 0x04`) — never "close".
+A Beacon acknowledge means someone is on it, not that the underlying
+Zabbix trigger has cleared; Zabbix's own recovery is what closes the
+problem. The Zabbix eventid acknowledged is the most recent one recorded
+against the Beacon alert group (its `external_id`, from the intake payload
+above) — the latest occurrence, since a Zabbix problem generates a new
+eventid each time it fires.
+
+Writeback failures are logged and otherwise silent: they never make a
+Beacon acknowledge look like it failed, since by the time writeback runs,
+the Beacon-side acknowledge has already committed.
+
+### Troubleshooting
+
+Check:
+
+1. The route's `integration_config.zabbix.ack_writeback_enabled` is `true`.
+2. `api_url` is reachable from Beacon — check
+   `outbound_private_network_allowlist` if it's a private address.
+3. `api_token` belongs to a Zabbix user whose role actually permits
+   `event.acknowledge`.
+4. The alert group has at least one child alert with a Zabbix `external_id`
+   — an alert that predates enabling writeback, or one that never carried
+   `event_id`/`eventid`/`trigger_id`/`triggerid`, has nothing to acknowledge
+   upstream.
+5. Application logs, logger `oncall.integrations.zabbix` — every attempt
+   logs success or the specific failure reason.

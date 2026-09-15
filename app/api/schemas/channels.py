@@ -3,7 +3,12 @@ from typing import Any, ClassVar, Dict
 from pydantic import Field, model_validator
 
 from app.api.schemas.base import ApiModel
-from app.notifiers.types import CHANNEL_TYPE_PATTERN, WEBHOOK_STYLE_CHANNELS, SLACK_CHANNEL
+from app.notifiers.types import (
+    CHANNEL_TYPE_PATTERN,
+    PUSHOVER_CHANNEL,
+    SLACK_CHANNEL,
+    WEBHOOK_STYLE_CHANNELS,
+)
 from app.notifiers.email.email_templates import normalize_email_html_template
 from app.services.channel_config import (
     CHANNEL_SECRET_PLACEHOLDER,
@@ -173,6 +178,51 @@ class ChannelBaseSchema(ApiModel):
                     )
             if mode == "webhook" and not config.get("webhook_url"):
                 raise ValueError("mattermost webhook mode requires webhook_url")
+
+        if self.channel_type == PUSHOVER_CHANNEL:
+            target = str(config.get("target") or "").strip()
+            if not target:
+                raise ValueError("pushover channel requires target")
+            config["target"] = target
+
+            # app_token is intentionally optional here: it can fall back to
+            # a single app-wide Config.PUSHOVER_APP_TOKEN (app/settings.py),
+            # the same way email channels fall back to the global SMTP
+            # config instead of carrying their own credentials. The
+            # notifier raises a clear error at send time if neither exists.
+            app_token = config.get("app_token")
+            if app_token is not None:
+                app_token = str(app_token).strip()
+                if app_token:
+                    config["app_token"] = app_token
+                else:
+                    config.pop("app_token", None)
+
+            priority_map = config.get("priority_map")
+            if priority_map is not None:
+                if not isinstance(priority_map, dict):
+                    raise ValueError("pushover priority_map must be an object")
+
+                normalized_priority_map = {}
+                for severity, priority in priority_map.items():
+                    try:
+                        priority = int(priority)
+                    except (TypeError, ValueError) as exc:
+                        raise ValueError(
+                            f"pushover priority_map.{severity} must be an integer"
+                        ) from exc
+
+                    if priority < -2 or priority > 2:
+                        raise ValueError(
+                            "pushover priority_map values must be between -2 and 2"
+                        )
+
+                    normalized_priority_map[str(severity)] = priority
+
+                if normalized_priority_map:
+                    config["priority_map"] = normalized_priority_map
+                else:
+                    config.pop("priority_map", None)
 
         if self.channel_type == "email":
             html_template = normalize_email_html_template(config.get("html_template"))

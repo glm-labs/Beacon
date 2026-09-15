@@ -10,6 +10,7 @@ from app.modules.db.models import (
 )
 from app.notifiers.browser_push import service as browser_push
 from app.notifiers.email.notifier import EmailNotifier
+from app.notifiers.pushover.notifier import PushoverNotifier
 from app.notifiers.voice.notifier import VoiceCallNotifier
 from app.services.severity import normalize_severity, normalize_severity_list
 from app.modules.db import alerts_repo
@@ -22,11 +23,13 @@ logger = logging.getLogger("oncall.notification_rules")
 NOTIFICATION_METHOD_BROWSER_PUSH = "browser_push"
 NOTIFICATION_METHOD_EMAIL = "email"
 NOTIFICATION_METHOD_VOICE_CALL = "voice_call"
+NOTIFICATION_METHOD_PUSHOVER = "pushover"
 
 NOTIFICATION_RULE_METHODS = {
     NOTIFICATION_METHOD_BROWSER_PUSH,
     NOTIFICATION_METHOD_EMAIL,
     NOTIFICATION_METHOD_VOICE_CALL,
+    NOTIFICATION_METHOD_PUSHOVER,
 }
 
 DEFAULT_RULE_EVENT_TYPES = {
@@ -38,6 +41,7 @@ DEFAULT_RULE_EVENT_TYPES = {
 DIRECT_NOTIFIERS = {
     NOTIFICATION_METHOD_EMAIL: EmailNotifier(),
     NOTIFICATION_METHOD_VOICE_CALL: VoiceCallNotifier(),
+    NOTIFICATION_METHOD_PUSHOVER: PushoverNotifier(),
 }
 
 SKIP_IF_NOT_FIRING_EVENT_TYPES = {
@@ -609,6 +613,9 @@ def build_direct_channel_config(delivery):
 
     if delivery.method == NOTIFICATION_METHOD_VOICE_CALL:
         config["callback_url"] = build_voice_rule_callback_url(delivery)
+
+    if delivery.method == NOTIFICATION_METHOD_PUSHOVER:
+        config["target"] = getattr(delivery.user, "pushover_user_key", None)
 
     return config
 

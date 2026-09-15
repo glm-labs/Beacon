@@ -83,6 +83,13 @@ def mask_route_integration_config(config):
     if sentry:
         config["sentry"] = sentry
 
+    zabbix = dict(config.get("zabbix") or {})
+    if zabbix.get("api_token"):
+        zabbix["api_token"] = "***"
+
+    if zabbix:
+        config["zabbix"] = zabbix
+
     return config
 
 
@@ -171,6 +178,48 @@ def build_route_integration_config(payload, current_route=None):
             "aws_sns": {
                 "topic_arn": topic_arn,
             },
+        }
+
+    if payload.source == "zabbix":
+        incoming_zabbix = dict(
+            incoming.get("zabbix") or {}
+        )
+
+        current_config = (
+            current_route.integration_config or {}
+            if current_route else {}
+        )
+        current_zabbix = dict(
+            current_config.get("zabbix") or {}
+        )
+
+        new_token = str(
+            incoming_zabbix.get("api_token") or ""
+        ).strip()
+        current_token = current_zabbix.get("api_token")
+
+        api_token = new_token or current_token
+
+        api_url = clean_route_config_string(
+            incoming_zabbix.get("api_url")
+        )
+        if api_url:
+            api_url = api_url.rstrip("/")
+
+        zabbix_config = {
+            "ack_writeback_enabled": bool(
+                incoming_zabbix.get("ack_writeback_enabled")
+            ),
+        }
+
+        if api_url:
+            zabbix_config["api_url"] = api_url
+
+        if api_token:
+            zabbix_config["api_token"] = api_token
+
+        return {
+            "zabbix": zabbix_config,
         }
 
     return {}

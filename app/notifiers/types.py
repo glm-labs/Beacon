@@ -11,6 +11,7 @@ WEBHOOK_CHANNEL = "webhook"
 DISCORD_CHANNEL = "discord"
 TEAMS_CHANNEL = "teams"
 EMAIL_CHANNEL = "email"
+PUSHOVER_CHANNEL = "pushover"
 
 CHANNEL_TYPE_VALUES = (
     TELEGRAM_CHANNEL,
@@ -20,9 +21,10 @@ CHANNEL_TYPE_VALUES = (
     DISCORD_CHANNEL,
     TEAMS_CHANNEL,
     EMAIL_CHANNEL,
+    PUSHOVER_CHANNEL,
 )
 
-CHANNEL_TYPE_PATTERN = r"^(telegram|slack|mattermost|webhook|discord|teams|email)$"
+CHANNEL_TYPE_PATTERN = r"^(telegram|slack|mattermost|webhook|discord|teams|email|pushover)$"
 
 WEBHOOK_STYLE_CHANNELS = frozenset(
     (WEBHOOK_CHANNEL, DISCORD_CHANNEL, TEAMS_CHANNEL)

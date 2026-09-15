@@ -1,0 +1,5 @@
+# Only what config/tools/apply.py needs. Deliberately not the app's own
+# requirements.txt -- this tooling runs in CI against a deployed Beacon,
+# never imports the app itself, and PyYAML is the one thing stdlib doesn't
+# give it.
+PyYAML==6.0.2

@@ -1,0 +1,28 @@
+# Notification channels, one entry per (team_slug, name).
+#
+# Secrets never go here in plaintext. Any `*_env` key names an environment
+# variable that config/tools/apply.py resolves at apply time and writes
+# into the matching config key (app_token_env -> app_token). A missing
+# env var fails the apply loudly -- same "mandatory lookup" convention as
+# PUSHOVER_TOKEN in Upgreat-AI/zabbix's config/vars/mediatypes/pushover.yaml,
+# deliberately: a silently-empty secret that gets applied anyway is worse
+# than a failed CI run.
+channels:
+  - team_slug: sre
+    name: "On-call Pushover"
+    channel_type: pushover
+    enabled: true
+    config:
+      app_token_env: PUSHOVER_APP_TOKEN
+      # A Pushover delivery-GROUP key, not a personal user key: this
+      # channel pages the whole on-call rotation, same as the group-key
+      # pattern already in use for Zabbix's own Pushover mediatype (see
+      # Upgreat-AI/zabbix, ADR 0001).
+      target_env: PUSHOVER_TARGET_GROUP
+      priority_map:
+        critical: 2
+        high: 1
+        medium: 0
+        warning: 0
+        low: -1
+        info: -1

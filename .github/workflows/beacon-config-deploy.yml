@@ -1,0 +1,40 @@
+name: beacon-config-deploy
+
+# Applies config/vars/*.yaml against the live Beacon API on merge to main.
+# Mirrors Upgreat-AI/zabbix's deploy.yaml: one apply at a time (a fast
+# second merge waits for the first to finish rather than racing it).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "config/**"
+  workflow_dispatch: {}
+
+concurrency:
+  group: beacon-config-deploy
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    env:
+      BEACON_API_URL: ${{ secrets.BEACON_API_URL }}
+      BEACON_API_TOKEN: ${{ secrets.BEACON_API_TOKEN }}
+      PUSHOVER_APP_TOKEN: ${{ secrets.PUSHOVER_APP_TOKEN }}
+      PUSHOVER_TARGET_GROUP: ${{ secrets.PUSHOVER_TARGET_GROUP }}
+      ZABBIX_ACK_API_TOKEN: ${{ secrets.ZABBIX_ACK_API_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install config tooling deps
+        run: pip install --no-cache-dir -r config/requirements.txt
+
+      - name: Apply
+        run: python3 config/tools/apply.py

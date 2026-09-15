@@ -140,6 +140,7 @@ class User(SoftDeleteModel):
     telegram_user_id = CharField(null=True)
     slack_user_id = CharField(null=True)
     mattermost_user_id = CharField(null=True)
+    pushover_user_key = CharField(null=True)
     notify_oncall_shift_start_email = BooleanField(default=True)
     notify_oncall_shift_end_email = BooleanField(default=True)
     notify_oncall_shift_start_mattermost = BooleanField(default=True)

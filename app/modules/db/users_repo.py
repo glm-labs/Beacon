@@ -459,6 +459,18 @@ def count_active_admins(exclude_user_id=None):
     return query.count()
 
 
+def get_user_by_pushover_user_key(pushover_user_key):
+    """Return an active user by their personal Pushover user key."""
+    if not pushover_user_key:
+        return None
+
+    return User.get_or_none(
+        (User.pushover_user_key == str(pushover_user_key))
+        & (User.deleted == False)
+        & (User.active == True)
+    )
+
+
 def get_user_by_telegram_id(telegram_user_id):
     """
     Return a user by Telegram user id.
