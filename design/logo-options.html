@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<title>Beacon logo opties</title>
+<style>
+  :root {
+    --dark-bg: #0b1220;
+    --dark-card: #0f1b33;
+    --light-bg: #f4f5f7;
+    --light-card: #ffffff;
+    --ink: #1c2230;
+    --muted: #6b7280;
+    --blue: #2563eb;
+    --amber: #fbbf24;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 24px 80px;
+    background: var(--light-bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Arial, sans-serif;
+    color: var(--ink);
+  }
+  h1 {
+    font-size: 22px;
+    margin: 0 0 4px;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 32px;
+    max-width: 640px;
+    line-height: 1.5;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+    max-width: 1400px;
+  }
+  .option {
+    background: var(--light-card);
+    border: 1px solid #e2e4e9;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .option-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .option-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--blue);
+    color: white;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .option-desc {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin: 0 0 14px;
+    line-height: 1.4;
+  }
+  .swatches {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .swatch {
+    flex: 1;
+    min-width: 130px;
+    border-radius: 10px;
+    padding: 18px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .swatch.dark { background: var(--dark-card); }
+  .swatch.light { background: var(--light-bg); border: 1px solid #e2e4e9; }
+  .swatch-label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.55;
+  }
+  .swatch.dark .swatch-label { color: #cbd5e1; }
+  .swatch.light .swatch-label { color: var(--muted); }
+  .icon-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .icon-64 svg { width: 64px; height: 64px; }
+  .icon-32 svg { width: 32px; height: 32px; }
+  .wordmark-row {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed #e2e4e9;
+  }
+  .wordmark-row svg { height: 40px; }
+  .pick-note {
+    margin-top: 40px;
+    max-width: 640px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  code { background: #eef0f4; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<h1>Beacon — logo opties</h1>
+<p class="sub">Zes verschillende richtingen, elk als hand-geschreven SVG (geen import, puur code). Elke optie: groot op donker + licht, en klein (32px) op donker om leesbaarheid in de ingeklapte sidebar te checken. Onderaan telkens het wordmark in context.</p>
+
+<div class="grid">
+
+  <!-- A: Ping / radar dot -->
+  <div class="option">
+    <p class="option-title"><span class="option-letter">A</span> Signal ping</p>
+    <p class="option-desc">Puur minimalistisch: een puls met uitdovende ringen. Geen letterlijke afbeelding, voelt modern/SaaS.</p>
+    <div class="swatches">
+      <div class="swatch dark">
+        <span class="swatch-label">Dark · 64px</span>
+        <div class="icon-64" id="a-dark-64"></div>
+      </div>
+      <div class="swatch light">
+        <span class="swatch-label">Light · 64px</span>
+        <div class="icon-64" id="a-light-64"></div>
+      </div>
+      <div class="swatch dark">
+        <span class="swatch-label">Dark · 32px</span>
+        <div class="icon-32" id="a-dark-32"></div>
+      </div>
+    </div>
+    <div class="wordmark-row swatch dark" id="a-word"></div>
+  </div>
+
+  <!-- B: Lighthouse -->
+  <div class="option">
+    <p class="option-title"><span class="option-letter">B</span> Lighthouse</p>
+    <p class="option-desc">Letterlijke beacon: een vuurtoren met uitwaaierende lichtbundel. Meest "verhalende" optie.</p>
+    <div class="swatches">
+      <div class="swatch dark">
+        <span class="swatch-label">Dark · 64px</span>
+        <div class="icon-64" id="b-dark-64"></div>
+      </div>
+      <div class="swatch light">
+        <span class="swatch-label">Light · 64px</span>
+        <div class="icon-64" id="b-light-64"></div>
+      </div>
+      <div class="swatch dark">
+        <span class="swatch-label">Dark · 32px</span>
+        <div class="icon-32" id="b-dark-32"></div>
+      </div>
+    </div>
+    <div class="wordmark-row swatch dark" id="b-word"></div>
+  </div>
+
+  <!-- C: Bell + badge -->
+  <div class="option">
+    <p class="option-title"><span class="option-letter">C</span> Alert bell</p>
+    <p class="option-desc">De "veilige" herkenbare keuze: klassieke alert-bel met een signaal-badge. Minst uniek, meest onmiddellijk begrepen.</p>
+    <div class="swatches">
+      <div class="swatch dark">
+        <span class="swatch-label">Dark · 64px</span>
+        <div class="icon-64" id="c-dark-64"></div>
+      </div>
+      <div class="swatch light">
+        <span class="swatch-label">Light · 64px</span>
+        <div class="icon-64" id="c-light-64"></div>
+      </div>
+      <div class="swatch dark">
+        <span class="swatch-label">Dark · 32px</span>
+        <div class="icon-32" id="c-dark-32"></div>
+      </div>
+    </div>
+    <div class="wordmark-row swatch dark" id="c-word"></div>
+  </div>
+
+  <!-- D: B monogram badge -->
+  <div class="option">
+    <p class="option-title"><span class="option-letter">D</span> Monogram badge</p>
+    <p class="option-desc">App-icon stijl (zoals Slack/Linear): afgeronde badge met een "B" en een signaal-accent in de hoek. Werkt heel sterk als losse app-icon.</p>
+    <div class="swatches">
+      <div class="swatch dark">
+        <span class="swatch-label">Dark · 64px</span>
+        <div class="icon-64" id="d-dark-64"></div>
+      </div>
+      <div class="swatch light">
+        <span class="swatch-label">Light · 64px</span>
+        <div class="icon-64" id="d-light-64"></div>
+      </div>
+      <div class="swatch dark">
+        <span class="swatch-label">Dark · 32px</span>
+        <div class="icon-32" id="d-dark-32"></div>
+      </div>
+    </div>
+    <div class="wordmark-row swatch dark" id="d-word"></div>
+  </div>
+
+  <!-- E: Shield + pulse -->
+  <div class="option">
+    <p class="option-title"><span class="option-letter">E</span> Shield + pulse</p>
+    <p class="option-desc">"Bewaker van je infrastructuur": een schild met een hartslag/EKG-lijn erin. Voelt vertrouwd/betrouwbaar.</p>
+    <div class="swatches">
+      <div class="swatch dark">
+        <span class="swatch-label">Dark · 64px</span>
+        <div class="icon-64" id="e-dark-64"></div>
+      </div>
+      <div class="swatch light">
+        <span class="swatch-label">Light · 64px</span>
+        <div class="icon-64" id="e-light-64"></div>
+      </div>
+      <div class="swatch dark">
+        <span class="swatch-label">Dark · 32px</span>
+        <div class="icon-32" id="e-dark-32"></div>
+      </div>
+    </div>
+    <div class="wordmark-row swatch dark" id="e-word"></div>
+  </div>
+
+  <!-- F: Signal bars -->
+  <div class="option">
+    <p class="option-title"><span class="option-letter">F</span> Signal bars</p>
+    <p class="option-desc">Oplopende signaalbalken met een beacon-licht bovenop de hoogste. Technisch/broadcast gevoel.</p>
+    <div class="swatches">
+      <div class="swatch dark">
+        <span class="swatch-label">Dark · 64px</span>
+        <div class="icon-64" id="f-dark-64"></div>
+      </div>
+      <div class="swatch light">
+        <span class="swatch-label">Light · 64px</span>
+        <div class="icon-64" id="f-light-64"></div>
+      </div>
+      <div class="swatch dark">
+        <span class="swatch-label">Dark · 32px</span>
+        <div class="icon-32" id="f-dark-32"></div>
+      </div>
+    </div>
+    <div class="wordmark-row swatch dark" id="f-word"></div>
+  </div>
+
+</div>
+
+<p class="pick-note">
+  Laat me gewoon weten welke letter (A–F) je wil, of een combinatie ("het schild van E maar met de puls-kleur van A"), dan bouw ik die uit tot de definitieve <code>beacon-icon.svg</code> / <code>beacon-logo.svg</code> en verwerk ik hem in de app.
+</p>
+
+<script>
+const ICONS = {
+  a: `
+    <circle cx="64" cy="64" r="52" stroke="#2563eb" stroke-width="6" fill="none" opacity="0.25"/>
+    <circle cx="64" cy="64" r="38" stroke="#2563eb" stroke-width="6" fill="none" opacity="0.5"/>
+    <circle cx="64" cy="64" r="24" stroke="#2563eb" stroke-width="6" fill="none" opacity="0.85"/>
+    <circle cx="64" cy="64" r="14" fill="#fbbf24"/>
+  `,
+  b: `
+    <path d="M74 34 L124 10 L124 54 Z" fill="#fbbf24" opacity="0.35"/>
+    <path d="M50 118 L58 40 L70 40 L78 118 Z" fill="#2563eb"/>
+    <rect x="42" y="112" width="44" height="10" rx="4" fill="#2563eb"/>
+    <circle cx="64" cy="34" r="13" fill="#fbbf24"/>
+  `,
+  c: `
+    <path d="M64 20C46 20 34 34 34 52V72C34 82 28 88 22 92H106C100 88 94 82 94 72V52C94 34 82 20 64 20Z" fill="#2563eb"/>
+    <rect x="54" y="93" width="20" height="9" rx="4.5" fill="#2563eb"/>
+    <circle cx="64" cy="104" r="8" fill="#2563eb"/>
+    <circle cx="96" cy="28" r="22" fill="none" stroke="#fbbf24" stroke-width="5" opacity="0.4"/>
+    <circle cx="96" cy="28" r="13" fill="#fbbf24"/>
+  `,
+  d: `
+    <rect x="8" y="8" width="112" height="112" rx="28" fill="#2563eb"/>
+    <text x="58" y="92" font-family="Inter, Arial, Helvetica, sans-serif" font-size="72" font-weight="800" fill="#ffffff" text-anchor="middle">B</text>
+    <circle cx="100" cy="30" r="7" fill="#fbbf24"/>
+    <circle cx="100" cy="30" r="15" fill="none" stroke="#fbbf24" stroke-width="4" opacity="0.5"/>
+  `,
+  e: `
+    <path d="M64 10L112 26V60C112 88 92 108 64 120C36 108 16 88 16 60V26Z" fill="#2563eb"/>
+    <path d="M30 66H46L54 50L64 82L72 60L80 66H98" stroke="#fbbf24" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  `,
+  f: `
+    <rect x="18" y="82" width="16" height="30" rx="6" fill="#2563eb" opacity="0.45"/>
+    <rect x="42" y="66" width="16" height="46" rx="6" fill="#2563eb" opacity="0.65"/>
+    <rect x="66" y="46" width="16" height="66" rx="6" fill="#2563eb" opacity="0.85"/>
+    <rect x="90" y="24" width="16" height="88" rx="6" fill="#2563eb"/>
+    <circle cx="98" cy="15" r="10" fill="#fbbf24"/>
+  `,
+};
+
+function svg(innerHTML, viewBox) {
+  return `<svg viewBox="${viewBox || '0 0 128 128'}" xmlns="http://www.w3.org/2000/svg">${innerHTML}</svg>`;
+}
+
+function wordmarkSvg(key) {
+  return `<svg viewBox="0 0 260 56" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(2,2) scale(0.42)">${ICONS[key]}</g>
+    <text x="66" y="35" font-family="Inter, Arial, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.8" fill="#ffffff">Beacon</text>
+  </svg>`;
+}
+
+['a','b','c','d','e','f'].forEach(function (key) {
+  document.getElementById(key + '-dark-64').innerHTML = svg(ICONS[key]);
+  document.getElementById(key + '-light-64').innerHTML = svg(ICONS[key]);
+  document.getElementById(key + '-dark-32').innerHTML = svg(ICONS[key]);
+  document.getElementById(key + '-word').innerHTML = wordmarkSvg(key);
+});
+</script>
+
+</body>
+</html>

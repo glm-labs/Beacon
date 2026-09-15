@@ -1,35 +1,15 @@
 <svg width="240" height="56" viewBox="0 0 240 56" xmlns="http://www.w3.org/2000/svg" fill="none">
-  <!-- Icon -->
-  <g transform="translate(0, 2) scale(0.42)">
-    <path
-      d="M16 66A48 48 0 0 1 112 66"
-      stroke="#fbbf24"
-      stroke-width="7"
-      stroke-linecap="round"
-      opacity="0.3"
-    />
-    <path
-      d="M28 66A36 36 0 0 1 100 66"
-      stroke="#fbbf24"
-      stroke-width="7"
-      stroke-linecap="round"
-      opacity="0.55"
-    />
-    <path
-      d="M40 66A24 24 0 0 1 88 66"
-      stroke="#fbbf24"
-      stroke-width="7"
-      stroke-linecap="round"
-      opacity="0.9"
-    />
-    <circle cx="64" cy="66" r="16" fill="#fbbf24" />
-    <rect x="59" y="80" width="10" height="34" rx="5" fill="#2563eb" />
-    <rect x="40" y="110" width="48" height="10" rx="5" fill="#2563eb" />
+  <!-- Icon: signal ping, same shape as beacon-icon.svg -->
+  <g transform="translate(2, 2) scale(0.42)">
+    <circle cx="64" cy="64" r="52" stroke="#2563eb" stroke-width="6" opacity="0.25" />
+    <circle cx="64" cy="64" r="38" stroke="#2563eb" stroke-width="6" opacity="0.5" />
+    <circle cx="64" cy="64" r="24" stroke="#2563eb" stroke-width="6" opacity="0.85" />
+    <circle cx="64" cy="64" r="14" fill="#fbbf24" />
   </g>
 
   <!-- Wordmark -->
   <text
-    x="62"
+    x="66"
     y="35"
     font-family="Inter, Arial, Helvetica, sans-serif"
     font-size="24"
@@ -38,7 +18,4 @@
   >
     <tspan fill="#ffffff">Beacon</tspan>
   </text>
-
-  <!-- Signal-light accent, echoing the icon -->
-  <circle cx="186" cy="27" r="5" fill="#fbbf24" />
 </svg>
