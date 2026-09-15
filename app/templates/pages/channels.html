@@ -472,7 +472,40 @@
                   {% include 'pages/include/email_config_block.html' %}
                 </div>
               </div>
-                
+
+              <div class="channel-config" data-channel-config="pushover">
+                <div class="form-section">
+                  <label for="cfg-pushover-target">{{ _('channels.pushover.target') }}</label>
+                  <input
+                    id="cfg-pushover-target"
+                    class="input"
+                    type="text"
+                    autocomplete="off"
+                    spellcheck="false"
+                    placeholder="g... or u..."
+                  >
+                  <div class="help-text">
+                    {{ _('channels.pushover.target_help') }}
+                  </div>
+
+                  <label for="cfg-pushover-app-token">{{ _('channels.pushover.app_token') }}</label>
+                  <input
+                    id="cfg-pushover-app-token"
+                    class="input"
+                    type="password"
+                    autocomplete="new-password"
+                    placeholder="a..."
+                  >
+                  <div class="help-text">
+                    {{ _('channels.pushover.app_token_help') }}
+                  </div>
+
+                  <div class="help-text">
+                    {{ _('channels.pushover.help') }}
+                  </div>
+                </div>
+              </div>
+
               <div class="form-divider"></div>
 
               <label for="channel-config-json">{{ _('channels.form.advanced') }}</label>

@@ -216,5 +216,17 @@
   "routes.intake.generic_example_comment": "Generisches IncidentRelay-Webhook-Format",
   "routes.intake.pagerduty_example_comment": "PagerDuty-Events-API-v2-kompatibles Format",
   "routes.intake.webhook_help": "Generische Payloads verwenden Authorization: Bearer. PagerDuty-Events-API-v2-kompatible Payloads übergeben dasselbe Token in routing_key.",
-  "routes.intake.webhook_subtitle": "Verwenden Sie dieses Token als Authorization: Bearer für generische Payloads oder als routing_key für PagerDuty-Events-API-v2-kompatible Payloads."
+  "routes.intake.webhook_subtitle": "Verwenden Sie dieses Token als Authorization: Bearer für generische Payloads oder als routing_key für PagerDuty-Events-API-v2-kompatible Payloads.",
+  "routes.form.zabbix_ack_writeback_enabled": "Auch das ursprüngliche Zabbix-Ereignis bestätigen",
+  "routes.form.zabbix_ack_writeback_help": "Standardmäßig deaktiviert. Wenn aktiviert, wird beim Bestätigen eines Alarms dieser Route in Beacon – gleich auf welchem Weg, nicht nur über Pushover – auch Zabbix' event.acknowledge aufgerufen, damit Zabbix' eigene Eskalation (und, falls dasselbe Ereignis auch dort alarmiert, der Retry seines Pushover-Media-Typs) erfährt, dass sich jemand darum kümmert.",
+  "routes.form.zabbix_api_url": "Zabbix-API-URL",
+  "routes.form.zabbix_api_url_help": "Die Basis-URL des Zabbix-Frontends, ohne abschließendes /api_jsonrpc.php. Oft eine private/interne Adresse – sie muss dann auch zu [security] outbound_private_network_allowlist hinzugefügt werden.",
+  "routes.form.zabbix_api_token": "Zabbix-API-Token",
+  "routes.form.zabbix_api_token_placeholder": "Zabbix-API-Token einfügen",
+  "routes.form.zabbix_api_token_new_help": "Verwenden Sie ein eigens dafür angelegtes Zabbix-API-Token, das ausschließlich für event.acknowledge berechtigt ist, kein Admin-Token – siehe die Zabbix-Integrationsdokumentation.",
+  "routes.form.zabbix_api_token_configured_help": "Zabbix-API-Token ist konfiguriert. Lassen Sie das Feld leer, um das bestehende Token zu behalten.",
+  "routes.form.zabbix_api_token_missing_help": "Fügen Sie hier ein Zabbix-API-Token ein. Solange keines konfiguriert ist, wird die Bestätigungs-Rückmeldung übersprungen und protokolliert, nicht wiederholt.",
+  "routes.details.zabbix_ack_writeback": "Bestätigungs-Rückmeldung",
+  "routes.details.zabbix_api_url": "Zabbix-API-URL",
+  "routes.details.zabbix_api_token": "Zabbix-API-Token"
 }

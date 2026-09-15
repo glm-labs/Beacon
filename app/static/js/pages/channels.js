@@ -118,6 +118,10 @@ function showChannelFields() {
         $('[data-channel-config="email"]').show();
         return;
     }
+    if (type === "pushover") {
+        $('[data-channel-config="pushover"]').show();
+        return;
+    }
 }
 
 function buildSlackConfig(config) {
@@ -277,6 +281,36 @@ function buildChannelConfig() {
         }
         return config;
     }
+    if (type === "pushover") {
+        return buildPushoverConfig(config);
+    }
+    return config;
+}
+
+function buildPushoverConfig(config) {
+    config.target = String(
+        $("#cfg-pushover-target").val() || ""
+    ).trim();
+
+    const appToken = String(
+        $("#cfg-pushover-app-token").val() || ""
+    ).trim();
+
+    if (appToken) {
+        config.app_token = appToken;
+    } else {
+        // Optional field: falls back to the app-wide config-file token at
+        // send time (see app/notifiers/pushover/notifier.py). An empty
+        // string here must not overwrite a placeholder value the schema
+        // would otherwise treat as "no change" on update -- simplest is
+        // to just not send the key at all when the field is blank.
+        delete config.app_token;
+    }
+
+    // priority_map and callback_secret are deliberately not first-class
+    // fields here -- they're advanced per-channel overrides of the
+    // config-file defaults, edited via the Advanced JSON box below like
+    // any other channel-type-specific extra field.
     return config;
 }
 
@@ -539,6 +573,10 @@ function stripVisibleChannelConfig(type, config) {
     if (["webhook", "discord", "teams"].includes(type)) {
         delete config.webhook_url;
     }
+    if (type === "pushover") {
+        delete config.target;
+        delete config.app_token;
+    }
     return config;
 }
 
@@ -601,6 +639,10 @@ function fillChannelFields(type, config) {
     if (type === "email") {
         $("#cfg-email-html-template").val(config.html_template || getDefaultEmailHtmlTemplate());
     }
+    if (type === "pushover") {
+        $("#cfg-pushover-target").val(config.target || "");
+        $("#cfg-pushover-app-token").val(config.app_token || "");
+    }
 }
 
 function clearChannelFields() {
@@ -621,6 +663,8 @@ function clearChannelFields() {
     $("#cfg-slack-signing-secret").val("");
     $("#cfg-slack-app-token").val("");
     $("#cfg-slack-webhook-url").val("");
+    $("#cfg-pushover-target").val("");
+    $("#cfg-pushover-app-token").val("");
 
     showSlackModeFields();
     resetEmailHtmlTemplate();
@@ -717,6 +761,7 @@ function getChannelTypeLabel(type) {
         discord: "channels.type.discord",
         teams: "channels.type.teams",
         email: "channels.type.email",
+        pushover: "channels.type.pushover",
     };
     return labels[type] ? i18n.t(labels[type]) : (type || "-");
 }
@@ -887,6 +932,9 @@ function getSafeChannelConfigSummary(channel) {
     }
     if (channel.channel_type === "telegram") {
         return config.chat_id ? i18n.t("channels.config.chat_ready") : i18n.t("channels.config.chat_missing");
+    }
+    if (channel.channel_type === "pushover") {
+        return config.target ? i18n.t("channels.config.pushover_ready") : i18n.t("channels.config.pushover_missing");
     }
     return "-";
 }

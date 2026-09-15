@@ -152,5 +152,13 @@
   "channels.slack.app_token": "App-Level-Token",
   "channels.slack.app_token_help": "Slack App-Level-Token mit Präfix xapp- und Scope connections:write. Der Slack-Worker muss laufen.",
   "channels.config.bot_http_ready": "Bot API mit HTTP-Aktionen konfiguriert",
-  "channels.config.bot_socket_ready": "Bot API mit Socket Mode konfiguriert"
+  "channels.config.bot_socket_ready": "Bot API mit Socket Mode konfiguriert",
+  "channels.type.pushover": "Pushover",
+  "channels.pushover.app_token": "Pushover-App-Token",
+  "channels.pushover.app_token_help": "Optional. Leer lassen, um das app-weite [pushover] app_token aus der Konfigurationsdatei zu verwenden.",
+  "channels.pushover.target": "Pushover-Ziel",
+  "channels.pushover.target_help": "Ein persönlicher Pushover-Benutzerschlüssel alarmiert eine Person. Ein Gruppenschlüssel alarmiert alle Mitglieder dieser Gruppe – die übliche Wahl für eine Bereitschaftsrotation.",
+  "channels.pushover.help": "Alarme mit Schweregrad „critical“ werden mit Pushovers Notfallpriorität gesendet, die wiederholt wird, bis sie bestätigt wird oder abläuft. Ein Tippen auf die integrierte Bestätigen-Schaltfläche von Pushover bestätigt den Alarm auch hier – siehe „Erweitert“ für priority_map- und callback_secret-Überschreibungen.",
+  "channels.config.pushover_ready": "Ziel konfiguriert",
+  "channels.config.pushover_missing": "Ziel fehlt"
 }

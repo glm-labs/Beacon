@@ -216,5 +216,17 @@
   "routes.form.azure_monitor_help": "Azure Monitor Action Group Webhook requiere Common Alert Schema. Usa la URI de webhook generada, que incluye credenciales HTTP Basic para esta ruta.",
   "routes.intake.azure_monitor_example_comment": "Ejemplo de webhook Azure Monitor Common Alert Schema",
   "routes.intake.azure_monitor_subtitle": "Usa esta URI en un Webhook de Azure Monitor Action Group y habilita Common Alert Schema.",
-  "routes.intake.azure_monitor_help": "La URI generada se autentica mediante HTTP Basic con el usuario incidentrelay y el token de la ruta como contraseña. Bearer auth también funciona para clientes que pueden establecer headers personalizados."
+  "routes.intake.azure_monitor_help": "La URI generada se autentica mediante HTTP Basic con el usuario incidentrelay y el token de la ruta como contraseña. Bearer auth también funciona para clientes que pueden establecer headers personalizados.",
+  "routes.form.zabbix_ack_writeback_enabled": "También confirmar el evento de Zabbix de origen",
+  "routes.form.zabbix_ack_writeback_help": "Desactivado de forma predeterminada. Cuando está activado, confirmar una alerta de esta ruta en Beacon (por cualquier medio, no solo Pushover) también llama a event.acknowledge de Zabbix, para que la propia escalada de Zabbix (y el reintento de su tipo de medio Pushover, si el mismo evento también avisa allí) sepa que alguien ya lo está atendiendo.",
+  "routes.form.zabbix_api_url": "URL de la API de Zabbix",
+  "routes.form.zabbix_api_url_help": "La URL base del frontend de Zabbix, sin /api_jsonrpc.php al final. Suele ser una dirección privada/interna; en ese caso también hay que añadirla a [security] outbound_private_network_allowlist.",
+  "routes.form.zabbix_api_token": "Token de la API de Zabbix",
+  "routes.form.zabbix_api_token_placeholder": "Pegue un token de la API de Zabbix",
+  "routes.form.zabbix_api_token_new_help": "Use un token de la API de Zabbix creado específicamente para esto, con permiso únicamente para event.acknowledge, nunca un token de administrador; consulte la documentación de la integración de Zabbix.",
+  "routes.form.zabbix_api_token_configured_help": "El token de la API de Zabbix está configurado. Déjelo vacío para conservar el token existente.",
+  "routes.form.zabbix_api_token_missing_help": "Pegue aquí un token de la API de Zabbix. Hasta que se configure, la confirmación de retorno se omitirá y quedará registrada, no se reintentará.",
+  "routes.details.zabbix_ack_writeback": "Confirmación de retorno",
+  "routes.details.zabbix_api_url": "URL de la API de Zabbix",
+  "routes.details.zabbix_api_token": "Token de la API de Zabbix"
 }

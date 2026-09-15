@@ -152,5 +152,13 @@
   "channels.slack.app_token": "Token de nivel de aplicación",
   "channels.slack.app_token_help": "Token de nivel de aplicación de Slack que comienza por xapp- y con el scope connections:write. El worker de Slack debe estar ejecutándose.",
   "channels.config.bot_http_ready": "Bot API configurada con acciones HTTP",
-  "channels.config.bot_socket_ready": "Bot API configurada con Socket Mode"
+  "channels.config.bot_socket_ready": "Bot API configurada con Socket Mode",
+  "channels.type.pushover": "Pushover",
+  "channels.pushover.app_token": "Token de aplicación de Pushover",
+  "channels.pushover.app_token_help": "Opcional. Déjelo vacío para usar el app_token de [pushover] definido a nivel de toda la aplicación en el archivo de configuración.",
+  "channels.pushover.target": "Destino de Pushover",
+  "channels.pushover.target_help": "Una clave de usuario personal de Pushover avisa a una persona. Una clave de grupo de entrega avisa a todos los miembros de ese grupo, la opción habitual para una rotación de guardia.",
+  "channels.pushover.help": "Las alertas de severidad crítica se envían con la prioridad de emergencia de Pushover, que se repite hasta que se confirma o caduca. Al pulsar el botón de confirmación integrado de Pushover también se confirma la alerta aquí; consulte Avanzado para las anulaciones de priority_map y callback_secret.",
+  "channels.config.pushover_ready": "Destino configurado",
+  "channels.config.pushover_missing": "Falta el destino"
 }

@@ -216,5 +216,17 @@
   "routes.intake.datadog_help": "Configurez un payload JSON personnalisé contenant ALERT_CYCLE_KEY et ALERT_TRANSITION afin que le rétablissement mette à jour la même alerte IncidentRelay.",
   "routes.intake.uptime_kuma_example_comment": "Exemple de payload Webhook standard Uptime Kuma",
   "routes.intake.uptime_kuma_subtitle": "Utilisez ce point de terminaison et le jeton de la route dans une notification Webhook Uptime Kuma.",
-  "routes.intake.uptime_kuma_help": "Dans Uptime Kuma, créez une notification Webhook avec la méthode POST, le type application/json, l’URL de réception de la route et un en-tête Authorization supplémentaire. Conservez le corps de requête par défaut."
+  "routes.intake.uptime_kuma_help": "Dans Uptime Kuma, créez une notification Webhook avec la méthode POST, le type application/json, l’URL de réception de la route et un en-tête Authorization supplémentaire. Conservez le corps de requête par défaut.",
+  "routes.form.zabbix_ack_writeback_enabled": "Confirmer aussi l'événement Zabbix d'origine",
+  "routes.form.zabbix_ack_writeback_help": "Désactivé par défaut. Une fois activé, confirmer une alerte de cette route dans Beacon (par n'importe quel moyen, pas seulement Pushover) appelle aussi event.acknowledge de Zabbix, afin que l'escalade propre à Zabbix (et la nouvelle tentative de son type de média Pushover, si le même événement y envoie aussi des alertes) sache que quelqu'un s'en occupe.",
+  "routes.form.zabbix_api_url": "URL de l'API Zabbix",
+  "routes.form.zabbix_api_url_help": "L'URL de base du frontend Zabbix, sans /api_jsonrpc.php à la fin. Il s'agit souvent d'une adresse privée/interne, qu'il faut alors aussi ajouter à [security] outbound_private_network_allowlist.",
+  "routes.form.zabbix_api_token": "Jeton d'API Zabbix",
+  "routes.form.zabbix_api_token_placeholder": "Collez un jeton d'API Zabbix",
+  "routes.form.zabbix_api_token_new_help": "Utilisez un jeton d'API Zabbix créé spécifiquement pour cela, autorisé uniquement pour event.acknowledge, jamais un jeton administrateur — voir la documentation de l'intégration Zabbix.",
+  "routes.form.zabbix_api_token_configured_help": "Le jeton d'API Zabbix est configuré. Laissez le champ vide pour conserver le jeton existant.",
+  "routes.form.zabbix_api_token_missing_help": "Collez ici un jeton d'API Zabbix. Tant qu'il n'est pas configuré, la confirmation en retour sera ignorée et journalisée, sans nouvelle tentative.",
+  "routes.details.zabbix_ack_writeback": "Confirmation en retour",
+  "routes.details.zabbix_api_url": "URL de l'API Zabbix",
+  "routes.details.zabbix_api_token": "Jeton d'API Zabbix"
 }

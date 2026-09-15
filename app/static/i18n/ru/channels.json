@@ -152,5 +152,13 @@
   "channels.slack.app_token": "App-level token",
   "channels.slack.app_token_help": "App-level token Slack, начинающийся с xapp-, со scope connections:write. Slack worker должен быть запущен.",
   "channels.config.bot_http_ready": "Bot API настроен с HTTP-действиями",
-  "channels.config.bot_socket_ready": "Bot API настроен с Socket Mode"
+  "channels.config.bot_socket_ready": "Bot API настроен с Socket Mode",
+  "channels.type.pushover": "Pushover",
+  "channels.pushover.app_token": "Токен приложения Pushover",
+  "channels.pushover.app_token_help": "Необязательно. Оставьте пустым, чтобы использовать общий app_token из секции [pushover] файла конфигурации.",
+  "channels.pushover.target": "Получатель Pushover",
+  "channels.pushover.target_help": "Личный ключ пользователя Pushover оповещает одного человека. Ключ группы доставки оповещает всех участников этой группы — обычный выбор для дежурной ротации.",
+  "channels.pushover.help": "Оповещения с критической серьёзностью отправляются с экстренным приоритетом Pushover, который повторяется до подтверждения или истечения срока. Нажатие встроенной кнопки подтверждения Pushover также подтверждает оповещение здесь — см. раздел «Дополнительно» для переопределений priority_map и callback_secret.",
+  "channels.config.pushover_ready": "Получатель настроен",
+  "channels.config.pushover_missing": "Получатель не указан"
 }

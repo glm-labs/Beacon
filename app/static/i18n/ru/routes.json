@@ -216,5 +216,17 @@
   "routes.intake.datadog_help": "Настройте JSON custom payload с ALERT_CYCLE_KEY и ALERT_TRANSITION, чтобы recovery обновлял тот же алерт IncidentRelay.",
   "routes.intake.uptime_kuma_example_comment": "Пример стандартного Webhook payload Uptime Kuma",
   "routes.intake.uptime_kuma_subtitle": "Используйте этот endpoint и token маршрута в Webhook notification Uptime Kuma.",
-  "routes.intake.uptime_kuma_help": "В Uptime Kuma создайте Webhook notification с методом POST, типом application/json, intake URL маршрута и дополнительным заголовком Authorization. Оставьте стандартный request body."
+  "routes.intake.uptime_kuma_help": "В Uptime Kuma создайте Webhook notification с методом POST, типом application/json, intake URL маршрута и дополнительным заголовком Authorization. Оставьте стандартный request body.",
+  "routes.form.zabbix_ack_writeback_enabled": "Также подтверждать исходное событие Zabbix",
+  "routes.form.zabbix_ack_writeback_help": "По умолчанию отключено. При включении подтверждение оповещения этого маршрута в Beacon — любым способом, не только через Pushover — также вызывает event.acknowledge Zabbix, чтобы собственная эскалация Zabbix (и повтор его Pushover-медиатипа, если то же событие оповещает и там) знала, что кто-то уже занимается проблемой.",
+  "routes.form.zabbix_api_url": "URL API Zabbix",
+  "routes.form.zabbix_api_url_help": "Базовый URL веб-интерфейса Zabbix, без /api_jsonrpc.php в конце. Часто это приватный/внутренний адрес — тогда его нужно также добавить в [security] outbound_private_network_allowlist.",
+  "routes.form.zabbix_api_token": "Токен API Zabbix",
+  "routes.form.zabbix_api_token_placeholder": "Вставьте токен API Zabbix",
+  "routes.form.zabbix_api_token_new_help": "Используйте специально созданный токен API Zabbix с правом только на event.acknowledge, а не токен администратора — см. документацию по интеграции с Zabbix.",
+  "routes.form.zabbix_api_token_configured_help": "Токен API Zabbix настроен. Оставьте поле пустым, чтобы сохранить текущий токен.",
+  "routes.form.zabbix_api_token_missing_help": "Вставьте сюда токен API Zabbix. Пока он не настроен, обратное подтверждение будет пропускаться и логироваться, а не повторяться.",
+  "routes.details.zabbix_ack_writeback": "Обратное подтверждение",
+  "routes.details.zabbix_api_url": "URL API Zabbix",
+  "routes.details.zabbix_api_token": "Токен API Zabbix"
 }

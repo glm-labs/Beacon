@@ -216,5 +216,17 @@
   "routes.intake.datadog_help": "配置包含 ALERT_CYCLE_KEY 和 ALERT_TRANSITION 的 JSON 自定义载荷，以便恢复通知更新同一条 IncidentRelay 告警。",
   "routes.intake.uptime_kuma_example_comment": "Uptime Kuma 标准 Webhook 载荷示例",
   "routes.intake.uptime_kuma_subtitle": "在 Uptime Kuma Webhook 通知中使用此端点和路由 Token。",
-  "routes.intake.uptime_kuma_help": "在 Uptime Kuma 中创建 Webhook 通知：请求方法选择 POST，内容类型选择 application/json，填写路由接入 URL，并添加 Authorization 请求头。请求体保持默认值。"
+  "routes.intake.uptime_kuma_help": "在 Uptime Kuma 中创建 Webhook 通知：请求方法选择 POST，内容类型选择 application/json，填写路由接入 URL，并添加 Authorization 请求头。请求体保持默认值。",
+  "routes.form.zabbix_ack_writeback_enabled": "同时确认对应的 Zabbix 事件",
+  "routes.form.zabbix_ack_writeback_help": "默认关闭。启用后，在 Beacon 中确认此路由的告警（无论通过何种方式，不仅限于 Pushover）也会调用 Zabbix 的 event.acknowledge，让 Zabbix 自身的升级流程（以及该事件若同时通过其 Pushover 媒体类型告警时的重试）知道已有人处理。",
+  "routes.form.zabbix_api_url": "Zabbix API URL",
+  "routes.form.zabbix_api_url_help": "Zabbix 前端的基础 URL，末尾不含 /api_jsonrpc.php。这通常是私有/内网地址——此时还需要将其加入 [security] outbound_private_network_allowlist。",
+  "routes.form.zabbix_api_token": "Zabbix API Token",
+  "routes.form.zabbix_api_token_placeholder": "粘贴 Zabbix API Token",
+  "routes.form.zabbix_api_token_new_help": "请使用专门创建、且仅拥有 event.acknowledge 权限的 Zabbix API Token，切勿使用管理员 Token——详见 Zabbix 集成文档。",
+  "routes.form.zabbix_api_token_configured_help": "已配置 Zabbix API Token。留空可保留现有 Token。",
+  "routes.form.zabbix_api_token_missing_help": "在此粘贴 Zabbix API Token。在配置完成之前，确认回写会被跳过并记录日志，而不会重试。",
+  "routes.details.zabbix_ack_writeback": "确认回写",
+  "routes.details.zabbix_api_url": "Zabbix API URL",
+  "routes.details.zabbix_api_token": "Zabbix API Token"
 }

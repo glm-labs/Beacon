@@ -924,6 +924,16 @@ function renderRouteDetails(route, options) {
                 : $()
         )
         .append(
+            route.source === "zabbix"
+                ? routeDetailsItem(
+                    i18n.t("routes.details.zabbix_ack_writeback"),
+                    getRouteZabbixConfig(route).ack_writeback_enabled
+                        ? i18n.t("routes.status.enabled")
+                        : i18n.t("routes.status.disabled")
+                )
+                : $()
+        )
+        .append(
             routeDetailsItem(
                 i18n.t("routes.details.maintenance"),
                 window.AppMaintenanceBadges.text(route, "-")
@@ -993,6 +1003,25 @@ function renderRouteDetails(route, options) {
                 awsSnsConfig.topic_arn
             )
         );
+    }
+
+    if (route.source === "zabbix") {
+        const zabbixConfig = getRouteZabbixConfig(route);
+        fullWidthDetails
+            .append(
+                routeDetailsItem(
+                    i18n.t("routes.details.zabbix_api_url"),
+                    zabbixConfig.api_url || "-"
+                )
+            )
+            .append(
+                routeDetailsItem(
+                    i18n.t("routes.details.zabbix_api_token"),
+                    zabbixConfig.has_api_token
+                        ? i18n.t("routes.details.configured")
+                        : i18n.t("routes.details.not_configured")
+                )
+            );
     }
 
     fullWidthDetails
@@ -1108,6 +1137,35 @@ function getRouteAwsSnsConfig(route) {
     return integrationConfig.aws_sns || {};
 }
 
+function getRouteZabbixConfig(route) {
+    const integrationConfig = (
+        route && route.integration_config
+            ? route.integration_config
+            : {}
+    );
+
+    return integrationConfig.zabbix || {};
+}
+
+function updateRouteZabbixWritebackFieldsUi() {
+    const enabled = $("#route-zabbix-ack-writeback-enabled").is(":checked");
+    $("#route-zabbix-ack-writeback-fields").toggleClass("is-hidden", !enabled);
+    $("#route-zabbix-api-url").prop("required", enabled);
+}
+
+function updateZabbixApiTokenHelp(route) {
+    const zabbixConfig = getRouteZabbixConfig(route);
+    let key = "routes.form.zabbix_api_token_new_help";
+
+    if (route && zabbixConfig.has_api_token) {
+        key = "routes.form.zabbix_api_token_configured_help";
+    } else if (route && route.id) {
+        key = "routes.form.zabbix_api_token_missing_help";
+    }
+
+    $("#route-zabbix-api-token-help").text(i18n.t(key));
+}
+
 function updateRouteSourceUi() {
     const source = String(
         $("#route-source").val() || ""
@@ -1115,6 +1173,7 @@ function updateRouteSourceUi() {
 
     const isSentry = source === "sentry";
     const isAwsSns = source === "aws_sns";
+    const isZabbix = source === "zabbix";
     const isDatadog = source === "datadog";
     const isNewRelic = source === "new_relic";
     const isAzureMonitor = source === "azure_monitor";
@@ -1123,6 +1182,7 @@ function updateRouteSourceUi() {
     const isWebhook = source === "webhook";
 
     $("#route-sentry-settings").toggleClass("is-hidden", !isSentry);
+    $("#route-zabbix-settings").toggleClass("is-hidden", !isZabbix);
     $("#route-webhook-compatibility-help").toggleClass(
         "is-hidden",
         !isWebhook
@@ -1248,6 +1308,39 @@ function collectRouteIntegrationConfig() {
             sentry: sentry
         };
     }
+
+    if (source === "zabbix") {
+        // api_url is sent regardless of the checkbox state, same as
+        // Sentry's base_url/organization_slug above: unchecking "enable
+        // writeback" shouldn't throw away a URL you already typed in,
+        // only to have it flip straight back on. The checkbox controls
+        // ack_writeback_enabled only.
+        const zabbix = {
+            ack_writeback_enabled: $(
+                "#route-zabbix-ack-writeback-enabled"
+            ).is(":checked"),
+            api_url: String(
+                $("#route-zabbix-api-url").val() || ""
+            ).trim()
+        };
+
+        const apiToken = String(
+            $("#route-zabbix-api-token").val() || ""
+        ).trim();
+
+        // Blank means "keep the existing token" on an update (see
+        // routes_view.build_route_integration_config, same
+        // secret-preserving convention as Sentry's webhook_secret above)
+        // and simply "none yet" on create.
+        if (apiToken) {
+            zabbix.api_token = apiToken;
+        }
+
+        return {
+            zabbix: zabbix
+        };
+    }
+
     return {};
 }
 
@@ -1406,6 +1499,16 @@ function editRoute(id) {
             .addClass("is-hidden");
     }
 
+    const zabbixConfig = (
+        integrationConfig.zabbix || {}
+    );
+
+    $("#route-zabbix-ack-writeback-enabled").prop(
+        "checked", !!zabbixConfig.ack_writeback_enabled
+    );
+    $("#route-zabbix-api-url").val(zabbixConfig.api_url || "");
+    $("#route-zabbix-api-token").val("");
+
     setMatcherEditorValue("#route-matchers", route.matchers || {});
     $("#route-group-by").val(JSON.stringify(asArray(route.group_by), null, 2));
     $("#route-enabled").prop("checked", !!route.enabled);
@@ -1414,7 +1517,9 @@ function editRoute(id) {
     $("#route-sentry-organization-slug").val(sentryConfig.organization_slug || "");
 
     updateSentrySecretHelp(route);
+    updateZabbixApiTokenHelp(route);
     updateRouteSourceUi();
+    updateRouteZabbixWritebackFieldsUi();
 
     loadRouteDependencies(function () {
         const usePolicy = !!route.escalation_policy_id;
@@ -1517,10 +1622,15 @@ function resetRouteForm() {
     $("#route-sentry-webhook-secret").val("");
     $("#route-sentry-base-url").val("");
     $("#route-sentry-organization-slug").val("");
+    $("#route-zabbix-ack-writeback-enabled").prop("checked", false);
+    $("#route-zabbix-api-url").val("");
+    $("#route-zabbix-api-token").val("");
     $("#route-notification-channel-mode").val("route_only");
     updateRouteNotificationChannelModeUi();
     updateSentrySecretHelp(null);
+    updateZabbixApiTokenHelp(null);
     updateRouteSourceUi();
+    updateRouteZabbixWritebackFieldsUi();
 }
 
 function getRouteIntakePath(route) {
@@ -1848,6 +1958,7 @@ $(document).on("change", "#route-team", function () {
     loadRouteDependencies();
 });
 $(document).on("change", "#route-source", updateRouteSourceUi);
+$(document).on("change", "#route-zabbix-ack-writeback-enabled", updateRouteZabbixWritebackFieldsUi);
 $(document).on("input", "#routes-search", renderRoutesTable);
 $(document).on("change", "#routes-source-filter, #routes-status-filter", renderRoutesTable);
 $(document).on("click", "#open-route-create-modal", openCreateRouteModal);

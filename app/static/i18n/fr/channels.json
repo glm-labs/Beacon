@@ -152,5 +152,13 @@
   "channels.slack.app_token": "Jeton de niveau application",
   "channels.slack.app_token_help": "Jeton Slack de niveau application commençant par xapp- et disposant de la portée connections:write. Le worker Slack doit être en cours d’exécution.",
   "channels.config.bot_http_ready": "API du bot configurée avec des actions HTTP",
-  "channels.config.bot_socket_ready": "API du bot configurée avec le mode Socket"
+  "channels.config.bot_socket_ready": "API du bot configurée avec le mode Socket",
+  "channels.type.pushover": "Pushover",
+  "channels.pushover.app_token": "Jeton d'application Pushover",
+  "channels.pushover.app_token_help": "Facultatif. Laissez vide pour utiliser le app_token [pushover] défini au niveau de l'application dans le fichier de configuration.",
+  "channels.pushover.target": "Cible Pushover",
+  "channels.pushover.target_help": "Une clé utilisateur Pushover personnelle alerte une seule personne. Une clé de groupe de diffusion alerte tous les membres de ce groupe — le choix habituel pour une rotation d'astreinte.",
+  "channels.pushover.help": "Les alertes de sévérité critique sont envoyées avec la priorité d'urgence de Pushover, qui se répète jusqu'à confirmation ou expiration. Appuyer sur le bouton Confirmer intégré de Pushover confirme aussi l'alerte ici — voir Avancé pour les remplacements priority_map et callback_secret.",
+  "channels.config.pushover_ready": "Cible configurée",
+  "channels.config.pushover_missing": "Cible manquante"
 }

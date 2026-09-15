@@ -152,5 +152,13 @@
   "channels.slack.app_token": "App-level token",
   "channels.slack.app_token_help": "Slack app-level token starting with xapp- and the connections:write scope. The Slack worker must be running.",
   "channels.config.bot_http_ready": "Bot API configured with HTTP actions",
-  "channels.config.bot_socket_ready": "Bot API configured with Socket Mode"
+  "channels.config.bot_socket_ready": "Bot API configured with Socket Mode",
+  "channels.type.pushover": "Pushover",
+  "channels.pushover.app_token": "Pushover application token",
+  "channels.pushover.app_token_help": "Optional. Leave blank to use the app-wide [pushover] app_token from the config file.",
+  "channels.pushover.target": "Pushover target",
+  "channels.pushover.target_help": "A personal Pushover user key pages one person. A delivery-group key pages everyone in that group — the usual choice for an on-call rotation.",
+  "channels.pushover.help": "Critical-severity alerts send at Pushover's emergency priority, which repeats until acknowledged or expired. Tapping Pushover's own built-in Acknowledge button acknowledges the alert here too — see Advanced for priority_map and callback_secret overrides.",
+  "channels.config.pushover_ready": "Target configured",
+  "channels.config.pushover_missing": "Target missing"
 }

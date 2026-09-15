@@ -152,5 +152,13 @@
   "channels.slack.app_token": "应用级 Token",
   "channels.slack.app_token_help": "以 xapp- 开头且具有 connections:write 权限的 Slack 应用级 Token。Slack Worker 必须保持运行。",
   "channels.config.bot_http_ready": "Bot API 已配置 HTTP 交互操作",
-  "channels.config.bot_socket_ready": "Bot API 已配置 Socket Mode"
+  "channels.config.bot_socket_ready": "Bot API 已配置 Socket Mode",
+  "channels.type.pushover": "Pushover",
+  "channels.pushover.app_token": "Pushover 应用 Token",
+  "channels.pushover.app_token_help": "可选。留空则使用配置文件中应用级别的 [pushover] app_token。",
+  "channels.pushover.target": "Pushover 目标",
+  "channels.pushover.target_help": "个人 Pushover 用户密钥只通知一个人。投递组密钥会通知该组的所有成员，这是值班轮换的常见选择。",
+  "channels.pushover.help": "严重级别为 critical 的告警会以 Pushover 的紧急优先级发送，在被确认或过期前会持续重复提醒。点击 Pushover 内置的确认按钮也会在此处确认该告警，priority_map 和 callback_secret 的覆盖设置见“高级”。",
+  "channels.config.pushover_ready": "已配置目标",
+  "channels.config.pushover_missing": "缺少目标"
 }

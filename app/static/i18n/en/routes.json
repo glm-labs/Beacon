@@ -216,5 +216,17 @@
   "routes.intake.datadog_help": "Configure a JSON custom payload with ALERT_CYCLE_KEY and ALERT_TRANSITION so recovery updates the same IncidentRelay alert.",
   "routes.intake.uptime_kuma_example_comment": "Standard Uptime Kuma Webhook payload example",
   "routes.intake.uptime_kuma_subtitle": "Use this endpoint and route token in an Uptime Kuma Webhook notification.",
-  "routes.intake.uptime_kuma_help": "In Uptime Kuma, create a Webhook notification with POST, application/json, the route intake URL, and an additional Authorization header. Keep the default request body."
+  "routes.intake.uptime_kuma_help": "In Uptime Kuma, create a Webhook notification with POST, application/json, the route intake URL, and an additional Authorization header. Keep the default request body.",
+  "routes.form.zabbix_ack_writeback_enabled": "Also acknowledge the originating Zabbix event",
+  "routes.form.zabbix_ack_writeback_help": "Off by default. When on, acknowledging an alert from this route in Beacon — by any means, not just Pushover — also calls Zabbix's event.acknowledge, so Zabbix's own escalation (and its Pushover mediatype's own retry, if the same event pages there too) learns someone is on it.",
+  "routes.form.zabbix_api_url": "Zabbix API URL",
+  "routes.form.zabbix_api_url_help": "The Zabbix frontend's base URL, no trailing /api_jsonrpc.php. Often a private/internal address — it also needs adding to [security] outbound_private_network_allowlist.",
+  "routes.form.zabbix_api_token": "Zabbix API token",
+  "routes.form.zabbix_api_token_placeholder": "Paste a Zabbix API token",
+  "routes.form.zabbix_api_token_new_help": "Use a purpose-built Zabbix API token scoped to exactly event.acknowledge, not an admin token — see the Zabbix integration docs.",
+  "routes.form.zabbix_api_token_configured_help": "Zabbix API token is configured. Leave empty to keep the existing token.",
+  "routes.form.zabbix_api_token_missing_help": "Paste a Zabbix API token here. Until it is configured, acknowledge writeback will be skipped and logged, not retried.",
+  "routes.details.zabbix_ack_writeback": "Acknowledge writeback",
+  "routes.details.zabbix_api_url": "Zabbix API URL",
+  "routes.details.zabbix_api_token": "Zabbix API token"
 }
