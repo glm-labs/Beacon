@@ -21,9 +21,9 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: roxy-wi/incidentrelay
-  CHART_DIR: helm/incidentrelay
-  CHART_REGISTRY: ghcr.io/roxy-wi/incidentrelay-charts
+  IMAGE_NAME: glm-labs/beacon
+  CHART_DIR: helm/beacon
+  CHART_REGISTRY: ghcr.io/glm-labs/beacon-charts
 
 jobs:
   helm-check:
@@ -49,15 +49,15 @@ jobs:
       - name: Lint chart
         run: |
           helm lint "${CHART_DIR}" \
-            --set-string config.main.secret_key=incidentrelay-ci-secret
+            --set-string config.main.secret_key=beacon-ci-secret
 
       - name: Render chart
         run: |
-          helm template incidentrelay "${CHART_DIR}" \
-            --namespace incidentrelay \
-            --set-string config.main.secret_key=incidentrelay-ci-secret \
-            > /tmp/incidentrelay.yaml
-          test -s /tmp/incidentrelay.yaml
+          helm template beacon "${CHART_DIR}" \
+            --namespace beacon \
+            --set-string config.main.secret_key=beacon-ci-secret \
+            > /tmp/beacon.yaml
+          test -s /tmp/beacon.yaml
 
   build-and-push:
     name: Build and push Docker image
@@ -115,7 +115,7 @@ jobs:
             echo "labels<<EOF"
             echo "org.opencontainers.image.source=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
             echo "org.opencontainers.image.revision=${GITHUB_SHA}"
-            echo "org.opencontainers.image.title=IncidentRelay"
+            echo "org.opencontainers.image.title=Beacon"
             echo "EOF"
           } >> "${GITHUB_OUTPUT}"
 
@@ -182,7 +182,7 @@ jobs:
         run: |
           mkdir -p dist
           helm package "${CHART_DIR}" --destination dist
-          test -f "dist/incidentrelay-${{ steps.chart.outputs.version }}.tgz"
+          test -f "dist/beacon-${{ steps.chart.outputs.version }}.tgz"
 
       - name: Log in to GHCR with Helm
         shell: bash
@@ -195,5 +195,5 @@ jobs:
       - name: Push chart to GHCR
         run: |
           helm push \
-            "dist/incidentrelay-${{ steps.chart.outputs.version }}.tgz" \
+            "dist/beacon-${{ steps.chart.outputs.version }}.tgz" \
             "oci://${CHART_REGISTRY}"

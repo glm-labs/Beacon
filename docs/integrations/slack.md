@@ -7,7 +7,7 @@ description: Slack incoming webhook and Bot API notification setup.
 
 Slack is an outgoing notification channel.
 
-IncidentRelay supports two Slack delivery modes:
+Beacon supports two Slack delivery modes:
 
 1. Incoming webhook mode for one-way notifications.
 2. Bot API mode with interactive `Acknowledge` and `Resolve` buttons and message updates.
@@ -32,7 +32,7 @@ Create an incoming webhook in Slack and configure the channel with:
 }
 ```
 
-Incoming webhook messages cannot be updated by IncidentRelay after an alert is acknowledged or resolved.
+Incoming webhook messages cannot be updated by Beacon after an alert is acknowledged or resolved.
 
 ## Bot API mode
 
@@ -42,7 +42,7 @@ Bot API mode supports:
 - `Acknowledge` and `Resolve` buttons;
 - updating the original Slack message after ACK or resolve;
 - removing actions after the alert is resolved;
-- optional attribution to an IncidentRelay user.
+- optional attribution to an Beacon user.
 
 HTTP actions configuration:
 
@@ -81,15 +81,15 @@ Socket Mode configuration:
 
 5. Install or reinstall the app in the workspace.
 6. Copy the **Bot User OAuth Token**. It normally starts with `xoxb-`.
-7. Invite the bot to the Slack channel that will receive IncidentRelay alerts.
+7. Invite the bot to the Slack channel that will receive Beacon alerts.
 
-IncidentRelay uses `chat.postMessage` to send messages and `chat.update` to update existing messages.
+Beacon uses `chat.postMessage` to send messages and `chat.update` to update existing messages.
 
 ## Choose the interactive action transport
 
 ### HTTP Request URL
 
-Use HTTP mode when Slack can reach IncidentRelay over public HTTPS.
+Use HTTP mode when Slack can reach Beacon over public HTTPS.
 
 
 Open **Interactivity & Shortcuts** in the Slack app settings and enable interactivity.
@@ -97,12 +97,12 @@ Open **Interactivity & Shortcuts** in the Slack app settings and enable interact
 Set the Request URL to:
 
 ```text
-https://incidentrelay.example.com/api/integrations/slack/actions
+https://beacon.example.com/api/integrations/slack/actions
 ```
 
-Replace `https://incidentrelay.example.com` with the configured IncidentRelay public URL.
+Replace `https://beacon.example.com` with the configured Beacon public URL.
 
-IncidentRelay validates every interaction using:
+Beacon validates every interaction using:
 
 - `X-Slack-Signature`;
 - `X-Slack-Request-Timestamp`;
@@ -114,13 +114,13 @@ Requests older than five minutes are rejected.
 
 Open **Basic Information** in the Slack app settings and find **App Credentials**.
 
-Copy the **Signing Secret** into the IncidentRelay Slack channel configuration.
+Copy the **Signing Secret** into the Beacon Slack channel configuration.
 
-Do not use the old Slack verification token. IncidentRelay validates signed requests using the signing secret.
+Do not use the old Slack verification token. Beacon validates signed requests using the signing secret.
 
 ## Socket Mode
 
-Socket Mode is recommended for private networks, NAT and firewall-restricted installations. IncidentRelay opens an outbound WebSocket connection to Slack, so no public Request URL or `public_base_url` is required for the action buttons.
+Socket Mode is recommended for private networks, NAT and firewall-restricted installations. Beacon opens an outbound WebSocket connection to Slack, so no public Request URL or `public_base_url` is required for the action buttons.
 
 In the Slack app settings:
 
@@ -130,24 +130,24 @@ In the Slack app settings:
 4. Copy the token beginning with `xapp-`.
 5. Keep **Interactivity & Shortcuts** enabled; no Request URL is needed in Socket Mode.
 
-In IncidentRelay select **Bot API → Socket Mode** and enter the bot token, app-level token and Slack channel ID.
+In Beacon select **Bot API → Socket Mode** and enter the bot token, app-level token and Slack channel ID.
 
-The Slack worker must be running. Docker Compose includes `incidentrelay-slack`. For systemd:
+The Slack worker must be running. Docker Compose includes `beacon-slack`. For systemd:
 
 ```bash
-sudo cp etc/systemd/incidentrelay-slack-worker.service /etc/systemd/system/
+sudo cp etc/systemd/beacon-slack-worker.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now incidentrelay-slack-worker
+sudo systemctl enable --now beacon-slack-worker
 ```
 
 Check status:
 
 ```bash
-systemctl status incidentrelay-slack-worker
-journalctl -u incidentrelay-slack-worker -f
+systemctl status beacon-slack-worker
+journalctl -u beacon-slack-worker -f
 ```
 
-One Socket Mode connection is opened for each distinct app-level token. Multiple IncidentRelay Slack channels may share the same Slack app and app-level token.
+One Socket Mode connection is opened for each distinct app-level token. Multiple Beacon Slack channels may share the same Slack app and app-level token.
 
 ## Find the channel ID
 
@@ -163,9 +163,9 @@ Do not enter the channel display name.
 
 The bot must be able to post to the configured channel.
 
-## Configure IncidentRelay
+## Configure Beacon
 
-In IncidentRelay:
+In Beacon:
 
 1. Open **Channels**.
 2. Create or edit a Slack channel.
@@ -178,13 +178,13 @@ In IncidentRelay:
 7. Attach the channel to the required route.
 8. Send a test notification or a real test alert.
 
-For HTTP interactive actions, ensure Slack can reach `POST /api/integrations/slack/actions` over public HTTPS. `public_base_url` is recommended for the **Open alert in IncidentRelay** link, but it is not used to validate or process Slack button actions. Socket Mode does not require the action endpoint to be publicly reachable.
+For HTTP interactive actions, ensure Slack can reach `POST /api/integrations/slack/actions` over public HTTPS. `public_base_url` is recommended for the **Open alert in Beacon** link, but it is not used to validate or process Slack button actions. Socket Mode does not require the action endpoint to be publicly reachable.
 
 ## User attribution
 
-An IncidentRelay user can have a Slack user ID in their profile.
+An Beacon user can have a Slack user ID in their profile.
 
-When a responder clicks `Acknowledge` or `Resolve`, IncidentRelay reads the Slack user ID from the interaction payload and tries to match it to an active IncidentRelay user.
+When a responder clicks `Acknowledge` or `Resolve`, Beacon reads the Slack user ID from the interaction payload and tries to match it to an active Beacon user.
 
 If no matching user exists, the action can still be processed, but it will not be attributed to a local user.
 
@@ -196,7 +196,7 @@ For a firing alert, the Slack message contains:
 - status, severity and priority;
 - team, service and assignee;
 - service links and runbooks when configured;
-- a link to the alert in IncidentRelay;
+- a link to the alert in Beacon;
 - `Acknowledge` and `Resolve` buttons.
 
 After acknowledgment:
@@ -216,7 +216,7 @@ Incoming webhook mode only sends messages and does not support these updates.
 
 ## Test button
 
-The channel test verifies that IncidentRelay can send a message using the configured Slack credentials.
+The channel test verifies that Beacon can send a message using the configured Slack credentials.
 
 It does not prove that:
 
@@ -249,7 +249,7 @@ For both transports, check that Bot API mode is selected and **Interactivity & S
 For HTTP actions, also check that:
 
 - the Request URL points to `/api/integrations/slack/actions`;
-- the IncidentRelay endpoint is publicly reachable over HTTPS;
+- the Beacon endpoint is publicly reachable over HTTPS;
 - the signing secret matches the Slack app;
 - reverse proxies preserve the raw request body and Slack signature headers.
 
@@ -263,13 +263,13 @@ For Socket Mode, also check that:
 
 Slack interaction requests older than five minutes are rejected.
 
-Check system time synchronization on the IncidentRelay server and reverse proxy.
+Check system time synchronization on the Beacon server and reverse proxy.
 
 ### Slack action is rejected for a channel mismatch
 
-The Slack channel ID in the interaction must match the Channel ID configured in IncidentRelay.
+The Slack channel ID in the interaction must match the Channel ID configured in Beacon.
 
-Check that the notification was sent to the expected Slack channel and that the IncidentRelay channel configuration has not been changed.
+Check that the notification was sent to the expected Slack channel and that the Beacon channel configuration has not been changed.
 
 ### Messages are not updated
 
@@ -287,7 +287,7 @@ Incoming webhook deliveries cannot be updated.
 - Keep the bot token, app-level token and signing secret private.
 - Do not include these values in logs, screenshots or support requests.
 - Rotate any exposed bot token, app-level token or signing secret.
-- Expose only the required IncidentRelay HTTPS endpoints.
+- Expose only the required Beacon HTTPS endpoints.
 - Keep server time synchronized so timestamp validation works correctly.
 
 ## Slack references
@@ -312,25 +312,25 @@ Check that:
 
 ## Slack worker logging
 
-The Socket Mode worker uses the `slack` logging role and writes JSON logs to a separate file. Configure the path in `incidentrelay.conf`:
+The Socket Mode worker uses the `slack` logging role and writes JSON logs to a separate file. Configure the path in `beacon.conf`:
 
 ```ini
 [logging]
-slack_worker_file = /var/log/incidentrelay/incidentrelay-slack-worker.log
+slack_worker_file = /var/log/beacon/beacon-slack-worker.log
 ```
 
-The file contains `oncall.slack`, `oncall.slack.socket`, and worker-level `oncall.error` events. The packaged logrotate rule already covers this file through `/var/log/incidentrelay/*.log`.
+The file contains `oncall.slack`, `oncall.slack.socket`, and worker-level `oncall.error` events. The packaged logrotate rule already covers this file through `/var/log/beacon/*.log`.
 
 For systemd installations:
 
 ```bash
-tail -f /var/log/incidentrelay/incidentrelay-slack-worker.log
-journalctl -u incidentrelay-slack-worker -f
+tail -f /var/log/beacon/beacon-slack-worker.log
+journalctl -u beacon-slack-worker -f
 ```
 
 For Docker Compose:
 
 ```bash
-docker compose exec incidentrelay-slack \
-  tail -f /var/log/incidentrelay/incidentrelay-slack-worker.log
+docker compose exec beacon-slack \
+  tail -f /var/log/beacon/beacon-slack-worker.log
 ```

@@ -1,13 +1,13 @@
 ---
 title: Email Templates
-description: Customize IncidentRelay email notification templates.
+description: Customize Beacon email notification templates.
 ---
 
 # Email templates
 
 Email channels can define an optional HTML template.
 
-If no custom template is configured, IncidentRelay uses the built-in default email layout.
+If no custom template is configured, Beacon uses the built-in default email layout.
 
 ## Placeholder format
 
@@ -27,13 +27,13 @@ Do not use mustache-style placeholders such as `{{ title }}`.
 | `{event_type}` | Notification event, for example `NOTIFICATION`, `ACKNOWLEDGED`, `RESOLVED` |
 | `{title}` | Alert title |
 | `{message}` | Alert message |
-| `{alert_id}` | IncidentRelay alert ID |
+| `{alert_id}` | Beacon alert ID |
 | `{team}` | Team slug or name |
 | `{status}` | Alert status |
 | `{severity}` | Normalized alert severity |
 | `{assignee}` | Assigned user display name or username |
 | `{source}` | Alert source, for example `alertmanager`, `zabbix`, `webhook` |
-| `{alert_url}` | Link to the alert in IncidentRelay |
+| `{alert_url}` | Link to the alert in Beacon |
 | `{text}` | Plain-text formatted alert message |
 
 Values inserted into the HTML template should be escaped by the renderer.

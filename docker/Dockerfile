@@ -3,7 +3,7 @@ FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /opt/incidentrelay
+WORKDIR /opt/beacon
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -13,26 +13,26 @@ RUN apt-get update \
         libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /opt/incidentrelay/requirements.txt
+COPY requirements.txt /opt/beacon/requirements.txt
 
 RUN pip install --no-cache-dir -r requirements.txt \
     && pip install --no-cache-dir gunicorn psycopg2-binary
 
-COPY . /opt/incidentrelay
+COPY . /opt/beacon
 
 RUN mkdir -p \
-      /etc/incidentrelay \
-      /var/lib/incidentrelay \
-      /var/log/incidentrelay \
-      /usr/local/lib/incidentrelay/voice_providers
+      /etc/beacon \
+      /var/lib/beacon \
+      /var/log/beacon \
+      /usr/local/lib/beacon/voice_providers
 
-COPY docker/incidentrelay.docker.conf /etc/incidentrelay/incidentrelay.conf
+COPY docker/beacon.docker.conf /etc/beacon/beacon.conf
 COPY docker/entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
-ENV INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
-ENV INCIDENTRELAY_SERVICE=web
+ENV BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
+ENV BEACON_SERVICE=web
 
 EXPOSE 8080
 

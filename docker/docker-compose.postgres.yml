@@ -1,41 +1,41 @@
 services:
-  incidentrelay:
+  beacon:
     environment:
-      INCIDENTRELAY_WEB_WORKERS: "4"
+      BEACON_WEB_WORKERS: "4"
     volumes:
-      - ./docker/incidentrelay.postgres.conf:/etc/incidentrelay/incidentrelay.conf:ro
-      - incidentrelay-logs:/var/log/incidentrelay
-      - ./custom_voice_providers:/usr/local/lib/incidentrelay/voice_providers:ro
+      - ./docker/beacon.postgres.conf:/etc/beacon/beacon.conf:ro
+      - beacon-logs:/var/log/beacon
+      - ./custom_voice_providers:/usr/local/lib/beacon/voice_providers:ro
     depends_on:
       postgres:
         condition: service_healthy
 
-  incidentrelay-scheduler:
+  beacon-scheduler:
     volumes:
-      - ./docker/incidentrelay.postgres.conf:/etc/incidentrelay/incidentrelay.conf:ro
-      - incidentrelay-logs:/var/log/incidentrelay
-      - ./custom_voice_providers:/usr/local/lib/incidentrelay/voice_providers:ro
+      - ./docker/beacon.postgres.conf:/etc/beacon/beacon.conf:ro
+      - beacon-logs:/var/log/beacon
+      - ./custom_voice_providers:/usr/local/lib/beacon/voice_providers:ro
     depends_on:
-      incidentrelay:
+      beacon:
         condition: service_healthy
       postgres:
         condition: service_healthy
 
   postgres:
     image: postgres:16-alpine
-    container_name: incidentrelay-postgres
+    container_name: beacon-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: incidentrelay
-      POSTGRES_USER: incidentrelay
-      POSTGRES_PASSWORD: incidentrelay-change-me
+      POSTGRES_DB: beacon
+      POSTGRES_USER: beacon
+      POSTGRES_PASSWORD: beacon-change-me
     volumes:
-      - incidentrelay-postgres:/var/lib/postgresql/data
+      - beacon-postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U incidentrelay -d incidentrelay"]
+      test: ["CMD-SHELL", "pg_isready -U beacon -d beacon"]
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
-  incidentrelay-postgres:
+  beacon-postgres:

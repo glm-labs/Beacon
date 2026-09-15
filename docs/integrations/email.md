@@ -33,7 +33,7 @@ Configure SMTP in the global config file:
 [smtp]
 host = 127.0.0.1
 port = 25
-from = incidentrelay@example.com
+from = beacon@example.com
 use_tls = false
 user =
 password =
@@ -45,9 +45,9 @@ For an authenticated SMTP server:
 [smtp]
 host = smtp.example.com
 port = 587
-from = incidentrelay@example.com
+from = beacon@example.com
 use_tls = true
-user = incidentrelay@example.com
+user = beacon@example.com
 password = change-me
 ```
 
@@ -80,7 +80,7 @@ With severity filter:
 
 ## Test button
 
-When testing an email channel, IncidentRelay sends the test email to the current user's profile email address.
+When testing an email channel, Beacon sends the test email to the current user's profile email address.
 
 If the current user has no email address, the test returns an error telling the user to set email in their profile.
 
@@ -98,4 +98,4 @@ Check the real alert assignee:
 
 ### Log says `notification sent`, but mailbox is empty
 
-The SMTP server accepted the message from IncidentRelay. Check downstream SMTP relay logs, spam quarantine, recipient policy, SPF/DMARC and mailbox rules.
+The SMTP server accepted the message from Beacon. Check downstream SMTP relay logs, spam quarantine, recipient policy, SPF/DMARC and mailbox rules.

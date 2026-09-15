@@ -1,6 +1,6 @@
 ---
 title: Voice Call OpenAPI Notes
-description: Заметки OpenAPI по эндпоинтам голосовых вызовов IncidentRelay.
+description: Заметки OpenAPI по эндпоинтам голосовых вызовов Beacon.
 ---
 
 # Заметки по Voice Call OpenAPI

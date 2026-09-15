@@ -1,6 +1,6 @@
 # Service Standards, Readiness and Catalog Events
 
-This document describes the Service Catalog readiness model in IncidentRelay: service standards, readiness checks, the in-process catalog event adapter, and the service timeline API.
+This document describes the Service Catalog readiness model in Beacon: service standards, readiness checks, the in-process catalog event adapter, and the service timeline API.
 
 ## Goals
 
@@ -294,7 +294,7 @@ Example response:
       "event_type": "service_runbook.created",
       "title": "Service runbook created",
       "summary": "RabbitMQ cluster partition",
-      "source": "incidentrelay",
+      "source": "beacon",
       "source_ref": "service_runbook:42",
       "external_url": "https://docs.example.com/runbooks/rabbitmq",
       "actor": {

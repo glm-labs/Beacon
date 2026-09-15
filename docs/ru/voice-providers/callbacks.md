@@ -5,7 +5,7 @@ description: Колбэки голосового провайдера, стат�
 
 # Колбэки и DTMF
 
-IncidentRelay может принимать колбэки провайдера для:
+Beacon может принимать колбэки провайдера для:
 
 - изменений статуса вызова;
 - ввода с телефонной клавиатуры DTMF;
@@ -13,12 +13,12 @@ IncidentRelay может принимать колбэки провайдера 
 
 ## URL колбэка
 
-Когда IncidentRelay создаёт вызов, он передаёт провайдеру `callback_url`.
+Когда Beacon создаёт вызов, он передаёт провайдеру `callback_url`.
 
 Пример:
 
 ```text
-https://incidentrelay.example.com/api/integrations/voice/callback/12/change-me-channel-secret
+https://beacon.example.com/api/integrations/voice/callback/12/change-me-channel-secret
 ```
 
 Формат URL:
@@ -31,7 +31,7 @@ https://incidentrelay.example.com/api/integrations/voice/callback/12/change-me-c
 
 Провайдер должен отправлять события вызова на URL колбэка.
 
-IncidentRelay выполнит:
+Beacon выполнит:
 
 ```text
 1. Validate callback secret.
@@ -82,7 +82,7 @@ cancelled
 unknown
 ```
 
-IncidentRelay сохраняет последний статус в записи уведомления, а также сохраняет историю колбэков.
+Beacon сохраняет последний статус в записи уведомления, а также сохраняет историю колбэков.
 
 ## Колбэк DTMF
 
@@ -100,7 +100,7 @@ DTMF означает ввод с телефонной клавиатуры.
 Пример произносимого сообщения:
 
 ```text
-IncidentRelay alert 123.
+Beacon alert 123.
 Disk is full.
 Severity critical.
 Press 1 to acknowledge.
@@ -117,13 +117,13 @@ Press 2 to resolve.
 }
 ```
 
-IncidentRelay сопоставляет это с:
+Beacon сопоставляет это с:
 
 ```text
 acknowledge
 ```
 
-Если пользователь нажимает `2`, IncidentRelay сопоставляет это с:
+Если пользователь нажимает `2`, Beacon сопоставляет это с:
 
 ```text
 resolve
@@ -139,7 +139,7 @@ resolve
 }
 ```
 
-В этом случае IncidentRelay не нужно сопоставлять цифру.
+В этом случае Beacon не нужно сопоставлять цифру.
 
 ## Колбэк ошибки
 
@@ -195,7 +195,7 @@ def parse_callback(self, payload, headers=None, raw_body=None, query_args=None):
     ...
 ```
 
-IncidentRelay проверяет свой собственный секрет колбэка перед вызовом `parse_callback()`.
+Beacon проверяет свой собственный секрет колбэка перед вызовом `parse_callback()`.
 
 Проверка подписи, специфичной для провайдера, необязательна, но рекомендуется, когда провайдер её поддерживает.
 

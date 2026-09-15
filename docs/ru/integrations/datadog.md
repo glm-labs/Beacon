@@ -1,11 +1,11 @@
 ---
 title: Datadog
-description: Отправка алертов и восстановлений мониторов Datadog в IncidentRelay через интеграцию Datadog Webhooks.
+description: Отправка алертов и восстановлений мониторов Datadog в Beacon через интеграцию Datadog Webhooks.
 ---
 
 # Интеграция с Datadog
 
-IncidentRelay принимает уведомления мониторов Datadog через нативный входящий маршрут.
+Beacon принимает уведомления мониторов Datadog через нативный входящий маршрут.
 
 Эндпоинт:
 
@@ -13,7 +13,7 @@ IncidentRelay принимает уведомления мониторов Datad
 POST /api/integrations/datadog
 ```
 
-## Создание маршрута IncidentRelay
+## Создание маршрута Beacon
 
 Создайте маршрут с параметрами:
 
@@ -28,14 +28,14 @@ Source: Datadog
 В Datadog откройте **Integrations → Webhooks**, создайте вебхук и укажите его URL:
 
 ```text
-https://incidentrelay.example.com/api/integrations/datadog
+https://beacon.example.com/api/integrations/datadog
 ```
 
 Настройте пользовательские заголовки в формате JSON:
 
 ```json
 {
-  "Authorization": "Bearer INCIDENTRELAY_ROUTE_TOKEN"
+  "Authorization": "Bearer BEACON_ROUTE_TOKEN"
 }
 ```
 
@@ -64,17 +64,17 @@ https://incidentrelay.example.com/api/integrations/datadog
 
 Не включайте form-кодирование. Отправляйте полезную нагрузку в формате JSON.
 
-Добавьте упоминание вебхука в каждый монитор Datadog, который должен уведомлять IncidentRelay:
+Добавьте упоминание вебхука в каждый монитор Datadog, который должен уведомлять Beacon:
 
 ```text
-@webhook-incidentrelay
+@webhook-beacon
 ```
 
 Datadog повторяет доставку вебхука при внутренних ошибках и ответах `5xx`. Проверьте полезную нагрузку перед широким включением, поскольку клиентские ошибки `4xx` не считаются временными сбоями.
 
 ## Жизненный цикл и дедупликация
 
-IncidentRelay использует поля в следующем порядке:
+Beacon использует поля в следующем порядке:
 
 ```text
 ALERT_CYCLE_KEY
@@ -87,7 +87,7 @@ generated key from monitor/event identity and scope
 
 Сопоставление переходов:
 
-| Переход Datadog | Статус IncidentRelay |
+| Переход Datadog | Статус Beacon |
 |---|---|
 | `Triggered`, `Re-Triggered` | `firing` |
 | `Warn`, `Re-Warn` | `firing` |
@@ -99,9 +99,9 @@ generated key from monitor/event identity and scope
 
 ## Сопоставление важности
 
-Явное поле `severity` имеет приоритет. В остальных случаях IncidentRelay использует приоритет монитора, а затем `ALERT_TYPE`.
+Явное поле `severity` имеет приоритет. В остальных случаях Beacon использует приоритет монитора, а затем `ALERT_TYPE`.
 
-| Значение Datadog | Важность IncidentRelay |
+| Значение Datadog | Важность Beacon |
 |---|---|
 | `P1` или `error` | `critical` |
 | `P2` | `high` |
@@ -130,7 +130,7 @@ env:prod,service:payments,team:sre,monitor
 }
 ```
 
-IncidentRelay также добавляет метаданные-метки, такие как:
+Beacon также добавляет метаданные-метки, такие как:
 
 ```text
 datadog_alert_id
@@ -152,7 +152,7 @@ event_link
 ## Тестовый запрос
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/datadog' \
+curl -X POST 'https://beacon.example.com/api/integrations/datadog' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer ROUTE_TOKEN' \
   -d '{

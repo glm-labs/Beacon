@@ -144,7 +144,7 @@ class FakePagerDuty:
         return [{"id": "V3-1", "name": "Shift schedule"}]
 
 
-class FakeIncidentRelay:
+class FakeBeacon:
     def __init__(self):
         self.base_url = "https://ir.example.com"
         self.next_id = 100
@@ -336,7 +336,7 @@ class ConversionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp)
             pd = FakePagerDuty()
-            ir = FakeIncidentRelay()
+            ir = FakeBeacon()
             state = module.StateStore(output / "state.json", persist=True)
             secrets = module.SecretStore(output / "route-secrets.json", persist=True)
             reporter = module.Reporter()

@@ -5,7 +5,7 @@ description: Alert group lifecycle, grouping, comments and API examples.
 
 # Alerts and alert groups
 
-IncidentRelay stores every incoming monitoring signal as an **alert** and shows operators an **alert group** in the Alerts page.
+Beacon stores every incoming monitoring signal as an **alert** and shows operators an **alert group** in the Alerts page.
 
 An alert group is the incident-level object. It is the object that users acknowledge, resolve, notify, remind, escalate, and merge.
 
@@ -26,7 +26,7 @@ A child alert is the concrete signal inside the group. For example, three `DiskF
 
 Deduplication and grouping solve different problems.
 
-`dedup_key` updates the same concrete alert. If the same alert is received again with the same `dedup_key`, IncidentRelay updates the existing child alert instead of creating a new child alert.
+`dedup_key` updates the same concrete alert. If the same alert is received again with the same `dedup_key`, Beacon updates the existing child alert instead of creating a new child alert.
 
 `group_key` joins several related child alerts into one alert group. If two alerts have different `dedup_key` values but the same `group_key`, they become different child alerts inside the same alert group.
 
@@ -62,7 +62,7 @@ With route `group_by = ["alertname", "severity", "instance"]`, they are placed i
 
 ## Default grouping
 
-If a route does not define `group_by`, IncidentRelay uses the default grouping:
+If a route does not define `group_by`, Beacon uses the default grouping:
 
 ```text
 alertname
@@ -103,7 +103,7 @@ Supported field forms:
 | Explicit label path | `labels.instance` | Reads from alert labels. |
 | Explicit annotation path | `annotations.summary` | Reads from alert annotations. |
 | Explicit payload path | `payload.trigger.id` | Reads from normalized payload. |
-| Built-in scope | `source`, `team`, `route`, `service` | Uses routed IncidentRelay metadata. |
+| Built-in scope | `source`, `team`, `route`, `service` | Uses routed Beacon metadata. |
 
 ## Alert group lifecycle
 
@@ -149,13 +149,13 @@ Merged groups are hidden from the normal alert list unless the API/UI explicitly
 
 Alert groups support delayed and batched notifications.
 
-The first firing notification can be delayed by `ALERT_GROUP_WAIT_SECONDS`. This gives IncidentRelay time to collect several child alerts into one group before notifying users.
+The first firing notification can be delayed by `ALERT_GROUP_WAIT_SECONDS`. This gives Beacon time to collect several child alerts into one group before notifying users.
 
 Updates after the first notification are rate-limited by `ALERT_GROUP_INTERVAL_SECONDS`.
 
-If a group resolves before the first notification is sent, IncidentRelay clears the pending firing notification and does not send noisy stale notifications.
+If a group resolves before the first notification is sent, Beacon clears the pending firing notification and does not send noisy stale notifications.
 
-If a group was already notified and then resolves, IncidentRelay sends the resolved notification immediately.
+If a group was already notified and then resolves, Beacon sends the resolved notification immediately.
 
 Relevant settings:
 
@@ -180,7 +180,7 @@ A manual incident is stored as a normal alert group with one child alert:
 
 Manual incidents do not require an intake route. The creator selects the team directly, and may optionally select a service.
 
-If a service is selected, IncidentRelay can use the service ownership, default rotation, escalation policy and notification policy. Route channels are not used for route-less manual incidents.
+If a service is selected, Beacon can use the service ownership, default rotation, escalation policy and notification policy. Route channels are not used for route-less manual incidents.
 
 ### Permissions
 
@@ -196,7 +196,7 @@ Viewers cannot create manual incidents.
 ### API example
 
 ```bash
-curl -X POST https://incidentrelay.example.com/api/incidents \
+curl -X POST https://beacon.example.com/api/incidents \
   -H "Authorization: Bearer TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -212,7 +212,7 @@ curl -X POST https://incidentrelay.example.com/api/incidents \
 
 Notification behavior
 
-When notifying is true, IncidentRelay schedules the normal alert group notification. For route-less manual incidents, delivery is resolved through the selected service notification policy.
+When notifying is true, Beacon schedules the normal alert group notification. For route-less manual incidents, delivery is resolved through the selected service notification policy.
 
 If no service is selected, or the selected service has no matching notification policy rule, the incident is still created but no notification target may be found.
 
@@ -225,7 +225,7 @@ The UI can merge selected alert groups. The target is the group that remains vis
 API example:
 
 ```bash
-curl -X POST https://incidentrelay.example.com/api/alerts/merge \
+curl -X POST https://beacon.example.com/api/alerts/merge \
   -H "Authorization: Bearer TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -263,14 +263,14 @@ The path parameter name is kept as `alert_id` for compatibility, but it should b
 
 ```bash
 curl -H "Authorization: Bearer TOKEN" \
-  "https://incidentrelay.example.com/api/alerts?status=firing&severity=critical"
+  "https://beacon.example.com/api/alerts?status=firing&severity=critical"
 ```
 
 ### Get group details
 
 ```bash
 curl -H "Authorization: Bearer TOKEN" \
-  "https://incidentrelay.example.com/api/alerts/101"
+  "https://beacon.example.com/api/alerts/101"
 ```
 
 The detail response contains:
@@ -302,7 +302,7 @@ The detail response contains:
 ### Acknowledge group
 
 ```bash
-curl -X POST https://incidentrelay.example.com/api/alerts/101/ack \
+curl -X POST https://beacon.example.com/api/alerts/101/ack \
   -H "Authorization: Bearer TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
@@ -311,7 +311,7 @@ curl -X POST https://incidentrelay.example.com/api/alerts/101/ack \
 ### Resolve group
 
 ```bash
-curl -X POST https://incidentrelay.example.com/api/alerts/101/resolve \
+curl -X POST https://beacon.example.com/api/alerts/101/resolve \
   -H "Authorization: Bearer TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
@@ -321,7 +321,7 @@ curl -X POST https://incidentrelay.example.com/api/alerts/101/resolve \
 
 ### Alerts are not grouped
 
-Check the route `group_by` value. If `instance`, `pod`, `container`, or another high-cardinality label is included, IncidentRelay may create one group per host or per pod.
+Check the route `group_by` value. If `instance`, `pod`, `container`, or another high-cardinality label is included, Beacon may create one group per host or per pod.
 
 ### Unrelated alerts are grouped
 
@@ -333,7 +333,7 @@ A new child alert normally reopens the acknowledged group. If the route groups o
 
 ### A resolved notification was not sent
 
-If the group resolved before the first delayed notification was sent, IncidentRelay intentionally skips both firing and resolved notifications to avoid noise.
+If the group resolved before the first delayed notification was sent, Beacon intentionally skips both firing and resolved notifications to avoid noise.
 
 ### A group disappeared after merge
 

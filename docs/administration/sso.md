@@ -1,11 +1,11 @@
 ---
 title: SSO
-description: Configure OIDC and SAML single sign-on in IncidentRelay.
+description: Configure OIDC and SAML single sign-on in Beacon.
 ---
 
 # SSO
 
-IncidentRelay supports authentication through external Identity Providers using:
+Beacon supports authentication through external Identity Providers using:
 
 - OIDC
 - SAML 2.0
@@ -16,19 +16,19 @@ SSO providers are configured in the admin UI:
 Admin → SSO
 ```
 
-The page is available only to IncidentRelay administrators.
+The page is available only to Beacon administrators.
 
 ---
 
 ## How SSO Works
 
 1. An administrator creates an SSO provider.
-2. A user opens the IncidentRelay login page.
+2. A user opens the Beacon login page.
 3. If the provider is enabled, the SSO login button appears on `/login`.
 4. The user is redirected to the external Identity Provider.
-5. After successful authentication, the Identity Provider redirects the user back to IncidentRelay.
-6. IncidentRelay reads user claims and finds, links, or creates a local user.
-7. If group synchronization is enabled, IncidentRelay applies group mappings.
+5. After successful authentication, the Identity Provider redirects the user back to Beacon.
+6. Beacon reads user claims and finds, links, or creates a local user.
+7. If group synchronization is enabled, Beacon applies group mappings.
 
 ---
 
@@ -48,16 +48,16 @@ Scopes
 Redirect URI
 ```
 
-IncidentRelay callback URL:
+Beacon callback URL:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/<provider_slug>/callback
+https://beacon.example.com/api/auth/sso/<provider_slug>/callback
 ```
 
 Example for provider slug `keycloak`:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/keycloak/callback
+https://beacon.example.com/api/auth/sso/keycloak/callback
 ```
 
 ---
@@ -79,23 +79,23 @@ SLS URL
 NameID format
 ```
 
-IncidentRelay ACS URL:
+Beacon ACS URL:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/<provider_slug>/callback
+https://beacon.example.com/api/auth/sso/<provider_slug>/callback
 ```
 
-IncidentRelay SAML metadata URL:
+Beacon SAML metadata URL:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/<provider_slug>/metadata
+https://beacon.example.com/api/auth/sso/<provider_slug>/metadata
 ```
 
 Example for provider slug `adfs`:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/adfs/callback
-https://incidentrelay.example.com/api/auth/sso/adfs/metadata
+https://beacon.example.com/api/auth/sso/adfs/callback
+https://beacon.example.com/api/auth/sso/adfs/metadata
 ```
 
 ---
@@ -115,7 +115,7 @@ https://incidentrelay.example.com/api/auth/sso/adfs/metadata
 
 ## Claims
 
-IncidentRelay uses claims to connect an external user identity with a local IncidentRelay user.
+Beacon uses claims to connect an external user identity with a local Beacon user.
 
 Recommended claims:
 
@@ -128,7 +128,7 @@ groups
 mobile
 ```
 
-### Claim Fields in IncidentRelay
+### Claim Fields in Beacon
 
 | Field | Purpose                                                            |
 |---|--------------------------------------------------------------------|
@@ -215,18 +215,18 @@ groups
 
 ### Auto Create Users
 
-If enabled, IncidentRelay automatically creates a local user on the first successful SSO login.
+If enabled, Beacon automatically creates a local user on the first successful SSO login.
 
 ```text
 Enabled: a new local user is created automatically.
-Disabled: only users that already exist in IncidentRelay can log in.
+Disabled: only users that already exist in Beacon can log in.
 ```
 
 ---
 
 ### Auto Link by Email
 
-If enabled, IncidentRelay can link an SSO identity to an existing local user by email.
+If enabled, Beacon can link an SSO identity to an existing local user by email.
 
 ```text
 Enabled: an existing user with the same email is linked to the SSO identity.
@@ -239,7 +239,7 @@ Enable this only when email addresses from the Identity Provider are trusted.
 
 ### Require Verified Email
 
-If enabled, IncidentRelay requires a verified email from the OIDC provider.
+If enabled, Beacon requires a verified email from the OIDC provider.
 
 OIDC providers usually expose this as:
 
@@ -268,17 +268,17 @@ If the list is empty, no domain restriction is applied.
 
 ## Group Mappings
 
-Group mappings connect external Identity Provider groups to IncidentRelay groups.
+Group mappings connect external Identity Provider groups to Beacon groups.
 
 Example:
 
 ```text
-External group: IncidentRelay-Infra
-IncidentRelay group: Infrastructure
+External group: Beacon-Infra
+Beacon group: Infrastructure
 Role: editor
 ```
 
-When a user logs in through SSO and the Identity Provider sends the group `IncidentRelay-Infra`, IncidentRelay adds the user to the `Infrastructure` group with the `editor` role.
+When a user logs in through SSO and the Identity Provider sends the group `Beacon-Infra`, Beacon adds the user to the `Infrastructure` group with the `editor` role.
 
 ---
 
@@ -300,7 +300,7 @@ Legacy roles `read_only` and `rw` are not used.
 
 ### Sync Group Memberships
 
-If enabled, IncidentRelay applies group mappings on every SSO login.
+If enabled, Beacon applies group mappings on every SSO login.
 
 ```text
 Enabled: user group memberships are updated during login.
@@ -311,11 +311,11 @@ Disabled: SSO is used only for authentication, and groups are not synchronized.
 
 ### Remove Missing Group Memberships
 
-If enabled, IncidentRelay disables group memberships that were previously added through SSO mapping but are no longer present in the claims from the Identity Provider.
+If enabled, Beacon disables group memberships that were previously added through SSO mapping but are no longer present in the claims from the Identity Provider.
 
 ```text
 Enabled: strict synchronization.
-Disabled: IncidentRelay only adds new memberships and does not remove missing ones.
+Disabled: Beacon only adds new memberships and does not remove missing ones.
 ```
 
 For the first rollout, it is safer to leave this disabled.
@@ -329,16 +329,16 @@ For the first rollout, it is safer to leave this disabled.
 Use this redirect URI:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/<provider_slug>/callback
+https://beacon.example.com/api/auth/sso/<provider_slug>/callback
 ```
 
 Example:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/keycloak/callback
+https://beacon.example.com/api/auth/sso/keycloak/callback
 ```
 
-### 2. Create an OIDC Provider in IncidentRelay
+### 2. Create an OIDC Provider in Beacon
 
 Minimum settings:
 
@@ -370,7 +370,7 @@ Groups claim: groups
 Open:
 
 ```text
-https://incidentrelay.example.com/login
+https://beacon.example.com/login
 ```
 
 The SSO login button should be visible on the login page.
@@ -379,7 +379,7 @@ The SSO login button should be visible on the login page.
 
 ## SAML Setup
 
-### 1. Create a SAML Provider in IncidentRelay
+### 1. Create a SAML Provider in Beacon
 
 Minimum settings:
 
@@ -394,19 +394,19 @@ SP URLs:
 
 ```text
 SP Entity ID:
-https://incidentrelay.example.com/api/auth/sso/adfs/metadata
+https://beacon.example.com/api/auth/sso/adfs/metadata
 
 ACS URL:
-https://incidentrelay.example.com/api/auth/sso/adfs/callback
+https://beacon.example.com/api/auth/sso/adfs/callback
 
 SLS URL:
-https://incidentrelay.example.com/api/auth/sso/adfs/callback
+https://beacon.example.com/api/auth/sso/adfs/callback
 ```
 
 Metadata URL to provide to the Identity Provider:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/adfs/metadata
+https://beacon.example.com/api/auth/sso/adfs/metadata
 ```
 
 ### 2. Configure the Identity Provider
@@ -420,7 +420,7 @@ NameID
 Claims
 ```
 
-### 3. Fill IdP Settings in IncidentRelay
+### 3. Fill IdP Settings in Beacon
 
 ```text
 IdP Entity ID
@@ -447,7 +447,7 @@ For ADFS, URI-style claims can be used if those are the claims actually sent by 
 
 ## SAML Security
 
-IncidentRelay supports SAML security settings per provider.
+Beacon supports SAML security settings per provider.
 
 For the first setup, recommended settings are:
 
@@ -466,7 +466,7 @@ If the Identity Provider requires signed AuthnRequests:
 
 1. Generate an SP certificate and private key.
 2. Upload the public certificate to the Identity Provider.
-3. Fill these fields in IncidentRelay:
+3. Fill these fields in Beacon:
    - `SP x509 certificate`
    - `SP private key`
 4. Enable:
@@ -484,7 +484,7 @@ Current status:
 No
 ```
 
-IncidentRelay does not automatically refresh ADFS metadata or certificates yet. The IdP x509 certificate must be configured manually.
+Beacon does not automatically refresh ADFS metadata or certificates yet. The IdP x509 certificate must be configured manually.
 
 If the ADFS certificate changes, update the `IdP x509 certificate` field in the SAML provider settings.
 
@@ -510,7 +510,7 @@ If ADFS does not require signed AuthnRequests:
 Not used. AuthnRequests are not signed.
 ```
 
-If ADFS requires signed AuthnRequests, generate an SP certificate/private key and enable request signing in IncidentRelay.
+If ADFS requires signed AuthnRequests, generate an SP certificate/private key and enable request signing in Beacon.
 
 ---
 
@@ -518,7 +518,7 @@ If ADFS requires signed AuthnRequests, generate an SP certificate/private key an
 
 2FA must be enforced on the ADFS / Identity Provider side.
 
-IncidentRelay does not perform its own 2FA verification for SSO logins.
+Beacon does not perform its own 2FA verification for SSO logins.
 
 ---
 
@@ -540,7 +540,7 @@ groups
 
 Client Secret and SAML private key are stored encrypted.
 
-IncidentRelay uses this setting for encryption:
+Beacon uses this setting for encryption:
 
 ```text
 SSO_SECRET_ENCRYPTION_KEY
@@ -563,16 +563,16 @@ Important: if this key is changed after providers are saved, previously saved se
 
 ## Public Base URL
 
-A public IncidentRelay URL must be configured so callback and metadata URLs are generated correctly.
+A public Beacon URL must be configured so callback and metadata URLs are generated correctly.
 
 Example:
 
 ```ini
 [app]
-public_base_url = https://incidentrelay.example.com
+public_base_url = https://beacon.example.com
 ```
 
-If IncidentRelay is behind a reverse proxy, make sure the external URL uses the correct protocol, host, and port.
+If Beacon is behind a reverse proxy, make sure the external URL uses the correct protocol, host, and port.
 
 ---
 
@@ -583,7 +583,7 @@ If IncidentRelay is behind a reverse proxy, make sure the external URL uses the 
 Check the public endpoint:
 
 ```bash
-curl -s https://incidentrelay.example.com/api/auth/sso/providers
+curl -s https://beacon.example.com/api/auth/sso/providers
 ```
 
 It should return an enabled provider:
@@ -629,7 +629,7 @@ Check:
 Auto create users
 ```
 
-If it is disabled, the user must already exist in IncidentRelay.
+If it is disabled, the user must already exist in Beacon.
 
 ---
 
@@ -702,17 +702,17 @@ Remove missing group memberships: enabled
 Public provider list:
 
 ```bash
-curl -s https://incidentrelay.example.com/api/auth/sso/providers | jq
+curl -s https://beacon.example.com/api/auth/sso/providers | jq
 ```
 
 SAML metadata:
 
 ```bash
-curl -s https://incidentrelay.example.com/api/auth/sso/adfs/metadata
+curl -s https://beacon.example.com/api/auth/sso/adfs/metadata
 ```
 
 OIDC/SAML login redirect:
 
 ```bash
-curl -I https://incidentrelay.example.com/api/auth/sso/adfs/login
+curl -I https://beacon.example.com/api/auth/sso/adfs/login
 ```

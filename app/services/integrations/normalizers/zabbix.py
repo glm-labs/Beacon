@@ -26,7 +26,7 @@ def build_zabbix_event_link(zabbix_url, event_id=None, trigger_id=None):
 
 
 def normalize_zabbix_status(value):
-    """Convert Zabbix event status to IncidentRelay alert status."""
+    """Convert Zabbix event status to Beacon alert status."""
     status = str(value or "").strip().lower()
 
     if status in {"ok", "resolved", "resolve", "recovery", "closed", "0"}:
@@ -36,7 +36,7 @@ def normalize_zabbix_status(value):
 
 
 def normalize_zabbix_severity(value):
-    """Map common Zabbix severities to IncidentRelay severities."""
+    """Map common Zabbix severities to Beacon severities."""
     severity = str(value or "").strip().lower()
 
     mapping = {

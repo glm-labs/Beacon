@@ -55,7 +55,7 @@
   "channels.details.config": "配置",
   "channels.form.create": "创建通知渠道",
   "channels.form.edit": "编辑通知渠道 #{id}",
-  "channels.form.subtitle": "配置 IncidentRelay 的通知发送目标。",
+  "channels.form.subtitle": "配置 Beacon 的通知发送目标。",
   "channels.form.channel": "通知渠道",
   "channels.form.channel_help": "作用域、名称、类型和启用状态。",
   "channels.form.group": "用户组",

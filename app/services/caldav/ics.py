@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 def event_uid(event):
     parts = [
-        "incidentrelay",
+        "beacon",
         str(event.get("team_id") or "team"),
         str(event.get("rotation_id") or "rotation"),
         str(event.get("layer_id") or event.get("override_id") or "shift"),
@@ -13,7 +13,7 @@ def event_uid(event):
     ]
 
     digest = hashlib.sha256(":".join(parts).encode("utf-8")).hexdigest()
-    return f"{digest}@incidentrelay"
+    return f"{digest}@beacon"
 
 
 def event_href(team_id, event):
@@ -39,7 +39,7 @@ def build_event_ics(event):
     lines = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
-        "PRODID:-//IncidentRelay//CalDAV//EN",
+        "PRODID:-//Beacon//CalDAV//EN",
         "CALSCALE:GREGORIAN",
     ]
 
@@ -106,7 +106,7 @@ def build_calendar_ics(calendar_name, events):
     lines = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
-        "PRODID:-//IncidentRelay//On-call Calendar//EN",
+        "PRODID:-//Beacon//On-call Calendar//EN",
         "CALSCALE:GREGORIAN",
         "METHOD:PUBLISH",
         f"X-WR-CALNAME:{ics_escape(calendar_name)}",

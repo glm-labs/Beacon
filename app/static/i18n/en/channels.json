@@ -55,7 +55,7 @@
   "channels.details.config": "Config",
   "channels.form.create": "Create channel",
   "channels.form.edit": "Edit channel #{id}",
-  "channels.form.subtitle": "Configure where IncidentRelay sends notifications.",
+  "channels.form.subtitle": "Configure where Beacon sends notifications.",
   "channels.form.channel": "Channel",
   "channels.form.channel_help": "Scope, name, type and enabled state.",
   "channels.form.group": "Group",

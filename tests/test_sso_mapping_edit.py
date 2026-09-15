@@ -14,7 +14,7 @@ def _make_oidc_provider() -> SsoProvider:
         label="Editable OIDC",
         protocol="oidc",
         enabled=True,
-        client_id="incidentrelay",
+        client_id="beacon",
         oidc_metadata_url="https://idp.example.com/.well-known/openid-configuration",
         oidc_issuer="https://idp.example.com",
         oidc_jwks_uri="https://idp.example.com/jwks",
@@ -48,7 +48,7 @@ def test_admin_can_update_oidc_mapping_rule(app) -> None:
     mapping = SsoGroupMapping.create(
         provider=provider,
         external_group="old-external-group",
-        incidentrelay_group=original_group,
+        beacon_group=original_group,
         group_role="viewer",
         active=True,
         priority=100,
@@ -81,7 +81,7 @@ def test_admin_can_update_oidc_mapping_rule(app) -> None:
     assert data["active"] is False
     assert data["priority"] == 20
     assert updated.external_group == "new-external-group"
-    assert updated.incidentrelay_group.id == replacement_group.id
+    assert updated.beacon_group.id == replacement_group.id
     assert updated.group_role == "editor"
     assert updated.active is False
     assert updated.priority == 20

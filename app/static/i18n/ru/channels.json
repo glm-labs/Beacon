@@ -55,7 +55,7 @@
   "channels.details.config": "Конфигурация",
   "channels.form.create": "Создать канал",
   "channels.form.edit": "Изменить канал №{id}",
-  "channels.form.subtitle": "Настройте, куда IncidentRelay отправляет уведомления.",
+  "channels.form.subtitle": "Настройте, куда Beacon отправляет уведомления.",
   "channels.form.channel": "Канал",
   "channels.form.channel_help": "Область, название, тип и состояние канала.",
   "channels.form.group": "Группа",

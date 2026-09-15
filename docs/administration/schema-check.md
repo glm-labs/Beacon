@@ -1,6 +1,6 @@
 ---
 title: Schema Check
-description: Check the IncidentRelay database schema after migrations.
+description: Check the Beacon database schema after migrations.
 ---
 
 # Schema Check

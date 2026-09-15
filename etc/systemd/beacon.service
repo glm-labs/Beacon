@@ -1,0 +1,32 @@
+[Unit]
+Description=Beacon Gunicorn service
+After=network.target
+
+[Service]
+Type=simple
+
+User=beacon
+Group=beacon
+
+WorkingDirectory=/var/www/beacon
+
+Environment=BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
+
+ExecStart=/usr/local/bin/gunicorn \
+    --workers 4 \
+    --threads 2 \
+    --timeout 120 \
+    --bind 127.0.0.1:8080 \
+    --access-logfile /var/log/beacon/gun-beacon.log \
+    --error-logfile /var/log/beacon/gun-beacon_error.log \
+    --capture-output \
+    "app:create_app()"
+
+Restart=always
+RestartSec=5
+
+KillSignal=SIGTERM
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

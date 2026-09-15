@@ -1,4 +1,4 @@
-{{- include "incidentrelay.validateCustomCA" . -}}
+{{- include "beacon.validateCustomCA" . -}}
 {{- $customCA := default (dict) .Values.customCA -}}
 {{- $bundle := default "" (get $customCA "bundle") | toString | trim -}}
 {{- $existingConfigMap := default "" (get $customCA "existingConfigMap") | toString | trim -}}
@@ -6,9 +6,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "incidentrelay.fullname" . }}-custom-ca
+  name: {{ include "beacon.fullname" . }}-custom-ca
   labels:
-    {{- include "incidentrelay.labels" . | nindent 4 }}
+    {{- include "beacon.labels" . | nindent 4 }}
 data:
   ca.crt: |-
 {{ $bundle | nindent 4 }}

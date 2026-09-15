@@ -123,7 +123,7 @@ def build_stakeholder_notification_email(group, event_type, old_value=None):
     config = _stakeholder_notification_config(event_type)
 
     subject = (
-        "[IncidentRelay] "
+        "[Beacon] "
         f"{format_alert_title_with_priority(group)} {config['subject_suffix']}"
     )
 

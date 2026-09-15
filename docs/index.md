@@ -1,11 +1,11 @@
 ---
-title: IncidentRelay Documentation
-description: Documentation for IncidentRelay self-hosted on-call scheduling, alert routing and notification service
+title: Beacon Documentation
+description: Documentation for Beacon self-hosted on-call scheduling, alert routing and notification service
 ---
 
-# IncidentRelay Documentation
+# Beacon Documentation
 
-IncidentRelay is a self-hosted on-call scheduling, alert routing and notification service. It keeps teams, rotations, routes, notification channels, browser push subscriptions, acknowledgements, resolves, reminders and escalations inside your own infrastructure.
+Beacon is a self-hosted on-call scheduling, alert routing and notification service. It keeps teams, rotations, routes, notification channels, browser push subscriptions, acknowledgements, resolves, reminders and escalations inside your own infrastructure.
 
 ## Alert flow
 
@@ -36,24 +36,24 @@ Choose one installation method:
 All production installations should run two processes:
 
 ```text
-incidentrelay             # HTTP API, UI, incoming webhooks
-incidentrelay-scheduler   # reminders, escalations, periodic jobs
+beacon             # HTTP API, UI, incoming webhooks
+beacon-scheduler   # reminders, escalations, periodic jobs
 ```
 
 Do not run scheduler jobs inside every web worker.
 
 ## Configuration
 
-IncidentRelay reads the config path from:
+Beacon reads the config path from:
 
 ```text
-INCIDENTRELAY_CONFIG_FILE
+BEACON_CONFIG_FILE
 ```
 
 Example:
 
 ```bash
-export INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
+export BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
 ```
 
 The old `ONCALL_CONFIG_FILE` name should not be used.
@@ -73,7 +73,7 @@ For browser/PWA notifications, configure `[browser_push]` and VAPID keys. Read m
 | Route | Alert routing rule with its own intake token |
 | Channel | Outgoing notification target such as Mattermost, Telegram, email, webhook or voice call |
 | Browser push | Profile-level browser/PWA notification delivery for assigned users |
-| Alert | IncidentRelay alert created from an incoming integration |
+| Alert | Beacon alert created from an incoming integration |
 | Silence | Rule that suppresses notifications for matching new alerts |
 | Override | Temporary replacement for a rotation member |
 
@@ -89,7 +89,7 @@ Read more:
 
 ## RBAC summary
 
-IncidentRelay uses two permission layers:
+Beacon uses two permission layers:
 
 | Layer | Purpose |
 |---|---|
@@ -116,7 +116,7 @@ Read more: [Groups and RBAC](concepts/groups-and-rbac.md).
 
 ## Integrations
 
-IncidentRelay has two integration layers.
+Beacon has two integration layers.
 
 ### Incoming alert sources
 
@@ -209,7 +209,7 @@ Useful pages:
 ## First setup flow
 
 ```text
-1. Install IncidentRelay
+1. Install Beacon
 2. Configure the service and public_base_url
 3. Configure browser push VAPID keys if browser/PWA notifications are required
 4. Run migrations
@@ -238,6 +238,6 @@ Read more: [First Login and Setup](getting-started/first-login.md).
 
 ## Project links
 
-- Repository: [https://github.com/roxy-wi/IncidentRelay](https://github.com/roxy-wi/IncidentRelay)
+- Repository: [https://github.com/glm-labs/Beacon](https://github.com/glm-labs/Beacon)
 - Swagger UI: `/docs`
 - OpenAPI JSON: `/api/openapi.json`

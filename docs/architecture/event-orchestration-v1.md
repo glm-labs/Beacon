@@ -2,12 +2,12 @@
 
 **Status:** Done  
 **Target:** Production-ready first release  
-**Project:** IncidentRelay  
+**Project:** Beacon  
 **Document path:** `docs/architecture/event-orchestration-v1.md`
 
 ## 1. Purpose
 
-Event Orchestration v1 introduces a unified, versioned rule engine that processes normalized events before they enter the existing IncidentRelay alert lifecycle.
+Event Orchestration v1 introduces a unified, versioned rule engine that processes normalized events before they enter the existing Beacon alert lifecycle.
 
 The goal is to combine routing, event mutation, service selection, priority selection, escalation decisions, notification decisions, grouping, suppression, delayed activation, and safe automation into one explainable execution pipeline.
 
@@ -15,7 +15,7 @@ This is not a minimal proof of concept. The first version must be safe enough fo
 
 ## 2. Current problem
 
-IncidentRelay already has many orchestration building blocks:
+Beacon already has many orchestration building blocks:
 
 - integration normalizers;
 - route matchers;
@@ -53,7 +53,7 @@ The first production release must provide:
 11. Safe asynchronous webhook actions.
 12. Simulation, replay, shadow mode, and detailed execution traces.
 13. A visual rule builder.
-14. Compatibility with the existing IncidentRelay lifecycle and legacy policies.
+14. Compatibility with the existing Beacon lifecycle and legacy policies.
 15. Public API and OpenAPI documentation.
 
 ## 4. Non-goals for v1
@@ -98,7 +98,7 @@ Service Orchestration
     ├── enqueue webhook actions
     └── continue/suppress/drop/pause
     ↓
-Existing IncidentRelay lifecycle
+Existing Beacon lifecycle
     ↓
 Alerts, incidents, escalation, notifications, correlation and impact
 ```
@@ -168,7 +168,7 @@ deleted_at
 
 Rules:
 
-- a global orchestration is owned by one IncidentRelay group;
+- a global orchestration is owned by one Beacon group;
 - a service orchestration is attached to one service;
 - only one published version is active at a time;
 - shadow mode evaluates rules but does not apply the result.
@@ -840,7 +840,7 @@ total duration
 
 ## 19. Compatibility modes
 
-IncidentRelay must support:
+Beacon must support:
 
 ```text
 legacy

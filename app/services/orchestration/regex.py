@@ -1,7 +1,7 @@
 """Bounded regular-expression helpers.
 
 Python's standard ``re`` engine has no portable timeout on the supported
-IncidentRelay Python versions, so orchestration regexes use strict size and
+Beacon Python versions, so orchestration regexes use strict size and
 complexity checks before compilation and input-size limits before matching.
 """
 

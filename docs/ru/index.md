@@ -1,11 +1,11 @@
 ---
-title: Документация IncidentRelay
-description: Документация по self-hosted сервису IncidentRelay для планирования дежурств, маршрутизации алертов и уведомлений
+title: Документация Beacon
+description: Документация по self-hosted сервису Beacon для планирования дежурств, маршрутизации алертов и уведомлений
 ---
 
-# Документация IncidentRelay
+# Документация Beacon
 
-IncidentRelay — это self-hosted сервис для планирования дежурств (on-call), маршрутизации алертов и уведомлений. Он хранит команды, ротации, маршруты, каналы уведомлений, подписки на браузерные push-уведомления, подтверждения (ACK), разрешения (Resolve), напоминания и эскалации внутри вашей собственной инфраструктуры.
+Beacon — это self-hosted сервис для планирования дежурств (on-call), маршрутизации алертов и уведомлений. Он хранит команды, ротации, маршруты, каналы уведомлений, подписки на браузерные push-уведомления, подтверждения (ACK), разрешения (Resolve), напоминания и эскалации внутри вашей собственной инфраструктуры.
 
 ## Поток алертов
 
@@ -36,24 +36,24 @@ Monitoring system
 Все production-установки должны запускать два процесса:
 
 ```text
-incidentrelay             # HTTP API, UI, incoming webhooks
-incidentrelay-scheduler   # reminders, escalations, periodic jobs
+beacon             # HTTP API, UI, incoming webhooks
+beacon-scheduler   # reminders, escalations, periodic jobs
 ```
 
 Не запускайте задачи планировщика внутри каждого веб-воркера.
 
 ## Настройка
 
-IncidentRelay читает путь к конфигурации из:
+Beacon читает путь к конфигурации из:
 
 ```text
-INCIDENTRELAY_CONFIG_FILE
+BEACON_CONFIG_FILE
 ```
 
 Пример:
 
 ```bash
-export INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
+export BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
 ```
 
 Старое имя `ONCALL_CONFIG_FILE` использовать не следует.
@@ -73,7 +73,7 @@ export INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
 | Route | Правило маршрутизации алертов с собственным токеном приёма |
 | Channel | Цель исходящих уведомлений, например Mattermost, Telegram, email, вебхук или голосовой вызов |
 | Browser push | Доставка браузерных/PWA-уведомлений на уровне профиля для назначенных пользователей |
-| Alert | Алерт IncidentRelay, созданный из входящей интеграции |
+| Alert | Алерт Beacon, созданный из входящей интеграции |
 | Silence | Правило, подавляющее уведомления для совпадающих новых алертов |
 | Override | Временная замена участника ротации |
 
@@ -89,7 +89,7 @@ export INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
 
 ## Сводка по RBAC
 
-IncidentRelay использует два уровня разрешений:
+Beacon использует два уровня разрешений:
 
 | Уровень | Назначение |
 |---|---|
@@ -116,7 +116,7 @@ Team roles:  viewer, responder, manager
 
 ## Интеграции
 
-В IncidentRelay есть два уровня интеграций.
+В Beacon есть два уровня интеграций.
 
 ### Источники входящих алертов
 
@@ -209,7 +209,7 @@ OpenAPI JSON:
 ## Процесс первичной настройки
 
 ```text
-1. Install IncidentRelay
+1. Install Beacon
 2. Configure the service and public_base_url
 3. Configure browser push VAPID keys if browser/PWA notifications are required
 4. Run migrations
@@ -238,6 +238,6 @@ OpenAPI JSON:
 
 ## Ссылки проекта
 
-- Репозиторий: [https://github.com/roxy-wi/IncidentRelay](https://github.com/roxy-wi/IncidentRelay)
+- Репозиторий: [https://github.com/glm-labs/Beacon](https://github.com/glm-labs/Beacon)
 - Swagger UI: `/docs`
 - OpenAPI JSON: `/api/openapi.json`

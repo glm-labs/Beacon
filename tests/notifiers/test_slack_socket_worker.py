@@ -26,7 +26,7 @@ def _record(name, level=logging.INFO):
 
 
 def test_slack_log_role_aliases_and_file(monkeypatch, tmp_path):
-    log_file = tmp_path / "incidentrelay-slack-worker.log"
+    log_file = tmp_path / "beacon-slack-worker.log"
     monkeypatch.setattr(Config, "LOG_SLACK_WORKER_FILE", str(log_file))
 
     assert _normalize_log_role("slack") == LOG_ROLE_SLACK
@@ -46,7 +46,7 @@ def test_slack_role_filter_isolates_worker_events():
 
 
 def test_slack_role_writes_json_to_separate_file(monkeypatch, tmp_path):
-    log_file = tmp_path / "incidentrelay-slack-worker.log"
+    log_file = tmp_path / "beacon-slack-worker.log"
     monkeypatch.setattr(Config, "LOG_SLACK_WORKER_FILE", str(log_file))
     monkeypatch.setattr(Config, "LOG_LEVEL", "INFO")
 

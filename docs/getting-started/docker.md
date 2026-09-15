@@ -1,19 +1,19 @@
 ---
 title: Docker Installation
-description: Run IncidentRelay with Docker Compose
+description: Run Beacon with Docker Compose
 ---
 
 # Docker Installation
 
-Docker Compose is the fastest way to run IncidentRelay for testing, demos and simple self-hosted deployments.
+Docker Compose is the fastest way to run Beacon for testing, demos and simple self-hosted deployments.
 
 The default Compose setup starts:
 
 ```text
-incidentrelay             # HTTP API, UI, incoming webhooks
-incidentrelay-scheduler   # reminders, escalations, periodic jobs
-incidentrelay-telegram    # Telegram callbacks / polling worker
-incidentrelay-slack       # Slack Socket Mode worker
+beacon             # HTTP API, UI, incoming webhooks
+beacon-scheduler   # reminders, escalations, periodic jobs
+beacon-telegram    # Telegram callbacks / polling worker
+beacon-slack       # Slack Socket Mode worker
 ```
 
 The Telegram and Slack workers are harmless when the corresponding integrations are not configured. PostgreSQL is optional. SQLite is suitable for small installations and quick starts.
@@ -22,34 +22,34 @@ The Telegram and Slack workers are harmless when the corresponding integrations 
 
 ```text
 Docker Compose
-├── incidentrelay
+├── beacon
 │   └── Gunicorn + Flask application
-├── incidentrelay-scheduler
+├── beacon-scheduler
 │   └── standalone scheduler worker
-├── incidentrelay-telegram
+├── beacon-telegram
 │   └── Telegram callbacks / polling
-├── incidentrelay-slack
+├── beacon-slack
 │   └── Slack Socket Mode interactions
-└── incidentrelay-data
+└── beacon-data
     └── SQLite database volume
 ```
 
 Default SQLite path inside the container:
 
 ```text
-/var/lib/incidentrelay/incidentrelay.db
+/var/lib/beacon/beacon.db
 ```
 
 Default config path inside the container:
 
 ```text
-/etc/incidentrelay/incidentrelay.conf
+/etc/beacon/beacon.conf
 ```
 
 The config file is selected by:
 
 ```text
-INCIDENTRELAY_CONFIG_FILE
+BEACON_CONFIG_FILE
 ```
 
 ## Quick start with SQLite
@@ -67,8 +67,8 @@ http://SERVER_IP:8080/login
 Show logs:
 
 ```bash
-docker compose logs -f incidentrelay
-docker compose logs -f incidentrelay-scheduler
+docker compose logs -f beacon
+docker compose logs -f beacon-scheduler
 ```
 
 ## Run migrations
@@ -76,13 +76,13 @@ docker compose logs -f incidentrelay-scheduler
 If migrations are not run automatically by your container entrypoint, run:
 
 ```bash
-docker compose exec incidentrelay python manage.py migrate
+docker compose exec beacon python manage.py migrate
 ```
 
 ## Create the first admin user
 
 ```bash
-docker compose exec incidentrelay \
+docker compose exec beacon \
   python manage.py create-admin \
     --username admin \
     --password 'change-me-123' \
@@ -96,7 +96,7 @@ Change the password and email before production use.
 File:
 
 ```text
-docker/incidentrelay.docker.conf
+docker/beacon.docker.conf
 ```
 
 Example:
@@ -104,7 +104,7 @@ Example:
 ```ini
 [main]
 log_level = INFO
-log_file = /var/log/incidentrelay/incidentrelay.log
+log_file = /var/log/beacon/beacon.log
 
 [server]
 host = 0.0.0.0
@@ -113,7 +113,7 @@ public_base_url = http://localhost:8080
 
 [database]
 type = sqlite
-name = /var/lib/incidentrelay/incidentrelay.db
+name = /var/lib/beacon/beacon.db
 
 [sqlite]
 wal = true
@@ -121,7 +121,7 @@ busy_timeout = 5000
 
 [voice]
 provider = stub
-providers_dir = /usr/local/lib/incidentrelay/voice_providers
+providers_dir = /usr/local/lib/beacon/voice_providers
 callback_secret =
 ```
 
@@ -150,9 +150,9 @@ PostgreSQL config example:
 type = postgresql
 host = postgres
 port = 5432
-name = incidentrelay
-user = incidentrelay
-password = incidentrelay-change-me
+name = beacon
+user = beacon
+password = beacon-change-me
 ```
 
 ## External access
@@ -164,7 +164,7 @@ ports:
   - "8080:8080"
 ```
 
-IncidentRelay is available on:
+Beacon is available on:
 
 ```text
 http://SERVER_IP:8080
@@ -172,17 +172,17 @@ http://SERVER_IP:8080
 
 if the firewall allows port `8080`.
 
-For production, it is better to expose IncidentRelay through Nginx or HAProxy with HTTPS:
+For production, it is better to expose Beacon through Nginx or HAProxy with HTTPS:
 
 ```text
-Internet -> Nginx/HAProxy :443 -> IncidentRelay :8080
+Internet -> Nginx/HAProxy :443 -> Beacon :8080
 ```
 
 Set the public URL correctly:
 
 ```ini
 [server]
-public_base_url = https://incidentrelay.example.com
+public_base_url = https://beacon.example.com
 ```
 
 `public_base_url` is used for generated links and callbacks.
@@ -192,18 +192,18 @@ public_base_url = https://incidentrelay.example.com
 Custom voice providers can be mounted into:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers
+/usr/local/lib/beacon/voice_providers
 ```
 
 Example Compose mount:
 
 ```yaml
 volumes:
-  - ./custom_voice_providers:/usr/local/lib/incidentrelay/voice_providers:ro
+  - ./custom_voice_providers:/usr/local/lib/beacon/voice_providers:ro
 ```
 
 After changing provider files, restart the containers:
 
 ```bash
-docker compose restart incidentrelay incidentrelay-scheduler
+docker compose restart beacon beacon-scheduler
 ```

@@ -2,12 +2,12 @@
 
 **Status:** Proposed  
 **Target:** Production-ready staged delivery  
-**Project:** IncidentRelay  
+**Project:** Beacon  
 **Suggested document path:** `docs/architecture/incident-management-v2.md`
 
 ## 1. Purpose
 
-Incident Management v2 separates the operational Incident workflow from the existing IncidentRelay alert lifecycle.
+Incident Management v2 separates the operational Incident workflow from the existing Beacon alert lifecycle.
 
 The goal is to preserve the current alert ingestion, grouping, escalation, notification, responder, stakeholder, comment, correlation and service-impact behavior while adding a first-class `Incident` record for problems that require coordinated investigation, external ticketing, classification, reporting and closure.
 
@@ -15,7 +15,7 @@ The implementation must not create a second competing alert lifecycle. `AlertGro
 
 ## 2. Current state
 
-IncidentRelay already provides most of the technical foundation:
+Beacon already provides most of the technical foundation:
 
 - `Alert` stores a normalized technical signal;
 - `AlertGroup` groups related alerts and currently acts as the day-to-day incident aggregate;
@@ -102,7 +102,7 @@ A group may be `resolved` and classified as `False Positive`. A group may be `fi
 
 ```text
 Alert
-  One normalized technical signal stored by IncidentRelay.
+  One normalized technical signal stored by Beacon.
 
 Alert Group
   A technical aggregation of one or more Alerts. It owns the current alert,
@@ -267,7 +267,7 @@ external_id
 external_key                   nullable
 url
 external_status                nullable
-source_of_truth                incidentrelay | external | link_only
+source_of_truth                beacon | external | link_only
 sync_status                    idle | pending | synced | failed | disabled
 last_synced_at                 nullable
 last_error                     nullable
@@ -548,8 +548,8 @@ First delivery should support **link-only** external references. The first activ
 Recommended rollout:
 
 1. Store external ID and URL manually.
-2. Create JSM ticket from IncidentRelay.
-3. Push selected updates from IncidentRelay.
+2. Create JSM ticket from Beacon.
+3. Push selected updates from Beacon.
 4. Receive JSM webhook updates.
 5. Add configurable source-of-truth and conflict handling.
 

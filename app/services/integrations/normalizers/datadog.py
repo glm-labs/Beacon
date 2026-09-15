@@ -49,7 +49,7 @@ def _get(data, *names):
 
 
 def normalize_datadog_status(transition, alert_type=None):
-    """Convert Datadog transitions to IncidentRelay firing/resolved state."""
+    """Convert Datadog transitions to Beacon firing/resolved state."""
 
     transition = clean_string(transition)
     normalized = str(transition or "").lower().replace("_", " ").replace("-", " ")
@@ -66,7 +66,7 @@ def normalize_datadog_status(transition, alert_type=None):
 
 
 def normalize_datadog_severity(explicit, alert_type=None, priority=None):
-    """Map Datadog severity/type/monitor priority to IncidentRelay severity."""
+    """Map Datadog severity/type/monitor priority to Beacon severity."""
 
     explicit = clean_string(explicit)
     if explicit:

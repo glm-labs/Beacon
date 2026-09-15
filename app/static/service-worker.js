@@ -1,4 +1,4 @@
-const IR_PWA_VERSION = "incidentrelay-pwa-v1.0.3";
+const IR_PWA_VERSION = "beacon-pwa-v1.0.3";
 const IR_STATIC_CACHE = IR_PWA_VERSION + "-static";
 const IR_OFFLINE_CACHE = IR_PWA_VERSION + "-offline";
 const OFFLINE_URL = "/static/offline.html";
@@ -107,7 +107,7 @@ self.addEventListener("activate", function (event) {
                     cacheNames
                         .filter(function (cacheName) {
                             return (
-                                cacheName.startsWith("incidentrelay-pwa-")
+                                cacheName.startsWith("beacon-pwa-")
                                 && cacheName.indexOf(IR_PWA_VERSION) !== 0
                             );
                         })
@@ -122,8 +122,8 @@ self.addEventListener("activate", function (event) {
     );
 });
 
-const IR_LOCALE_CACHE = "incidentrelay-settings";
-const IR_LOCALE_REQUEST = "/__incidentrelay_locale__";
+const IR_LOCALE_CACHE = "beacon-settings";
+const IR_LOCALE_REQUEST = "/__beacon_locale__";
 const IR_SW_MESSAGES = {
     en: {
         acknowledge: "Acknowledge",
@@ -167,7 +167,7 @@ const IR_SW_MESSAGES = {
     }
 };
 
-function normalizeIncidentRelayLocale(value) {
+function normalizeBeaconLocale(value) {
     const locale = String(value || "")
         .toLowerCase()
         .replace("_", "-");
@@ -184,8 +184,8 @@ function normalizeIncidentRelayLocale(value) {
     return "en";
 }
 
-function incidentRelaySwText(locale, key, params) {
-    const selectedLocale = normalizeIncidentRelayLocale(locale);
+function beaconSwText(locale, key, params) {
+    const selectedLocale = normalizeBeaconLocale(locale);
     const template = (
         IR_SW_MESSAGES[selectedLocale][key]
         || IR_SW_MESSAGES.en[key]
@@ -200,8 +200,8 @@ function incidentRelaySwText(locale, key, params) {
     });
 }
 
-async function saveIncidentRelayLocale(locale) {
-    const selectedLocale = normalizeIncidentRelayLocale(locale);
+async function saveBeaconLocale(locale) {
+    const selectedLocale = normalizeBeaconLocale(locale);
     const cache = await caches.open(IR_LOCALE_CACHE);
 
     await cache.put(
@@ -214,9 +214,9 @@ async function saveIncidentRelayLocale(locale) {
     return selectedLocale;
 }
 
-async function loadIncidentRelayLocale(preferredLocale) {
+async function loadBeaconLocale(preferredLocale) {
     if (preferredLocale) {
-        return saveIncidentRelayLocale(preferredLocale);
+        return saveBeaconLocale(preferredLocale);
     }
 
     try {
@@ -224,13 +224,13 @@ async function loadIncidentRelayLocale(preferredLocale) {
         const response = await cache.match(IR_LOCALE_REQUEST);
 
         if (response) {
-            return normalizeIncidentRelayLocale(await response.text());
+            return normalizeBeaconLocale(await response.text());
         }
     } catch (error) {
         // Browser language is a safe fallback when Cache Storage is unavailable.
     }
 
-    return normalizeIncidentRelayLocale(
+    return normalizeBeaconLocale(
         self.navigator && self.navigator.language
     );
 }
@@ -246,7 +246,7 @@ self.addEventListener("message", function (event) {
     }
 
     if (event.data.type === "SET_LOCALE") {
-        event.waitUntil(saveIncidentRelayLocale(event.data.locale));
+        event.waitUntil(saveBeaconLocale(event.data.locale));
     }
 });
 
@@ -286,34 +286,34 @@ self.addEventListener("push", function (event) {
                 payload = event.data.json();
             } catch (error) {
                 payload = {
-                    title: "IncidentRelay",
+                    title: "Beacon",
                     body: event.data.text()
                 };
             }
         }
 
-        const locale = await loadIncidentRelayLocale(payload.locale);
-        const title = payload.title || "IncidentRelay";
+        const locale = await loadBeaconLocale(payload.locale);
+        const title = payload.title || "Beacon";
         const actionTokens = payload.action_tokens || {};
         const actions = [];
 
         if (actionTokens.ack) {
             actions.push({
                 action: "ack",
-                title: incidentRelaySwText(locale, "acknowledge")
+                title: beaconSwText(locale, "acknowledge")
             });
         }
 
         if (actionTokens.resolve) {
             actions.push({
                 action: "resolve",
-                title: incidentRelaySwText(locale, "resolve")
+                title: beaconSwText(locale, "resolve")
             });
         }
 
         const options = {
             body: payload.body || "",
-            tag: payload.tag || `incidentrelay-${Date.now()}`,
+            tag: payload.tag || `beacon-${Date.now()}`,
             renotify: payload.renotify !== false,
             requireInteraction: payload.require_interaction !== false,
             silent: payload.silent === true,
@@ -323,7 +323,7 @@ self.addEventListener("push", function (event) {
                 alert_title: (
                     payload.alert_title
                     || payload.title
-                    || incidentRelaySwText(locale, "alert")
+                    || beaconSwText(locale, "alert")
                 ),
                 status: payload.status,
                 action_tokens: actionTokens,
@@ -340,7 +340,7 @@ self.addEventListener("push", function (event) {
     })());
 });
 
-function openIncidentRelayUrl(url) {
+function openBeaconUrl(url) {
     return clients.matchAll({
         type: "window",
         includeUncontrolled: true
@@ -375,19 +375,19 @@ self.addEventListener("notificationclick", function (event) {
     notification.close();
 
     if (action !== "ack" && action !== "resolve") {
-        event.waitUntil(openIncidentRelayUrl(url));
+        event.waitUntil(openBeaconUrl(url));
         return;
     }
 
     const token = actionTokens[action];
 
     if (!token) {
-        event.waitUntil(openIncidentRelayUrl(url));
+        event.waitUntil(openBeaconUrl(url));
         return;
     }
 
     event.waitUntil((async function () {
-        const locale = await loadIncidentRelayLocale(data.locale);
+        const locale = await loadBeaconLocale(data.locale);
 
         try {
             const response = await fetch("/api/push/actions", {
@@ -406,53 +406,53 @@ self.addEventListener("notificationclick", function (event) {
             });
 
             if (!response.ok || result.ok === false) {
-                return self.registration.showNotification("IncidentRelay", {
-                    body: incidentRelaySwText(
+                return self.registration.showNotification("Beacon", {
+                    body: beaconSwText(
                         locale,
                         "action_failed",
                         {
                             error: (
                                 result.error
-                                || incidentRelaySwText(locale, "unknown_error")
+                                || beaconSwText(locale, "unknown_error")
                             )
                         }
                     ),
-                    tag: `incidentrelay-action-error-${Date.now()}`,
+                    tag: `beacon-action-error-${Date.now()}`,
                     data: {url, locale}
                 });
             }
 
             const alertTitle = (
                 data.alert_title
-                || `${incidentRelaySwText(locale, "alert")} #${result.alert_id || data.alert_id || ""}`.trim()
+                || `${beaconSwText(locale, "alert")} #${result.alert_id || data.alert_id || ""}`.trim()
             );
             const body = action === "ack"
-                ? incidentRelaySwText(
+                ? beaconSwText(
                     locale,
                     "acknowledged",
                     {alert: alertTitle}
                 )
-                : incidentRelaySwText(
+                : beaconSwText(
                     locale,
                     "resolved",
                     {alert: alertTitle}
                 );
 
-            return self.registration.showNotification("IncidentRelay", {
+            return self.registration.showNotification("Beacon", {
                 body,
-                tag: `incidentrelay-alert-${result.alert_id || data.alert_id || Date.now()}`,
+                tag: `beacon-alert-${result.alert_id || data.alert_id || Date.now()}`,
                 renotify: true,
                 silent: false,
                 data: {url, locale}
             });
         } catch (error) {
-            return self.registration.showNotification("IncidentRelay", {
-                body: incidentRelaySwText(
+            return self.registration.showNotification("Beacon", {
+                body: beaconSwText(
                     locale,
                     "action_failed",
-                    {error: incidentRelaySwText(locale, "network_error")}
+                    {error: beaconSwText(locale, "network_error")}
                 ),
-                tag: `incidentrelay-action-error-${Date.now()}`,
+                tag: `beacon-action-error-${Date.now()}`,
                 data: {url, locale}
             });
         }

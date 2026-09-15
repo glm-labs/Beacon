@@ -1,6 +1,6 @@
 ---
 title: Event Orchestration API
-description: Create, version, validate, simulate, publish and observe Event Orchestration rules through the IncidentRelay API.
+description: Create, version, validate, simulate, publish and observe Event Orchestration rules through the Beacon API.
 ---
 
 # Event Orchestration API
@@ -237,4 +237,4 @@ DELETE /api/orchestration-webhook-actions/{action_id}
 GET    /api/orchestration-webhook-actions/{action_id}/executions
 ```
 
-Secret `headers` are write-only. IncidentRelay encrypts them and never returns them in API responses. Execution records expose only redacted response excerpts and safe error text.
+Secret `headers` are write-only. Beacon encrypts them and never returns them in API responses. Execution records expose only redacted response excerpts and safe error text.

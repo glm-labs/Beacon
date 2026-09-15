@@ -28,9 +28,9 @@ def test_security_config_rejects_missing_main_secret():
 
 
 def test_stock_deployment_does_not_ship_known_authentication_secret():
-    docker_config = (ROOT / "docker" / "incidentrelay.docker.conf").read_text()
-    helm_values = (ROOT / "helm" / "incidentrelay" / "values.yaml").read_text()
-    rpm_config = (ROOT / "etc" / "incidentrelay" / "incidentrelay.conf").read_text()
+    docker_config = (ROOT / "docker" / "beacon.docker.conf").read_text()
+    helm_values = (ROOT / "helm" / "beacon" / "values.yaml").read_text()
+    rpm_config = (ROOT / "etc" / "beacon" / "beacon.conf").read_text()
     for value in ("dev-secret-key", "change-this-jwt-secret"):
         assert value not in docker_config
         assert value not in helm_values

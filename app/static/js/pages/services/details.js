@@ -566,8 +566,8 @@ function formatServiceSliType(type) {
 
 function formatServiceSliSource(source) {
     const labels = {
-        incidentrelay_alert_groups: "Alert groups",
-        incidentrelay_service_status: "Service status",
+        beacon_alert_groups: "Alert groups",
+        beacon_service_status: "Service status",
     };
 
     return labels[source] || source || "-";
@@ -692,7 +692,7 @@ function renderServiceSliModal(service, sli) {
         name: "",
         description: "",
         sli_type: "alert_ack_latency",
-        source: "incidentrelay_alert_groups",
+        source: "beacon_alert_groups",
         severity: "critical",
         priority: "",
         enabled: true,
@@ -851,7 +851,7 @@ function collectServiceSliPayload() {
         name: $("#service-sli-name").val().trim(),
         description: $("#service-sli-description").val().trim() || null,
         sli_type: type,
-        source: "incidentrelay_alert_groups",
+        source: "beacon_alert_groups",
         configuration: configuration,
         severity: impact ? null : ($("#service-sli-severity").val() || null),
         priority: configuration.priority_scope && configuration.priority_scope.length === 1

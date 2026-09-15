@@ -32,14 +32,14 @@ Source: zabbix
 
 ## Готовый Webhook Media Type для Zabbix
 
-Для Zabbix 6.x/7.x откройте **Alerts → Media types → Create media type** и выберите тип **Webhook**. Такой media type может вызывать IncidentRelay напрямую, без внешнего скрипта.
+Для Zabbix 6.x/7.x откройте **Alerts → Media types → Create media type** и выберите тип **Webhook**. Такой media type может вызывать Beacon напрямую, без внешнего скрипта.
 
 Рекомендуемые параметры:
 
 | Параметр | Значение |
 |---|---|
-| `url` | `https://incidentrelay.example.com/api/integrations/zabbix` |
-| `token` | `{$INCIDENTRELAY.TOKEN}` |
+| `url` | `https://beacon.example.com/api/integrations/zabbix` |
+| `token` | `{$BEACON.TOKEN}` |
 | `event_id` | `{EVENT.ID}` |
 | `trigger_id` | `{TRIGGER.ID}` |
 | `event_name` | `{EVENT.NAME}` |
@@ -52,7 +52,7 @@ Source: zabbix
 | `event_link` | `{$ZABBIX.URL}/tr_events.php?triggerid={TRIGGER.ID}&eventid={EVENT.ID}` |
 | `HTTPProxy` | необязательный URL proxy или пустое значение |
 
-Создайте `{$INCIDENTRELAY.TOKEN}` как секретный пользовательский макрос Zabbix, а `{$ZABBIX.URL}` — как внешний URL frontend Zabbix.
+Создайте `{$BEACON.TOKEN}` как секретный пользовательский макрос Zabbix, а `{$ZABBIX.URL}` — как внешний URL frontend Zabbix.
 
 Используйте следующий Webhook script:
 
@@ -93,18 +93,18 @@ try {
 
     return response;
 } catch (error) {
-    Zabbix.log(3, '[ IncidentRelay webhook ] ' + error);
-    throw 'IncidentRelay webhook failed: ' + error;
+    Zabbix.log(3, '[ Beacon webhook ] ' + error);
+    throw 'Beacon webhook failed: ' + error;
 }
 ```
 
-Создайте пользователя/media с этим media type и добавьте пользователя или группу в нужный trigger action. Настройте как **Operations**, так и **Recovery operations**, иначе событие восстановления из Zabbix не попадёт в IncidentRelay.
+Создайте пользователя/media с этим media type и добавьте пользователя или группу в нужный trigger action. Настройте как **Operations**, так и **Recovery operations**, иначе событие восстановления из Zabbix не попадёт в Beacon.
 
 Перед подключением к production actions media type можно проверить встроенным тестом в UI Zabbix.
 
 ## Назначение сервиса
 
-После того как маршрут сопоставит входящий алерт, IncidentRelay может привязать алерт к сервису.
+После того как маршрут сопоставит входящий алерт, Beacon может привязать алерт к сервису.
 
 Есть два способа:
 
@@ -180,7 +180,7 @@ try {
 
 `event_link` сохраняется в `labels.event_link` и также предоставляется как `alert.event_link` в ответе API алертов. Оно используется модальным окном деталей алерта для открытия исходного события Zabbix.
 
-`event_tag` сохраняется в `labels.event_tag`. Когда оно содержит теговые данные вроде `team: infra, service: cpu`, IncidentRelay также извлекает отдельные метки, такие как `team` и `service`.
+`event_tag` сохраняется в `labels.event_tag`. Когда оно содержит теговые данные вроде `team: infra, service: cpu`, Beacon также извлекает отдельные метки, такие как `team` и `service`.
 
 ## Обязательное содержимое payload
 
@@ -208,7 +208,7 @@ fingerprint
 
 ## Нормализованные поля
 
-| Поле IncidentRelay | Источник |
+| Поле Beacon | Источник |
 |---|---|
 | `source` | `zabbix` |
 | `team_slug` | `team`, `labels.team`, `labels.oncall_team` или разобранные теги Zabbix |
@@ -220,9 +220,9 @@ fingerprint
 | `event_link` | `event_link`, `event_url`, `problem_url`, `trigger_url`, `labels.event_link` или собранная из `zabbix_url` и `event_id` |
 | `status` | `status` или `event_status`, по умолчанию `firing` |
 
-Значения severity Zabbix нормализуются для маршрутизации и фильтрации в IncidentRelay:
+Значения severity Zabbix нормализуются для маршрутизации и фильтрации в Beacon:
 
-| Severity Zabbix | Severity IncidentRelay |
+| Severity Zabbix | Severity Beacon |
 |---|---|
 | `Disaster` | `critical` |
 | `High` | `critical` |

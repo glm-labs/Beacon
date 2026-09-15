@@ -5,7 +5,7 @@ description: Service inventory, ownership, dependencies, default stakeholders, i
 
 # Services
 
-Services describe the affected systems inside IncidentRelay: APIs, databases, queues, websites, infrastructure components or business services.
+Services describe the affected systems inside Beacon: APIs, databases, queues, websites, infrastructure components or business services.
 
 Use this section for service ownership and impact modeling:
 
@@ -18,7 +18,7 @@ Use this section for service ownership and impact modeling:
 
 ## Why services matter
 
-Routes answer how an alert entered IncidentRelay.
+Routes answer how an alert entered Beacon.
 
 Services answer what system is affected.
 

@@ -1,9 +1,9 @@
 ---
 title: Примеры голосовых провайдеров
-description: Примеры пользовательских голосовых провайдеров для IncidentRelay.
+description: Примеры пользовательских голосовых провайдеров для Beacon.
 ---
 
-# Примеры голосовых провайдеров IncidentRelay
+# Примеры голосовых провайдеров Beacon
 
 Этот каталог содержит примеры пользовательских голосовых провайдеров.
 
@@ -18,10 +18,10 @@ stub_callback_test.py  Minimal provider useful for callback tests.
 ## Установка примера провайдера
 
 ```bash
-sudo mkdir -p /usr/local/lib/incidentrelay/voice_providers
+sudo mkdir -p /usr/local/lib/beacon/voice_providers
 sudo cp examples/voice_providers/example_http.py \
-  /usr/local/lib/incidentrelay/voice_providers/example_http.py
-sudo systemctl restart incidentrelay
+  /usr/local/lib/beacon/voice_providers/example_http.py
+sudo systemctl restart beacon
 ```
 
 Затем используйте эту конфигурацию канала:

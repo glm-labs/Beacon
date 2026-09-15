@@ -1,6 +1,6 @@
 # Интеграция с AWS SNS и CloudWatch
 
-IncidentRelay может принимать подписанные сообщения Amazon SNS и уведомления об алармах CloudWatch через отдельную входящую интеграцию. Сообщения принимаются только после проверки подписи SNS, URL сертификата подписи, источника маршрута, состояния маршрута и точного соответствия Topic ARN.
+Beacon может принимать подписанные сообщения Amazon SNS и уведомления об алармах CloudWatch через отдельную входящую интеграцию. Сообщения принимаются только после проверки подписи SNS, URL сертификата подписи, источника маршрута, состояния маршрута и точного соответствия Topic ARN.
 
 ## Эндпоинт
 
@@ -11,12 +11,12 @@ POST /api/integrations/aws-sns/{route_id}
 Пример:
 
 ```text
-https://incidentrelay.example.com/api/integrations/aws-sns/17
+https://beacon.example.com/api/integrations/aws-sns/17
 ```
 
-Этот эндпоинт не использует bearer-токен приёма маршрута. Amazon SNS аутентифицирует запросы с помощью подписи сообщения, при этом IncidentRelay дополнительно требует, чтобы `TopicArn` точно совпадал со значением, сохранённым в маршруте.
+Этот эндпоинт не использует bearer-токен приёма маршрута. Amazon SNS аутентифицирует запросы с помощью подписи сообщения, при этом Beacon дополнительно требует, чтобы `TopicArn` точно совпадал со значением, сохранённым в маршруте.
 
-## Создание маршрута IncidentRelay
+## Создание маршрута Beacon
 
 1. Откройте **Routes**.
 2. Создайте маршрут.
@@ -31,7 +31,7 @@ https://incidentrelay.example.com/api/integrations/aws-sns/17
 Пример Topic ARN:
 
 ```text
-arn:aws:sns:eu-west-1:123456789012:incidentrelay-alerts
+arn:aws:sns:eu-west-1:123456789012:beacon-alerts
 ```
 
 Рекомендуемая группировка:
@@ -42,7 +42,7 @@ arn:aws:sns:eu-west-1:123456789012:incidentrelay-alerts
 ]
 ```
 
-Это удерживает все изменения состояния одного аларма CloudWatch в одной группе IncidentRelay.
+Это удерживает все изменения состояния одного аларма CloudWatch в одной группе Beacon.
 
 ## Создание подписки SNS
 
@@ -51,10 +51,10 @@ arn:aws:sns:eu-west-1:123456789012:incidentrelay-alerts
 1. Откройте топик, ARN которого настроен в маршруте.
 2. Создайте подписку.
 3. Выберите **HTTPS** в качестве протокола.
-4. Укажите в качестве эндпоинта URL вебхука IncidentRelay.
+4. Укажите в качестве эндпоинта URL вебхука Beacon.
 5. Создайте подписку.
 
-Amazon SNS отправляет подписанное сообщение `SubscriptionConfirmation`. IncidentRelay проверяет его и подтверждает подписку автоматически.
+Amazon SNS отправляет подписанное сообщение `SubscriptionConfirmation`. Beacon проверяет его и подтверждает подписку автоматически.
 
 ## Настройка аларма CloudWatch
 
@@ -65,25 +65,25 @@ ALARM
 OK
 ```
 
-`ALARM` создаёт или обновляет активный алерт IncidentRelay. `OK` разрешает существующий алерт, поскольку оба уведомления используют один и тот же ARN аларма CloudWatch.
+`ALARM` создаёт или обновляет активный алерт Beacon. `OK` разрешает существующий алерт, поскольку оба уведомления используют один и тот же ARN аларма CloudWatch.
 
 `INSUFFICIENT_DATA` трактуется как активный алерт с важностью warning.
 
 
 ## Пример настройки через AWS CLI
 
-Ту же конфигурацию можно создать через AWS CLI. Сначала подпишите endpoint маршрута IncidentRelay на SNS topic:
+Ту же конфигурацию можно создать через AWS CLI. Сначала подпишите endpoint маршрута Beacon на SNS topic:
 
 ```bash
-TOPIC_ARN='arn:aws:sns:eu-west-1:123456789012:incidentrelay-alerts'
+TOPIC_ARN='arn:aws:sns:eu-west-1:123456789012:beacon-alerts'
 
 aws sns subscribe \
   --topic-arn "$TOPIC_ARN" \
   --protocol https \
-  --notification-endpoint 'https://incidentrelay.example.com/api/integrations/aws-sns/17'
+  --notification-endpoint 'https://beacon.example.com/api/integrations/aws-sns/17'
 ```
 
-IncidentRelay проверяет подписанный `SubscriptionConfirmation` и подтверждает подписку автоматически.
+Beacon проверяет подписанный `SubscriptionConfirmation` и подтверждает подписку автоматически.
 
 Затем создайте или обновите CloudWatch alarm и отправляйте как alarm, так и recovery actions в один и тот же SNS topic:
 
@@ -102,11 +102,11 @@ aws cloudwatch put-metric-alarm \
   --ok-actions "$TOPIC_ARN"
 ```
 
-Использование одного topic одновременно в `--alarm-actions` и `--ok-actions` даёт IncidentRelay полный lifecycle firing → resolved.
+Использование одного topic одновременно в `--alarm-actions` и `--ok-actions` даёт Beacon полный lifecycle firing → resolved.
 
 ## Сопоставление состояний CloudWatch
 
-| Состояние CloudWatch | Статус IncidentRelay | Важность по умолчанию |
+| Состояние CloudWatch | Статус Beacon | Важность по умолчанию |
 |---|---|---|
 | `ALARM` | `firing` | `critical` |
 | `INSUFFICIENT_DATA` | `firing` | `warning` |
@@ -116,7 +116,7 @@ aws cloudwatch put-metric-alarm \
 
 ## Дедупликация
 
-IncidentRelay использует `AlarmArn` одновременно как внешний идентификатор и ключ дедупликации.
+Beacon использует `AlarmArn` одновременно как внешний идентификатор и ключ дедупликации.
 
 Пример:
 
@@ -130,7 +130,7 @@ arn:aws:cloudwatch:eu-west-1:123456789012:alarm:HighCPU
 
 Общие метки включают:
 
-| Метка IncidentRelay | Источник |
+| Метка Beacon | Источник |
 |---|---|
 | `alertname` | `AlarmName` |
 | `severity` | атрибут SNS или сопоставление состояний |
@@ -235,7 +235,7 @@ severity=critical
 {
   "Type": "Notification",
   "MessageId": "sns-message-1",
-  "TopicArn": "arn:aws:sns:eu-west-1:123456789012:incidentrelay-alerts",
+  "TopicArn": "arn:aws:sns:eu-west-1:123456789012:beacon-alerts",
   "Subject": "ALARM: HighCPU",
   "Message": "{\"AlarmName\":\"HighCPU\",\"AWSAccountId\":\"123456789012\",\"NewStateValue\":\"ALARM\",\"NewStateReason\":\"Threshold crossed\",\"Region\":\"EU (Ireland)\",\"AlarmArn\":\"arn:aws:cloudwatch:eu-west-1:123456789012:alarm:HighCPU\",\"OldStateValue\":\"OK\"}",
   "Timestamp": "2026-06-21T10:00:01.000Z",
@@ -254,11 +254,11 @@ severity=critical
 - `AlarmRule`;
 - `TriggeringChildren`.
 
-IncidentRelay сохраняет эти значения в аннотациях и сохраняет полную полезную нагрузку CloudWatch. Дедупликация по-прежнему использует ARN аларма.
+Beacon сохраняет эти значения в аннотациях и сохраняет полную полезную нагрузку CloudWatch. Дедупликация по-прежнему использует ARN аларма.
 
 ## Обобщённые уведомления SNS
 
-Когда `Message` не распознаётся как аларм CloudWatch, IncidentRelay создаёт обобщённый алерт SNS, используя:
+Когда `Message` не распознаётся как аларм CloudWatch, Beacon создаёт обобщённый алерт SNS, используя:
 
 - `Subject` в качестве заголовка;
 - `Message` в качестве сообщения;
@@ -269,7 +269,7 @@ IncidentRelay сохраняет эти значения в аннотациях
 
 ## Сохранённая полезная нагрузка
 
-IncidentRelay сохраняет:
+Beacon сохраняет:
 
 ```text
 payload.sns
@@ -280,7 +280,7 @@ payload.cloudwatch
 
 ## Проверка подписи
 
-Перед принятием запроса IncidentRelay проверяет:
+Перед принятием запроса Beacon проверяет:
 
 1. существование маршрута;
 2. что источник маршрута — `aws_sns`;
@@ -308,7 +308,7 @@ payload.cloudwatch
 {
   "status": "confirmed",
   "message_id": "sns-confirmation-1",
-  "topic_arn": "arn:aws:sns:eu-west-1:123456789012:incidentrelay-alerts"
+  "topic_arn": "arn:aws:sns:eu-west-1:123456789012:beacon-alerts"
 }
 ```
 
@@ -318,7 +318,7 @@ payload.cloudwatch
 {
   "status": "unsubscribed",
   "message_id": "sns-confirmation-2",
-  "topic_arn": "arn:aws:sns:eu-west-1:123456789012:incidentrelay-alerts"
+  "topic_arn": "arn:aws:sns:eu-west-1:123456789012:beacon-alerts"
 }
 ```
 
@@ -358,11 +358,11 @@ payload.cloudwatch
 
 Проверьте, что:
 
-- эндпоинт IncidentRelay публично доступен через HTTPS;
+- эндпоинт Beacon публично доступен через HTTPS;
 - источник маршрута — `aws_sns`;
 - маршрут активен;
 - настроенный Topic ARN точно совпадает с топиком SNS;
-- IncidentRelay может обращаться к URL сертификата и подтверждения Amazon SNS;
+- Beacon может обращаться к URL сертификата и подтверждения Amazon SNS;
 - обратный прокси передаёт тела POST без изменений.
 
 ### Несоответствие Topic ARN
@@ -375,7 +375,7 @@ payload.cloudwatch
 
 Также проверьте:
 
-- исходящий доступ по HTTPS из IncidentRelay;
+- исходящий доступ по HTTPS из Beacon;
 - синхронизацию системных часов;
 - что тело не переписывается прокси;
 - что сообщение пришло из настроенного топика.
@@ -407,5 +407,5 @@ payload.cloudwatch
 - Настройте точный Topic ARN на каждом маршруте.
 - Не отключайте проверку URL сертификата.
 - Не принимайте редиректы при загрузке сертификатов или подтверждении подписок.
-- Держите системное время IncidentRelay синхронизированным.
+- Держите системное время Beacon синхронизированным.
 - Проверяйте трассировки маршрутизации и журналы после отклонённых запросов.

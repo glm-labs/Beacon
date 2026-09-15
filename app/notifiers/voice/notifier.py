@@ -74,7 +74,7 @@ class VoiceCallNotifier(BaseNotifier):
     def _build_call_text(self, alert, fallback_text, event_type):
         """Build the text that the voice provider should say."""
         template = getattr(Config, "VOICE_TEXT_TEMPLATE", "") or (
-            "IncidentRelay alert {alert_id}. "
+            "Beacon alert {alert_id}. "
             "{title}. "
             "Service {service}. "
             "Severity {severity}. "

@@ -5,7 +5,7 @@ description: P1-P5 incident priority behavior, automatic priority updates and no
 
 # Incident Priorities
 
-IncidentRelay uses a P1-P5 priority scale for alert groups / incidents.
+Beacon uses a P1-P5 priority scale for alert groups / incidents.
 
 | Priority | Meaning |
 |---|---|
@@ -19,7 +19,7 @@ Priority is separate from alert severity. Severity describes the incoming signal
 
 ## Automatic priority
 
-When an incoming alert creates or updates an incident, IncidentRelay can resolve a priority from the alert severity.
+When an incoming alert creates or updates an incident, Beacon can resolve a priority from the alert severity.
 
 Automatic priority changes follow conservative rules:
 
@@ -43,7 +43,7 @@ Manual priority changes:
 
 A manual priority override can be removed from the incident details view by selecting **Reset to automatic**.
 
-After the reset, IncidentRelay restores priority according to the effective policy update mode:
+After the reset, Beacon restores priority according to the effective policy update mode:
 
 - `initial_only` restores the priority selected for the first alert;
 - `raise_only` restores the highest priority found in the incident alert history;

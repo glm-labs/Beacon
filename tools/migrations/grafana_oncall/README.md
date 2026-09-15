@@ -1,25 +1,25 @@
 # Grafana OnCall OSS migration
 
-This tool migrates supported Grafana OnCall OSS configuration to IncidentRelay
+This tool migrates supported Grafana OnCall OSS configuration to Beacon
 through the public HTTP APIs. It does not connect to either database.
 
 The command is **dry-run by default**. A dry-run downloads a source snapshot,
-loads current IncidentRelay resources, builds a migration plan, and writes a
+loads current Beacon resources, builds a migration plan, and writes a
 report without creating or changing anything.
 
 ## Supported resources
 
 - Users: matched by email, then username.
 - Optional creation of missing users as inactive accounts.
-- Grafana teams → IncidentRelay teams inside one target group.
+- Grafana teams → Beacon teams inside one target group.
 - Group and team memberships.
 - Calendar/web schedules → rotations.
 - `rolling_users` and simple `recurrent_event` shifts → rotation layers.
 - Future/current `single_event` shifts → rotation overrides.
 - Escalation chains with `wait`, single-person notification, and schedule
   notification steps → escalation policies.
-- Integrations and their default route → IncidentRelay routes.
-- New IncidentRelay intake URLs and tokens are written to a protected secrets
+- Integrations and their default route → Beacon routes.
+- New Beacon intake URLs and tokens are written to a protected secrets
   file during `--apply`.
 
 ## Deliberate limitations
@@ -37,15 +37,15 @@ their meaning:
 - Alert history.
 
 Non-default conditional Grafana routes are created disabled because Grafana
-matches against the whole payload, while IncidentRelay routes match normalized
-labels. Review and configure IncidentRelay matchers before enabling them.
+matches against the whole payload, while Beacon routes match normalized
+labels. Review and configure Beacon matchers before enabling them.
 
 ## Requirements
 
 - Python 3.10 or newer.
 - A Grafana OnCall API key(not grafana service accounts) with read access to users, teams, schedules,
   escalation chains, integrations, and routes(Home -> Alerts & IRM -> OnCall -> Settings).
-- An IncidentRelay personal/API token belonging to a global administrator, with
+- An Beacon personal/API token belonging to a global administrator, with
   at least `resources:read` and `resources:write` scopes (or `*`).
 
 The script uses only Python's standard library.
@@ -54,11 +54,11 @@ The script uses only Python's standard library.
 
 ```bash
 export GRAFANA_ONCALL_TOKEN='...'
-export INCIDENTRELAY_TOKEN='...'
+export BEACON_TOKEN='...'
 
 python tools/migrations/grafana_oncall/migrate.py \
   --oncall-url https://oncall.example.com \
-  --ir-url https://incidentrelay.example.com \
+  --ir-url https://beacon.example.com \
   --target-group production \
   --fallback-team platform \
   --users-mode existing-only
@@ -83,7 +83,7 @@ After reviewing the dry-run:
 ```bash
 python tools/migrations/grafana_oncall/migrate.py \
   --oncall-url https://oncall.example.com \
-  --ir-url https://incidentrelay.example.com \
+  --ir-url https://beacon.example.com \
   --target-group production \
   --fallback-team platform \
   --users-mode create-inactive \
@@ -94,7 +94,7 @@ Apply mode additionally creates:
 
 ```text
 migration-output/
-├── state.json              Source ID → IncidentRelay ID mappings
+├── state.json              Source ID → Beacon ID mappings
 └── route-secrets.json      New intake URLs/tokens, mode 0600
 ```
 
@@ -110,7 +110,7 @@ stack URL:
 python tools/migrations/grafana_oncall/migrate.py \
   --oncall-url https://oncall-api.example.com \
   --grafana-url https://grafana.example.com \
-  --ir-url https://incidentrelay.example.com \
+  --ir-url https://beacon.example.com \
   --target-group production
 ```
 
@@ -118,7 +118,7 @@ python tools/migrations/grafana_oncall/migrate.py \
 
 ```text
 --snapshot-only
-    Download Grafana OnCall data without connecting to IncidentRelay.
+    Download Grafana OnCall data without connecting to Beacon.
 
 --users-mode existing-only
     Do not create users. This is the safest mode for SSO installations.
@@ -130,7 +130,7 @@ python tools/migrations/grafana_oncall/migrate.py \
     Default. Report simultaneous-user constructs for manual conversion.
 
 --multi-user-shift first
-    Explicitly keep only the first user where IncidentRelay supports one target.
+    Explicitly keep only the first user where Beacon supports one target.
 
 --include-past-overrides
     Import expired single-event shifts as historical overrides.

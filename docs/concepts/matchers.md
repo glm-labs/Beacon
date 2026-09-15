@@ -5,7 +5,7 @@ description: Shared matcher format, editor behavior and suggestions from recent 
 
 # Alert Matchers
 
-IncidentRelay uses one matcher format for routes, service rules, runbooks, silences, matcher presets, priority policy rules and notification policy rules.
+Beacon uses one matcher format for routes, service rules, runbooks, silences, matcher presets, priority policy rules and notification policy rules.
 
 All conditions in one matcher object use **AND** semantics. An empty object matches every alert:
 
@@ -124,6 +124,6 @@ The shared matcher editor provides the same JSON validation and formatting behav
 
 Suggestions require a team and only inspect alerts accessible through that team. A route or service context can narrow the sample further.
 
-By default, IncidentRelay inspects up to 200 recent alerts and returns up to 20 values for each matcher name. The API supports a maximum sample of 500 alerts and a maximum of 50 values per matcher name.
+By default, Beacon inspects up to 200 recent alerts and returns up to 20 values for each matcher name. The API supports a maximum sample of 500 alerts and a maximum of 50 values per matcher name.
 
 Suggestions include stored alert labels and normalized values such as severity, status, source and incident priority. Teams without matching alert history receive an empty suggestion list.

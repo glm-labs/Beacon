@@ -32,11 +32,11 @@ Attach at least one notification channel and copy the route intake token into Al
 
 ## Alertmanager configuration example
 
-A minimal `alertmanager.yml` receiver can send both firing and resolved notifications directly to IncidentRelay:
+A minimal `alertmanager.yml` receiver can send both firing and resolved notifications directly to Beacon:
 
 ```yaml
 route:
-  receiver: incidentrelay
+  receiver: beacon
   group_by:
     - alertname
     - cluster
@@ -46,25 +46,25 @@ route:
   repeat_interval: 4h
 
 receivers:
-  - name: incidentrelay
+  - name: beacon
     webhook_configs:
-      - url: https://incidentrelay.example.com/api/integrations/alertmanager
+      - url: https://beacon.example.com/api/integrations/alertmanager
         send_resolved: true
         http_config:
           authorization:
             type: Bearer
-            credentials_file: /etc/alertmanager/secrets/incidentrelay-route-token
+            credentials_file: /etc/alertmanager/secrets/beacon-route-token
 ```
 
-The credentials file must contain only the IncidentRelay route token, without the `Bearer ` prefix. Keeping the token in a mounted secret file is preferred over committing it to `alertmanager.yml`.
+The credentials file must contain only the Beacon route token, without the `Bearer ` prefix. Keeping the token in a mounted secret file is preferred over committing it to `alertmanager.yml`.
 
 For a small test installation, the token can also be configured inline:
 
 ```yaml
 receivers:
-  - name: incidentrelay
+  - name: beacon
     webhook_configs:
-      - url: https://incidentrelay.example.com/api/integrations/alertmanager
+      - url: https://beacon.example.com/api/integrations/alertmanager
         send_resolved: true
         http_config:
           authorization:
@@ -72,15 +72,15 @@ receivers:
             credentials: ROUTE_TOKEN
 ```
 
-`send_resolved: true` is important. Without resolved notifications, IncidentRelay cannot automatically close the corresponding alert when Alertmanager reports recovery.
+`send_resolved: true` is important. Without resolved notifications, Beacon cannot automatically close the corresponding alert when Alertmanager reports recovery.
 
-If only part of the Alertmanager tree should go to IncidentRelay, route that subset to the receiver instead of making it the default receiver:
+If only part of the Alertmanager tree should go to Beacon, route that subset to the receiver instead of making it the default receiver:
 
 ```yaml
 route:
   receiver: default-receiver
   routes:
-    - receiver: incidentrelay
+    - receiver: beacon
       matchers:
         - team="infra"
         - environment="production"
@@ -94,7 +94,7 @@ amtool check-config /etc/alertmanager/alertmanager.yml
 
 ## Service assignment
 
-After a route matches the incoming alert, IncidentRelay can attach the alert to a service.
+After a route matches the incoming alert, Beacon can attach the alert to a service.
 
 There are two ways:
 
@@ -149,9 +149,9 @@ This can attach matching alerts to the `RabbitMQ Cloud` service.
 }
 ```
 
-`generatorURL` is the standard Alertmanager source link to the expression that generated the alert. IncidentRelay uses it as `event_link` when a more specific link is not provided in annotations.
+`generatorURL` is the standard Alertmanager source link to the expression that generated the alert. Beacon uses it as `event_link` when a more specific link is not provided in annotations.
 
-IncidentRelay also supports these annotation aliases for the source event link:
+Beacon also supports these annotation aliases for the source event link:
 
 ```text
 event_link
@@ -173,7 +173,7 @@ Grafana-managed alert webhooks can include fields such as `dashboardURL`, `panel
 
 ## Normalized fields
 
-| IncidentRelay field | Source |
+| Beacon field | Source |
 |---|---|
 | `source` | `alertmanager` |
 | `team_slug` | `labels.team`, `labels.oncall_team`, or top-level `team` |
@@ -189,4 +189,4 @@ Grafana-managed alert webhooks can include fields such as `dashboardURL`, `panel
 
 Use the same fingerprint and grouping data for resolved events.
 
-That lets IncidentRelay update the existing alert instead of creating a new one.
+That lets Beacon update the existing alert instead of creating a new one.

@@ -51,7 +51,7 @@ def as_utc_aware(value):
 def as_utc_naive(value):
     """Return naive UTC datetime from datetime or ISO string.
 
-    IncidentRelay stores timestamps as naive UTC values. Naive inputs are
+    Beacon stores timestamps as naive UTC values. Naive inputs are
     therefore interpreted as UTC for backward compatibility.
     """
     value = as_utc_aware(value)
@@ -81,7 +81,7 @@ def timezone_or_utc(timezone_name):
 
 
 def local_datetime_to_utc_naive(value, timezone_name):
-    """Convert a local wall-clock datetime to IncidentRelay naive UTC.
+    """Convert a local wall-clock datetime to Beacon naive UTC.
 
     Naive values are interpreted in ``timezone_name``. Aware values already
     represent an absolute instant and are converted directly to UTC.
@@ -141,7 +141,7 @@ UTC = getattr(dt, "UTC", dt.timezone.utc)
 def utc_now() -> dt.datetime:
     """Return current UTC time without tzinfo.
 
-    IncidentRelay stores timestamps as naive UTC values.
+    Beacon stores timestamps as naive UTC values.
     """
     return dt.datetime.now(UTC).replace(tzinfo=None)
 

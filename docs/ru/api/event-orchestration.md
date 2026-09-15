@@ -1,6 +1,6 @@
 ---
 title: API Event Orchestration
-description: Создание, версионирование, проверка, симуляция, публикация и наблюдение за правилами Event Orchestration через API IncidentRelay.
+description: Создание, версионирование, проверка, симуляция, публикация и наблюдение за правилами Event Orchestration через API Beacon.
 ---
 
 # API Event Orchestration
@@ -237,4 +237,4 @@ DELETE /api/orchestration-webhook-actions/{action_id}
 GET    /api/orchestration-webhook-actions/{action_id}/executions
 ```
 
-Секретные `headers` доступны только для записи. IncidentRelay шифрует их и никогда не возвращает в ответах API. Записи выполнений содержат только отредактированные фрагменты ответов и безопасный текст ошибок.
+Секретные `headers` доступны только для записи. Beacon шифрует их и никогда не возвращает в ответах API. Записи выполнений содержат только отредактированные фрагменты ответов и безопасный текст ошибок.

@@ -45,13 +45,13 @@ Typical config:
 
 ## Generic outgoing webhook
 
-Generic outgoing webhook sends IncidentRelay notification payloads to a custom HTTP endpoint.
+Generic outgoing webhook sends Beacon notification payloads to a custom HTTP endpoint.
 
 Typical config:
 
 ```json
 {
-  "webhook_url": "https://example.com/incidentrelay/notifications"
+  "webhook_url": "https://example.com/beacon/notifications"
 }
 ```
 

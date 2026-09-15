@@ -32,11 +32,11 @@ Source: alertmanager
 
 ## Пример конфигурации Alertmanager
 
-Минимальный receiver в `alertmanager.yml` может отправлять в IncidentRelay как firing, так и resolved уведомления:
+Минимальный receiver в `alertmanager.yml` может отправлять в Beacon как firing, так и resolved уведомления:
 
 ```yaml
 route:
-  receiver: incidentrelay
+  receiver: beacon
   group_by:
     - alertname
     - cluster
@@ -46,25 +46,25 @@ route:
   repeat_interval: 4h
 
 receivers:
-  - name: incidentrelay
+  - name: beacon
     webhook_configs:
-      - url: https://incidentrelay.example.com/api/integrations/alertmanager
+      - url: https://beacon.example.com/api/integrations/alertmanager
         send_resolved: true
         http_config:
           authorization:
             type: Bearer
-            credentials_file: /etc/alertmanager/secrets/incidentrelay-route-token
+            credentials_file: /etc/alertmanager/secrets/beacon-route-token
 ```
 
-Файл credentials должен содержать только токен маршрута IncidentRelay, без префикса `Bearer `. Хранить токен в подключаемом secret-файле предпочтительнее, чем коммитить его в `alertmanager.yml`.
+Файл credentials должен содержать только токен маршрута Beacon, без префикса `Bearer `. Хранить токен в подключаемом secret-файле предпочтительнее, чем коммитить его в `alertmanager.yml`.
 
 Для небольшой тестовой инсталляции токен можно указать непосредственно в конфигурации:
 
 ```yaml
 receivers:
-  - name: incidentrelay
+  - name: beacon
     webhook_configs:
-      - url: https://incidentrelay.example.com/api/integrations/alertmanager
+      - url: https://beacon.example.com/api/integrations/alertmanager
         send_resolved: true
         http_config:
           authorization:
@@ -72,15 +72,15 @@ receivers:
             credentials: ROUTE_TOKEN
 ```
 
-`send_resolved: true` важен: без resolved-уведомлений IncidentRelay не сможет автоматически закрывать соответствующий алерт после восстановления в Alertmanager.
+`send_resolved: true` важен: без resolved-уведомлений Beacon не сможет автоматически закрывать соответствующий алерт после восстановления в Alertmanager.
 
-Если в IncidentRelay должна уходить только часть дерева маршрутизации Alertmanager, направьте в receiver только нужную ветку вместо использования его как receiver по умолчанию:
+Если в Beacon должна уходить только часть дерева маршрутизации Alertmanager, направьте в receiver только нужную ветку вместо использования его как receiver по умолчанию:
 
 ```yaml
 route:
   receiver: default-receiver
   routes:
-    - receiver: incidentrelay
+    - receiver: beacon
       matchers:
         - team="infra"
         - environment="production"
@@ -94,7 +94,7 @@ amtool check-config /etc/alertmanager/alertmanager.yml
 
 ## Назначение сервиса
 
-После того как маршрут сопоставит входящий алерт, IncidentRelay может привязать алерт к сервису.
+После того как маршрут сопоставит входящий алерт, Beacon может привязать алерт к сервису.
 
 Есть два способа:
 
@@ -149,9 +149,9 @@ amtool check-config /etc/alertmanager/alertmanager.yml
 }
 ```
 
-`generatorURL` — это стандартная для Alertmanager ссылка на источник, ведущая к выражению, которое сгенерировало алерт. IncidentRelay использует её как `event_link`, если более конкретная ссылка не указана в аннотациях.
+`generatorURL` — это стандартная для Alertmanager ссылка на источник, ведущая к выражению, которое сгенерировало алерт. Beacon использует её как `event_link`, если более конкретная ссылка не указана в аннотациях.
 
-IncidentRelay также поддерживает следующие псевдонимы аннотаций для ссылки на исходное событие:
+Beacon также поддерживает следующие псевдонимы аннотаций для ссылки на исходное событие:
 
 ```text
 event_link
@@ -173,7 +173,7 @@ runbook_url
 
 ## Нормализованные поля
 
-| Поле IncidentRelay | Источник |
+| Поле Beacon | Источник |
 |---|---|
 | `source` | `alertmanager` |
 | `team_slug` | `labels.team`, `labels.oncall_team` или верхнеуровневое `team` |
@@ -189,4 +189,4 @@ runbook_url
 
 Используйте тот же fingerprint и данные группировки для событий разрешения (resolved).
 
-Это позволяет IncidentRelay обновлять существующий алерт вместо создания нового.
+Это позволяет Beacon обновлять существующий алерт вместо создания нового.

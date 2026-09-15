@@ -1,5 +1,5 @@
 title: Dependency-aware Alert Correlation
-description: How IncidentRelay uses service dependencies to show possible root causes and downstream impact for related alert groups.
+description: How Beacon uses service dependencies to show possible root causes and downstream impact for related alert groups.
 # Dependency-aware Alert Correlation
 
 Dependency-aware alert correlation helps responders understand whether an alert may be related to another active alert in the service dependency graph.
@@ -22,7 +22,7 @@ Example dependency graph:
 
     Frontend -> Billing API -> PostgreSQL
 
-If `PostgreSQL` has an active critical alert and `Billing API` starts firing shortly after, IncidentRelay can mark the `Billing API` alert group as a possible symptom.
+If `PostgreSQL` has an active critical alert and `Billing API` starts firing shortly after, Beacon can mark the `Billing API` alert group as a possible symptom.
 
 Example:
 
@@ -40,7 +40,7 @@ For the PostgreSQL alert group:
 
 ## What is stored
 
-IncidentRelay stores correlation records between alert groups.
+Beacon stores correlation records between alert groups.
 
 A saved correlation contains:
 
@@ -140,7 +140,7 @@ Example:
 
     Frontend -> Billing API -> PostgreSQL
 
-If PostgreSQL is firing and Frontend starts firing, IncidentRelay can create a two-hop correlation:
+If PostgreSQL is firing and Frontend starts firing, Beacon can create a two-hop correlation:
 
     PostgreSQL unavailable -> Frontend 5xx
     depth = 2

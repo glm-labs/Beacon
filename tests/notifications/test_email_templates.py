@@ -32,7 +32,7 @@ def test_default_email_template_renders_escaped_values(monkeypatch):
     html = render_email_html(make_alert(), "fallback", "notification")
 
     assert "P1 Critical" in html
-    assert "IncidentRelay" in html
+    assert "Beacon" in html
     assert "Disk &lt;Full&gt;" in html
     assert "/var is &gt; 95% &amp; growing" in html
     assert "https://example.test/a?x=1&amp;y=2" in html

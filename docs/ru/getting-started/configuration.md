@@ -1,33 +1,33 @@
 ---
 title: Настройка
-description: Справочник по файлу конфигурации IncidentRelay
+description: Справочник по файлу конфигурации Beacon
 ---
 
 # Настройка
 
-IncidentRelay читает путь к файлу конфигурации из:
+Beacon читает путь к файлу конфигурации из:
 
 ```text
-INCIDENTRELAY_CONFIG_FILE
+BEACON_CONFIG_FILE
 ```
 
 Пример:
 
 ```bash
-export INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
+export BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
 ```
 
 Для systemd:
 
 ```ini
-Environment=INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
+Environment=BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
 ```
 
 Для Docker Compose:
 
 ```yaml
 environment:
-  INCIDENTRELAY_CONFIG_FILE: /etc/incidentrelay/incidentrelay.conf
+  BEACON_CONFIG_FILE: /etc/beacon/beacon.conf
 ```
 
 Старое имя `ONCALL_CONFIG_FILE` использовать не следует.
@@ -62,7 +62,7 @@ jwt_cookie_secure = true
 [server]
 host = 0.0.0.0
 port = 8080
-public_base_url = https://incidentrelay.example.com
+public_base_url = https://beacon.example.com
 ```
 
 | Параметр | Описание |
@@ -78,7 +78,7 @@ public_base_url = https://incidentrelay.example.com
 ```ini
 [database]
 type = sqlite
-name = /var/lib/incidentrelay/incidentrelay.db
+name = /var/lib/beacon/beacon.db
 
 [sqlite]
 wal = true
@@ -94,8 +94,8 @@ SQLite подходит для небольших self-hosted инсталляц
 type = postgresql
 host = 127.0.0.1
 port = 5432
-name = incidentrelay
-user = incidentrelay
+name = beacon
+user = beacon
 password = change-me
 ```
 
@@ -103,7 +103,7 @@ password = change-me
 
 ## Политика исходящих HTTP-подключений
 
-IncidentRelay защищает исходящие HTTP-запросы к адресам, заданным
+Beacon защищает исходящие HTTP-запросы к адресам, заданным
 администратором, от SSRF. По умолчанию запрещены private, loopback, link-local,
 multicast, reserved и unspecified адреса назначения.
 
@@ -140,7 +140,7 @@ outbound_private_network_allowlist = 10.20.0.0/16,192.168.50.10/32,fd00:1234::/4
 Эта политика используется общим клиентом исходящих HTTP-запросов, в том числе
 при загрузке OIDC metadata и JWKS, а также для исходящих интеграций:
 generic/Teams/Discord webhooks, Slack webhooks и запросов к Mattermost API.
-Это не allowlist имён хостов: IncidentRelay сначала разрешает DNS-имя, затем
+Это не allowlist имён хостов: Beacon сначала разрешает DNS-имя, затем
 проверяет полученные IP-адреса.
 
 Для DNS-имени **каждый адрес, возвращённый DNS, должен быть публичным или явно
@@ -148,11 +148,11 @@ generic/Teams/Discord webhooks, Slack webhooks и запросов к Mattermost
 Целевой адрес каждого redirect разрешается через DNS и проверяется повторно.
 
 !!! warning "Влияние обновления на 2.1"
-    В IncidentRelay 2.1 эта политика применяется к исходящим запросам.
+    В Beacon 2.1 эта политика применяется к исходящим запросам.
     Поэтому после обновления с 1.2 существующий внутренний OIDC metadata/JWKS
     endpoint или исходящая интеграция может перестать работать, даже если URL
     не менялся. До обновления разрешите внутренние endpoints с хоста/pod
-    IncidentRelay и добавьте только необходимые IP или CIDR.
+    Beacon и добавьте только необходимые IP или CIDR.
 
 Например, если внутренний identity provider разрешается в `10.42.7.15`:
 
@@ -161,7 +161,7 @@ generic/Teams/Discord webhooks, Slack webhooks и запросов к Mattermost
 outbound_private_network_allowlist = 10.42.7.15/32
 ```
 
-После изменения настройки перезапустите все процессы IncidentRelay, которые
+После изменения настройки перезапустите все процессы Beacon, которые
 могут выполнять исходящие запросы.
 
 Allowlist меняет только сетевую политику назначения. Он **не** отключает
@@ -196,7 +196,7 @@ Global и Service Event Orchestration могут переопределить з
 
 ## Политика хранения данных
 
-В IncidentRelay 2.1 все новые retention-настройки находятся в одной секции:
+В Beacon 2.1 все новые retention-настройки находятся в одной секции:
 
 ```ini
 [retention]
@@ -217,7 +217,7 @@ batch_size = 500
 [smtp]
 host = 127.0.0.1
 port = 25
-from = incidentrelay@example.com
+from = beacon@example.com
 use_tls = false
 user =
 password =
@@ -231,9 +231,9 @@ password =
 [smtp]
 host = smtp.example.com
 port = 587
-from = incidentrelay@example.com
+from = beacon@example.com
 use_tls = true
-user = incidentrelay@example.com
+user = beacon@example.com
 password = change-me
 ```
 
@@ -250,7 +250,7 @@ password = change-me
 ```ini
 [voice]
 provider = stub
-providers_dir = /usr/local/lib/incidentrelay/voice_providers
+providers_dir = /usr/local/lib/beacon/voice_providers
 callback_secret = change-me
 ```
 
@@ -270,7 +270,7 @@ callback_secret = change-me
 [browser_push]
 enabled = true
 vapid_public_key = CHANGE_ME_PUBLIC_KEY
-vapid_private_key = /etc/incidentrelay/vapid/private_key.pem
+vapid_private_key = /etc/beacon/vapid/private_key.pem
 vapid_subject = mailto:admin@example.com
 action_token_ttl_seconds = 900
 ```
@@ -308,7 +308,7 @@ action_token_ttl_seconds = 900
 ```ini
 [main]
 log_level = INFO
-log_file = /var/log/incidentrelay/incidentrelay.log
+log_file = /var/log/beacon/beacon.log
 ```
 
 Для systemd и контейнеров проверяйте также журнал или логи контейнера.

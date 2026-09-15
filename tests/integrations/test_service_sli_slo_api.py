@@ -8,7 +8,7 @@ def _sli_payload(**overrides):
         "name": "Critical alert acknowledgement latency",
         "description": "Ack latency for critical alert groups.",
         "sli_type": "alert_ack_latency",
-        "source": "incidentrelay_alert_groups",
+        "source": "beacon_alert_groups",
         "configuration": {},
         "severity": "critical",
         "priority": None,

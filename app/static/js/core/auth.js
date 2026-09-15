@@ -1,4 +1,4 @@
-const INCIDENTRELAY_TOKEN_KEY = "incidentrelay_jwt";
+const BEACON_TOKEN_KEY = "beacon_jwt";
 
 function normalizeReturnPath(value, fallback) {
   /*
@@ -51,11 +51,11 @@ function redirectToLogin(returnPath) {
 }
 
 function getStoredToken() {
-  return localStorage.getItem(INCIDENTRELAY_TOKEN_KEY);
+  return localStorage.getItem(BEACON_TOKEN_KEY);
 }
 
 function clearStoredToken() {
-  localStorage.removeItem(INCIDENTRELAY_TOKEN_KEY);
+  localStorage.removeItem(BEACON_TOKEN_KEY);
 }
 
 function logout() {

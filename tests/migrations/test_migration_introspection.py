@@ -33,7 +33,7 @@ class _Index:
 
 
 class FakePostgresqlDatabase:
-    def __init__(self, *, schema="incidentrelay", relation_exists=True):
+    def __init__(self, *, schema="beacon", relation_exists=True):
         self.schema = schema
         self.relation_exists = relation_exists
         self.sql_calls = []
@@ -88,12 +88,12 @@ class FakeSqliteDatabase:
 
 
 def test_postgres_columns_use_schema_of_relation_resolved_by_search_path():
-    db = FakePostgresqlDatabase(schema="incidentrelay")
+    db = FakePostgresqlDatabase(schema="beacon")
 
     columns = get_columns(db, "alertroute")
 
     assert [column.name for column in columns] == ["id", "escalation_policy_id"]
-    assert db.column_calls == [("alertroute", "incidentrelay")]
+    assert db.column_calls == [("alertroute", "beacon")]
     assert db.sql_calls[0][1] == ("alertroute",)
 
 
@@ -105,31 +105,31 @@ def test_postgres_missing_relation_returns_no_columns_without_public_fallback():
 
 
 def test_postgres_indexes_use_resolved_relation_schema():
-    db = FakePostgresqlDatabase(schema="incidentrelay")
+    db = FakePostgresqlDatabase(schema="beacon")
 
     indexes = get_indexes(db, "alertroute")
 
     assert [index.name for index in indexes] == [
         "idx_alertroute_escalation_policy_id"
     ]
-    assert db.index_calls == [("alertroute", "incidentrelay")]
+    assert db.index_calls == [("alertroute", "beacon")]
 
 
 def test_postgres_table_helpers_follow_search_path():
-    db = FakePostgresqlDatabase(schema="incidentrelay")
+    db = FakePostgresqlDatabase(schema="beacon")
 
-    assert resolve_table_schema(db, "alertroute") == "incidentrelay"
+    assert resolve_table_schema(db, "alertroute") == "beacon"
     assert table_exists(db, "alertroute") is True
     assert get_tables(db) == ["alert", "alertroute"]
     assert column_exists(db, "alertroute", "escalation_policy_id") is True
 
 
 def test_database_proxy_is_unwrapped_before_postgres_introspection():
-    database = FakePostgresqlDatabase(schema="incidentrelay")
+    database = FakePostgresqlDatabase(schema="beacon")
     proxy = _DatabaseProxy(database)
 
     assert column_exists(proxy, "alertroute", "escalation_policy_id") is True
-    assert database.column_calls == [("alertroute", "incidentrelay")]
+    assert database.column_calls == [("alertroute", "beacon")]
 
 
 def test_non_postgres_introspection_preserves_existing_behavior():

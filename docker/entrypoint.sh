@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Prefer the correctly-spelled env var; fall back to the legacy mis-spelled
-# one so existing deployments keep working until operators migrate.
-if [ -n "${INCEDENTRELAY_CONFIG_FILE:-}" ] && [ -z "${INCIDENTRELAY_CONFIG_FILE:-}" ]; then
-  echo "WARNING: environment variable INCEDENTRELAY_CONFIG_FILE is deprecated (typo); please use INCIDENTRELAY_CONFIG_FILE instead." >&2
-fi
-CONFIG_FILE="${INCIDENTRELAY_CONFIG_FILE:-${INCEDENTRELAY_CONFIG_FILE:-/etc/incidentrelay/incidentrelay.conf}}"
-SERVICE="${INCIDENTRELAY_SERVICE:-web}"
+CONFIG_FILE="${BEACON_CONFIG_FILE:-/etc/beacon/beacon.conf}"
+SERVICE="${BEACON_SERVICE:-web}"
 
 if [ ! -f "$CONFIG_FILE" ]; then
   echo "Config file not found: $CONFIG_FILE"
@@ -17,8 +12,8 @@ fi
 # The stock image config intentionally contains no reusable authentication
 # secrets. Create one persistent runtime config on the shared data volume so
 # web/scheduler/notifier processes all use the same random keys across restarts.
-if [ "$CONFIG_FILE" = "/etc/incidentrelay/incidentrelay.conf" ]; then
-  RUNTIME_CONFIG="/var/lib/incidentrelay/incidentrelay.conf"
+if [ "$CONFIG_FILE" = "/etc/beacon/beacon.conf" ]; then
+  RUNTIME_CONFIG="/var/lib/beacon/beacon.conf"
   python - "$CONFIG_FILE" "$RUNTIME_CONFIG" <<'PY_CONFIG'
 import configparser
 import fcntl
@@ -59,7 +54,7 @@ with open(lock_path, "a+", encoding="utf-8") as lock_file:
     ensure_secret("voice", "callback_secret")
 
     fd, temp_path = tempfile.mkstemp(
-        prefix="incidentrelay-conf-",
+        prefix="beacon-conf-",
         dir=os.path.dirname(target),
         text=True,
     )
@@ -73,13 +68,13 @@ with open(lock_path, "a+", encoding="utf-8") as lock_file:
             os.unlink(temp_path)
 PY_CONFIG
   CONFIG_FILE="$RUNTIME_CONFIG"
-  export INCIDENTRELAY_CONFIG_FILE="$CONFIG_FILE"
+  export BEACON_CONFIG_FILE="$CONFIG_FILE"
 fi
 
 echo "Using config: $CONFIG_FILE"
-echo "Starting IncidentRelay service: $SERVICE"
+echo "Starting Beacon service: $SERVICE"
 
-if [ "${INCIDENTRELAY_RUN_MIGRATIONS:-0}" = "1" ]; then
+if [ "${BEACON_RUN_MIGRATIONS:-0}" = "1" ]; then
   echo "Running database migrations..."
   python app/migrate.py migrate
 fi
@@ -87,10 +82,10 @@ fi
 case "$SERVICE" in
   web)
     exec gunicorn \
-      --bind "0.0.0.0:${INCIDENTRELAY_PORT:-8080}" \
-      --workers "${INCIDENTRELAY_WEB_WORKERS:-1}" \
-      --threads "${INCIDENTRELAY_WEB_THREADS:-4}" \
-      --timeout "${INCIDENTRELAY_WEB_TIMEOUT:-120}" \
+      --bind "0.0.0.0:${BEACON_PORT:-8080}" \
+      --workers "${BEACON_WEB_WORKERS:-1}" \
+      --threads "${BEACON_WEB_THREADS:-4}" \
+      --timeout "${BEACON_WEB_TIMEOUT:-120}" \
       --access-logfile "-" \
       --error-logfile "-" \
       "app:create_app()"
@@ -110,7 +105,7 @@ case "$SERVICE" in
     ;;
 
   *)
-    echo "Unknown INCIDENTRELAY_SERVICE: $SERVICE"
+    echo "Unknown BEACON_SERVICE: $SERVICE"
     echo "Allowed values: web, scheduler, telegram, slack, shell"
     exit 1
     ;;

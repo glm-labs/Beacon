@@ -20,7 +20,7 @@ email
 voice_call
 ```
 
-Browser push is intentionally not listed here. It is profile-level: users enable it in Profile, and IncidentRelay sends push notifications to active browser/PWA devices of the assigned user.
+Browser push is intentionally not listed here. It is profile-level: users enable it in Profile, and Beacon sends push notifications to active browser/PWA devices of the assigned user.
 
 Read more: [Browser Push](../usage/browser-push.md).
 
@@ -62,7 +62,7 @@ Some channels send notifications directly to the assigned user.
 | `email` | `email` |
 | `voice_call` | `phone` |
 
-For channel tests, IncidentRelay should use the current user's matching profile field.
+For channel tests, Beacon should use the current user's matching profile field.
 
 ## Channels that support actions
 

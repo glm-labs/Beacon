@@ -847,7 +847,7 @@ def voice_rule_callback(delivery_id):
     provided_secret = (
         authorization[7:]
         if authorization.startswith("Bearer ")
-        else str(request.headers.get("X-IncidentRelay-Callback-Secret") or "")
+        else str(request.headers.get("X-Beacon-Callback-Secret") or "")
     )
 
     if (

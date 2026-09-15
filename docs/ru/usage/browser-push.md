@@ -5,7 +5,7 @@ description: PWA и браузерные push-уведомления на уро
 
 # Браузерные push-уведомления
 
-Браузерные push-уведомления позволяют пользователям получать алерты IncidentRelay прямо в браузере или установленном PWA.
+Браузерные push-уведомления позволяют пользователям получать алерты Beacon прямо в браузере или установленном PWA.
 
 Браузерные push-уведомления работают **на уровне профиля**, а не как канал уведомлений:
 
@@ -14,7 +14,7 @@ User Profile -> Enable push on this device
 Alert assigned to user -> Browser push to that user's active browser/PWA devices
 ```
 
-Не создавайте канал уведомлений `browser_push` и не привязывайте браузерные push-уведомления к маршрутам. Если пользователь включает браузерные push-уведомления в профиле, IncidentRelay может автоматически отправлять уведомления об алертах на активные устройства (браузер/PWA) этого пользователя, когда алерт назначается на него.
+Не создавайте канал уведомлений `browser_push` и не привязывайте браузерные push-уведомления к маршрутам. Если пользователь включает браузерные push-уведомления в профиле, Beacon может автоматически отправлять уведомления об алертах на активные устройства (браузер/PWA) этого пользователя, когда алерт назначается на него.
 
 ## Требования
 
@@ -30,13 +30,13 @@ Alert assigned to user -> Browser push to that user's active browser/PWA devices
 
 ## Настройка
 
-Добавьте секцию браузерных push-уведомлений в основной конфиг IncidentRelay:
+Добавьте секцию браузерных push-уведомлений в основной конфиг Beacon:
 
 ```ini
 [browser_push]
 enabled = true
 vapid_public_key = CHANGE_ME_PUBLIC_KEY
-vapid_private_key = /etc/incidentrelay/vapid/private_key.pem
+vapid_private_key = /etc/beacon/vapid/private_key.pem
 vapid_subject = mailto:admin@example.com
 action_token_ttl_seconds = 900
 ```
@@ -56,14 +56,14 @@ action_token_ttl_seconds = 900
 Один из надёжных вариантов — сгенерировать приватный ключ в формате PEM и публичный ключ в формате base64url с помощью `py-vapid`:
 
 ```bash
-mkdir -p /etc/incidentrelay/vapid
+mkdir -p /etc/beacon/vapid
 
 python3 - <<'PY'
 from py_vapid import Vapid01
 from py_vapid.utils import b64urlencode
 from cryptography.hazmat.primitives import serialization
 
-private_key_file = "/etc/incidentrelay/vapid/private_key.pem"
+private_key_file = "/etc/beacon/vapid/private_key.pem"
 
 vapid = Vapid01()
 vapid.generate_keys()
@@ -83,9 +83,9 @@ print("vapid_public_key = " + public_key)
 print("vapid_private_key = " + private_key_file)
 PY
 
-chown -R incidentrelay:incidentrelay /etc/incidentrelay/vapid
-chmod 700 /etc/incidentrelay/vapid
-chmod 600 /etc/incidentrelay/vapid/private_key.pem
+chown -R beacon:beacon /etc/beacon/vapid
+chmod 700 /etc/beacon/vapid
+chmod 600 /etc/beacon/vapid/private_key.pem
 ```
 
 Используйте выведенные значения в секции конфига `[browser_push]`.
@@ -156,7 +156,7 @@ action_token_ttl_seconds = 900
 
 ## Звук и вибрация уведомлений
 
-IncidentRelay не настраивает пользовательский аудиофайл для браузерных push-уведомлений. Браузер и операционная система используют поведение уведомлений по умолчанию, когда уведомления разрешены и устройство не находится в беззвучном режиме или режиме «Не беспокоить».
+Beacon не настраивает пользовательский аудиофайл для браузерных push-уведомлений. Браузер и операционная система используют поведение уведомлений по умолчанию, когда уведомления разрешены и устройство не находится в беззвучном режиме или режиме «Не беспокоить».
 
 Полезная нагрузка push-уведомлений не должна устанавливать `silent: true` для уведомлений об алертах. Мобильные браузеры, поддерживающие вибрацию, могут использовать шаблон вибрации уведомления, если он доступен.
 

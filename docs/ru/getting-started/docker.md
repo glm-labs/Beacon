@@ -1,17 +1,17 @@
 ---
 title: Установка через Docker
-description: Запуск IncidentRelay с помощью Docker Compose
+description: Запуск Beacon с помощью Docker Compose
 ---
 
 # Установка через Docker
 
-Docker Compose — самый быстрый способ запустить IncidentRelay для тестирования, демонстраций и простых self-hosted развёртываний.
+Docker Compose — самый быстрый способ запустить Beacon для тестирования, демонстраций и простых self-hosted развёртываний.
 
 Стандартная конфигурация Compose запускает:
 
 ```text
-incidentrelay             # HTTP API, UI, incoming webhooks
-incidentrelay-scheduler   # reminders, escalations, periodic jobs
+beacon             # HTTP API, UI, incoming webhooks
+beacon-scheduler   # reminders, escalations, periodic jobs
 ```
 
 PostgreSQL опционален. SQLite подходит для небольших инсталляций и быстрого старта.
@@ -20,30 +20,30 @@ PostgreSQL опционален. SQLite подходит для небольши
 
 ```text
 Docker Compose
-├── incidentrelay
+├── beacon
 │   └── Gunicorn + Flask application
-├── incidentrelay-scheduler
+├── beacon-scheduler
 │   └── standalone scheduler worker
-└── incidentrelay-data
+└── beacon-data
     └── SQLite database volume
 ```
 
 Путь к SQLite по умолчанию внутри контейнера:
 
 ```text
-/var/lib/incidentrelay/incidentrelay.db
+/var/lib/beacon/beacon.db
 ```
 
 Путь к конфигурации по умолчанию внутри контейнера:
 
 ```text
-/etc/incidentrelay/incidentrelay.conf
+/etc/beacon/beacon.conf
 ```
 
 Файл конфигурации выбирается через:
 
 ```text
-INCIDENTRELAY_CONFIG_FILE
+BEACON_CONFIG_FILE
 ```
 
 ## Быстрый старт с SQLite
@@ -61,8 +61,8 @@ http://SERVER_IP:8080/login
 Показать логи:
 
 ```bash
-docker compose logs -f incidentrelay
-docker compose logs -f incidentrelay-scheduler
+docker compose logs -f beacon
+docker compose logs -f beacon-scheduler
 ```
 
 ## Запуск миграций
@@ -70,13 +70,13 @@ docker compose logs -f incidentrelay-scheduler
 Если миграции не запускаются автоматически точкой входа вашего контейнера, выполните:
 
 ```bash
-docker compose exec incidentrelay python manage.py migrate
+docker compose exec beacon python manage.py migrate
 ```
 
 ## Создание первого пользователя-администратора
 
 ```bash
-docker compose exec incidentrelay \
+docker compose exec beacon \
   python manage.py create-admin \
     --username admin \
     --password 'change-me-123' \
@@ -90,7 +90,7 @@ docker compose exec incidentrelay \
 Файл:
 
 ```text
-docker/incidentrelay.docker.conf
+docker/beacon.docker.conf
 ```
 
 Пример:
@@ -98,7 +98,7 @@ docker/incidentrelay.docker.conf
 ```ini
 [main]
 log_level = INFO
-log_file = /var/log/incidentrelay/incidentrelay.log
+log_file = /var/log/beacon/beacon.log
 
 [server]
 host = 0.0.0.0
@@ -107,7 +107,7 @@ public_base_url = http://localhost:8080
 
 [database]
 type = sqlite
-path = /var/lib/incidentrelay/incidentrelay.db
+path = /var/lib/beacon/beacon.db
 
 [sqlite]
 wal = true
@@ -115,7 +115,7 @@ busy_timeout = 5000
 
 [voice]
 provider = stub
-providers_dir = /usr/local/lib/incidentrelay/voice_providers
+providers_dir = /usr/local/lib/beacon/voice_providers
 callback_secret = change-me
 ```
 
@@ -144,9 +144,9 @@ docker compose \
 type = postgresql
 host = postgres
 port = 5432
-name = incidentrelay
-user = incidentrelay
-password = incidentrelay-change-me
+name = beacon
+user = beacon
+password = beacon-change-me
 ```
 
 ## Внешний доступ
@@ -158,7 +158,7 @@ ports:
   - "8080:8080"
 ```
 
-IncidentRelay доступен по адресу:
+Beacon доступен по адресу:
 
 ```text
 http://SERVER_IP:8080
@@ -166,17 +166,17 @@ http://SERVER_IP:8080
 
 если файрвол разрешает порт `8080`.
 
-Для продакшена лучше публиковать IncidentRelay через Nginx или HAProxy с HTTPS:
+Для продакшена лучше публиковать Beacon через Nginx или HAProxy с HTTPS:
 
 ```text
-Internet -> Nginx/HAProxy :443 -> IncidentRelay :8080
+Internet -> Nginx/HAProxy :443 -> Beacon :8080
 ```
 
 Правильно задайте публичный URL:
 
 ```ini
 [server]
-public_base_url = https://incidentrelay.example.com
+public_base_url = https://beacon.example.com
 ```
 
 `public_base_url` используется для генерируемых ссылок и колбэков.
@@ -186,18 +186,18 @@ public_base_url = https://incidentrelay.example.com
 Пользовательские голосовые провайдеры можно смонтировать в:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers
+/usr/local/lib/beacon/voice_providers
 ```
 
 Пример монтирования в Compose:
 
 ```yaml
 volumes:
-  - ./custom_voice_providers:/usr/local/lib/incidentrelay/voice_providers:ro
+  - ./custom_voice_providers:/usr/local/lib/beacon/voice_providers:ro
 ```
 
 После изменения файлов провайдеров перезапустите контейнеры:
 
 ```bash
-docker compose restart incidentrelay incidentrelay-scheduler
+docker compose restart beacon beacon-scheduler
 ```

@@ -1008,7 +1008,7 @@ SERVICE_OWNER_INPUT_SCHEMA = {
         "user_id": {
             "type": "integer",
             "nullable": True,
-            "description": "IncidentRelay user copied as stakeholder for new incidents.",
+            "description": "Beacon user copied as stakeholder for new incidents.",
         },
         "role": {
             "type": "string",

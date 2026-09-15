@@ -5,7 +5,7 @@ description: Profile-level PWA and browser push notifications for assigned users
 
 # Browser Push
 
-Browser push notifications let users receive IncidentRelay alerts directly in a browser or installed PWA.
+Browser push notifications let users receive Beacon alerts directly in a browser or installed PWA.
 
 Browser push is **profile-level**, not a notification channel:
 
@@ -14,7 +14,7 @@ User Profile -> Enable push on this device
 Alert assigned to user -> Browser push to that user's active browser/PWA devices
 ```
 
-Do not create a `browser_push` notification channel and do not attach browser push to routes. If a user enables browser push in Profile, IncidentRelay can send alert notifications to that user's active browser/PWA devices automatically when an alert is assigned to them.
+Do not create a `browser_push` notification channel and do not attach browser push to routes. If a user enables browser push in Profile, Beacon can send alert notifications to that user's active browser/PWA devices automatically when an alert is assigned to them.
 
 ## Requirements
 
@@ -30,13 +30,13 @@ For local testing, browser push generally requires HTTPS, except for browser-spe
 
 ## Configuration
 
-Add the browser push section to the main IncidentRelay config:
+Add the browser push section to the main Beacon config:
 
 ```ini
 [browser_push]
 enabled = true
 vapid_public_key = CHANGE_ME_PUBLIC_KEY
-vapid_private_key = /etc/incidentrelay/vapid/private_key.pem
+vapid_private_key = /etc/beacon/vapid/private_key.pem
 vapid_subject = mailto:admin@example.com
 action_token_ttl_seconds = 900
 ```
@@ -56,14 +56,14 @@ Restart the web service after changing the config. Restart the scheduler too if 
 One reliable option is to generate a PEM private key and a base64url public key with `py-vapid`:
 
 ```bash
-mkdir -p /etc/incidentrelay/vapid
+mkdir -p /etc/beacon/vapid
 
 python3 - <<'PY'
 from py_vapid import Vapid01
 from py_vapid.utils import b64urlencode
 from cryptography.hazmat.primitives import serialization
 
-private_key_file = "/etc/incidentrelay/vapid/private_key.pem"
+private_key_file = "/etc/beacon/vapid/private_key.pem"
 
 vapid = Vapid01()
 vapid.generate_keys()
@@ -83,9 +83,9 @@ print("vapid_public_key = " + public_key)
 print("vapid_private_key = " + private_key_file)
 PY
 
-chown -R incidentrelay:incidentrelay /etc/incidentrelay/vapid
-chmod 700 /etc/incidentrelay/vapid
-chmod 600 /etc/incidentrelay/vapid/private_key.pem
+chown -R beacon:beacon /etc/beacon/vapid
+chmod 700 /etc/beacon/vapid
+chmod 600 /etc/beacon/vapid/private_key.pem
 ```
 
 Use the printed values in the `[browser_push]` config section.
@@ -156,7 +156,7 @@ action_token_ttl_seconds = 900
 
 ## Notification sound and vibration
 
-IncidentRelay does not configure a custom audio file for browser push notifications. The browser and operating system use the default notification behavior when notifications are allowed and the device is not in silent or Do Not Disturb mode.
+Beacon does not configure a custom audio file for browser push notifications. The browser and operating system use the default notification behavior when notifications are allowed and the device is not in silent or Do Not Disturb mode.
 
 Push payloads should not set `silent: true` for alert notifications. Mobile browsers that support vibration can use the notification vibration pattern when available.
 

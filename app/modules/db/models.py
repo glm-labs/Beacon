@@ -770,7 +770,7 @@ class ServiceEvent(BaseModel):
     event_type = CharField(max_length=128, index=True)
     title = CharField()
     summary = TextField(null=True)
-    source = CharField(max_length=64, default="incidentrelay", index=True)
+    source = CharField(max_length=64, default="beacon", index=True)
     source_ref = CharField(max_length=191, null=True)
     dedup_key = CharField(max_length=191, null=True)
     external_url = TextField(null=True)
@@ -1233,7 +1233,7 @@ class ServiceSli(SoftDeleteModel):
     description = TextField(null=True)
 
     sli_type = CharField(index=True)
-    source = CharField(default="incidentrelay_alert_groups", index=True)
+    source = CharField(default="beacon_alert_groups", index=True)
     configuration = JSONTextField(default=dict)
 
     severity = CharField(null=True, index=True)
@@ -2492,7 +2492,7 @@ class SsoProvider(SoftDeleteModel):
 
 
 class SsoIdentity(BaseModel):
-    """External SSO identity linked to local IncidentRelay user."""
+    """External SSO identity linked to local Beacon user."""
 
     id = AutoField()
     user = ForeignKeyField(User, backref="sso_identities", on_delete="CASCADE")
@@ -2515,20 +2515,20 @@ class SsoIdentity(BaseModel):
 
 
 class SsoGroupMapping(BaseModel):
-    """Map external SSO group value to IncidentRelay group and optional team role."""
+    """Map external SSO group value to Beacon group and optional team role."""
 
     id = AutoField()
     provider = ForeignKeyField(SsoProvider, backref="group_mappings", on_delete="CASCADE")
 
     external_group = CharField()
-    incidentrelay_group = ForeignKeyField(
+    beacon_group = ForeignKeyField(
         Group,
         backref="sso_group_mappings",
         on_delete="CASCADE",
     )
 
     group_role = CharField(default="viewer")
-    incidentrelay_team = ForeignKeyField(
+    beacon_team = ForeignKeyField(
         Team,
         null=True,
         backref="sso_group_mappings",
@@ -2544,7 +2544,7 @@ class SsoGroupMapping(BaseModel):
     class Meta:
         table_name = "sso_group_mapping"
         indexes = (
-            (("provider", "external_group", "incidentrelay_group", "incidentrelay_team"), True),
+            (("provider", "external_group", "beacon_group", "beacon_team"), True),
         )
 
 

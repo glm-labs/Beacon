@@ -10,8 +10,8 @@ description: Быстрая установка с сервисами systemd
 Оно запускает два сервиса:
 
 ```text
-incidentrelay.service        # HTTP API, UI, webhooks
-incidentrelay-scheduler.service  # reminders, escalations, periodic jobs
+beacon.service        # HTTP API, UI, webhooks
+beacon-scheduler.service  # reminders, escalations, periodic jobs
 ```
 
 Планировщик должен работать как отдельный сервис. Не запускайте его внутри каждого веб-воркера.
@@ -19,18 +19,18 @@ incidentrelay-scheduler.service  # reminders, escalations, periodic jobs
 ## Рекомендуемые пути
 
 ```text
-/var/www/incidentrelay                     # application directory
-/var/www/incidentrelay/venv                # Python virtual environment
-/etc/incidentrelay/incidentrelay.conf      # configuration file
-/var/lib/incidentrelay                     # SQLite database or runtime state
-/var/log/incidentrelay                     # logs
-/usr/local/lib/incidentrelay/voice_providers # custom voice providers
+/var/www/beacon                     # application directory
+/var/www/beacon/venv                # Python virtual environment
+/etc/beacon/beacon.conf      # configuration file
+/var/lib/beacon                     # SQLite database or runtime state
+/var/log/beacon                     # logs
+/usr/local/lib/beacon/voice_providers # custom voice providers
 ```
 
-IncidentRelay читает путь к конфигурации из:
+Beacon читает путь к конфигурации из:
 
 ```text
-INCIDENTRELAY_CONFIG_FILE
+BEACON_CONFIG_FILE
 ```
 
 Старую переменную `ONCALL_CONFIG_FILE` использовать не следует.
@@ -56,51 +56,51 @@ sudo apt-get install -y \
 sudo apt-get install -y libpq-dev
 ```
 
-## 2. Клонирование IncidentRelay
+## 2. Клонирование Beacon
 
 ```bash
 sudo mkdir -p /var/www
-sudo git clone https://github.com/roxy-wi/IncidentRelay.git /var/www/incidentrelay
-cd /var/www/incidentrelay
+sudo git clone https://github.com/glm-labs/Beacon.git /var/www/beacon
+cd /var/www/beacon
 ```
 
 ## 3. Создание виртуального окружения
 
 ```bash
-sudo python3 -m venv /var/www/incidentrelay/venv
-sudo /var/www/incidentrelay/venv/bin/pip install --upgrade pip
-sudo /var/www/incidentrelay/venv/bin/pip install -r /var/www/incidentrelay/requirements.txt
-sudo /var/www/incidentrelay/venv/bin/pip install gunicorn
+sudo python3 -m venv /var/www/beacon/venv
+sudo /var/www/beacon/venv/bin/pip install --upgrade pip
+sudo /var/www/beacon/venv/bin/pip install -r /var/www/beacon/requirements.txt
+sudo /var/www/beacon/venv/bin/pip install gunicorn
 ```
 
 Для инсталляций с PostgreSQL:
 
 ```bash
-sudo /var/www/incidentrelay/venv/bin/pip install psycopg2-binary
+sudo /var/www/beacon/venv/bin/pip install psycopg2-binary
 ```
 
 ## 4. Создание каталогов
 
 ```bash
-sudo mkdir -p /etc/incidentrelay
-sudo mkdir -p /var/lib/incidentrelay
-sudo mkdir -p /var/log/incidentrelay
-sudo mkdir -p /usr/local/lib/incidentrelay/voice_providers
+sudo mkdir -p /etc/beacon
+sudo mkdir -p /var/lib/beacon
+sudo mkdir -p /var/log/beacon
+sudo mkdir -p /usr/local/lib/beacon/voice_providers
 ```
 
 Установите владельца:
 
 ```bash
-sudo chown -R www-data:www-data /var/www/incidentrelay
-sudo chown -R www-data:www-data /var/lib/incidentrelay
-sudo chown -R www-data:www-data /var/log/incidentrelay
+sudo chown -R www-data:www-data /var/www/beacon
+sudo chown -R www-data:www-data /var/lib/beacon
+sudo chown -R www-data:www-data /var/log/beacon
 ```
 
 Файлы пользовательских голосовых провайдеров — это исполняемый код Python. Держите этот каталог доступным для записи только администраторам:
 
 ```bash
-sudo chown root:root /usr/local/lib/incidentrelay/voice_providers
-sudo chmod 755 /usr/local/lib/incidentrelay/voice_providers
+sudo chown root:root /usr/local/lib/beacon/voice_providers
+sudo chmod 755 /usr/local/lib/beacon/voice_providers
 ```
 
 ## 5. Создание конфигурации
@@ -108,7 +108,7 @@ sudo chmod 755 /usr/local/lib/incidentrelay/voice_providers
 Создайте:
 
 ```text
-/etc/incidentrelay/incidentrelay.conf
+/etc/beacon/beacon.conf
 ```
 
 Пример для SQLite:
@@ -116,7 +116,7 @@ sudo chmod 755 /usr/local/lib/incidentrelay/voice_providers
 ```ini
 [main]
 log_level = INFO
-log_file = /var/log/incidentrelay/incidentrelay.log
+log_file = /var/log/beacon/beacon.log
 
 [server]
 host = 0.0.0.0
@@ -125,7 +125,7 @@ public_base_url = http://localhost:8080
 
 [database]
 type = sqlite
-path = /var/lib/incidentrelay/incidentrelay.db
+path = /var/lib/beacon/beacon.db
 
 [sqlite]
 wal = true
@@ -133,7 +133,7 @@ busy_timeout = 5000
 
 [voice]
 provider = stub
-providers_dir = /usr/local/lib/incidentrelay/voice_providers
+providers_dir = /usr/local/lib/beacon/voice_providers
 callback_secret = change-me
 ```
 
@@ -141,7 +141,7 @@ callback_secret = change-me
 
 ```ini
 [server]
-public_base_url = https://incidentrelay.example.com
+public_base_url = https://beacon.example.com
 ```
 
 `public_base_url` используется для генерируемых ссылок и URL колбэков.
@@ -151,8 +151,8 @@ public_base_url = https://incidentrelay.example.com
 Скопируйте файлы сервисов:
 
 ```bash
-sudo cp /var/www/incidentrelay/systemd/incidentrelay.service /etc/systemd/system/
-sudo cp /var/www/incidentrelay/systemd/incidentrelay-scheduler.service /etc/systemd/system/
+sudo cp /var/www/beacon/systemd/beacon.service /etc/systemd/system/
+sudo cp /var/www/beacon/systemd/beacon-scheduler.service /etc/systemd/system/
 ```
 
 Перезагрузите systemd:
@@ -164,19 +164,19 @@ sudo systemctl daemon-reload
 ## 7. Запуск миграций
 
 ```bash
-cd /var/www/incidentrelay
+cd /var/www/beacon
 sudo -u www-data \
-  INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf \
-  /var/www/incidentrelay/venv/bin/python app/migrate.py migrate
+  BEACON_CONFIG_FILE=/etc/beacon/beacon.conf \
+  /var/www/beacon/venv/bin/python app/migrate.py migrate
 ```
 
 ## 8. Создание первого пользователя-администратора
 
 ```bash
-cd /var/www/incidentrelay
+cd /var/www/beacon
 sudo -u www-data \
-  INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf \
-  /var/www/incidentrelay/venv/bin/python manage.py create-admin \
+  BEACON_CONFIG_FILE=/etc/beacon/beacon.conf \
+  /var/www/beacon/venv/bin/python manage.py create-admin \
     --username admin \
     --password 'change-me-123' \
     --email admin@example.com
@@ -185,18 +185,18 @@ sudo -u www-data \
 ## 9. Запуск сервисов
 
 ```bash
-sudo systemctl enable incidentrelay
-sudo systemctl enable incidentrelay-scheduler
+sudo systemctl enable beacon
+sudo systemctl enable beacon-scheduler
 
-sudo systemctl start incidentrelay
-sudo systemctl start incidentrelay-scheduler
+sudo systemctl start beacon
+sudo systemctl start beacon-scheduler
 ```
 
 Проверьте статус:
 
 ```bash
-sudo systemctl status incidentrelay
-sudo systemctl status incidentrelay-scheduler
+sudo systemctl status beacon
+sudo systemctl status beacon-scheduler
 ```
 
 Откройте:
@@ -210,19 +210,19 @@ http://SERVER_IP:8080/login
 Логи веб-сервиса:
 
 ```bash
-journalctl -u incidentrelay -f
+journalctl -u beacon -f
 ```
 
 Логи планировщика:
 
 ```bash
-journalctl -u incidentrelay-scheduler -f
+journalctl -u beacon-scheduler -f
 ```
 
 Файл лога приложения:
 
 ```bash
-tail -f /var/log/incidentrelay/incidentrelay.log
+tail -f /var/log/beacon/beacon.log
 ```
 
 ## Файлы сервисов systemd
@@ -231,7 +231,7 @@ tail -f /var/log/incidentrelay/incidentrelay.log
 
 ```ini
 [Unit]
-Description=IncidentRelay Web service
+Description=Beacon Web service
 After=network-online.target
 Wants=network-online.target
 
@@ -241,13 +241,13 @@ Type=simple
 User=www-data
 Group=www-data
 
-WorkingDirectory=/var/www/incidentrelay
+WorkingDirectory=/var/www/beacon
 
-Environment=INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
-Environment=INCIDENTRELAY_SERVICE=web
+Environment=BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
+Environment=BEACON_SERVICE=web
 Environment=PYTHONUNBUFFERED=1
 
-ExecStart=/var/www/incidentrelay/venv/bin/gunicorn \
+ExecStart=/var/www/beacon/venv/bin/gunicorn \
   --bind 0.0.0.0:8080 \
   --workers 1 \
   --threads 4 \
@@ -270,7 +270,7 @@ WantedBy=multi-user.target
 
 ```ini
 [Unit]
-Description=IncidentRelay Scheduler service
+Description=Beacon Scheduler service
 After=network-online.target
 Wants=network-online.target
 
@@ -280,13 +280,13 @@ Type=simple
 User=www-data
 Group=www-data
 
-WorkingDirectory=/var/www/incidentrelay
+WorkingDirectory=/var/www/beacon
 
-Environment=INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
-Environment=INCIDENTRELAY_SERVICE=scheduler
+Environment=BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
+Environment=BEACON_SERVICE=scheduler
 Environment=PYTHONUNBUFFERED=1
 
-ExecStart=/var/www/incidentrelay/venv/bin/python -m app.scheduler_worker
+ExecStart=/var/www/beacon/venv/bin/python -m app.scheduler_worker
 
 Restart=always
 RestartSec=5
@@ -319,7 +319,7 @@ scheduler service:
 ```python
 import os
 
-if os.getenv("INCIDENTRELAY_SERVICE") == "scheduler":
+if os.getenv("BEACON_SERVICE") == "scheduler":
     start_scheduler()
 ```
 
@@ -327,12 +327,12 @@ if os.getenv("INCIDENTRELAY_SERVICE") == "scheduler":
 
 ## Продакшен с обратным прокси
 
-Для продакшена обычно лучше привязать Gunicorn к localhost и публиковать IncidentRelay через Nginx или HAProxy с HTTPS.
+Для продакшена обычно лучше привязать Gunicorn к localhost и публиковать Beacon через Nginx или HAProxy с HTTPS.
 
 Измените `ExecStart` веб-сервиса:
 
 ```ini
-ExecStart=/var/www/incidentrelay/venv/bin/gunicorn \
+ExecStart=/var/www/beacon/venv/bin/gunicorn \
   --bind 127.0.0.1:8080 \
   --workers 1 \
   --threads 4 \
@@ -346,7 +346,7 @@ ExecStart=/var/www/incidentrelay/venv/bin/gunicorn \
 
 ```ini
 [server]
-public_base_url = https://incidentrelay.example.com
+public_base_url = https://beacon.example.com
 ```
 
 ## Вариант с PostgreSQL
@@ -360,15 +360,15 @@ public_base_url = https://incidentrelay.example.com
 type = postgresql
 host = 127.0.0.1
 port = 5432
-name = incidentrelay
-user = incidentrelay
+name = beacon
+user = beacon
 password = change-me
 ```
 
 Для PostgreSQL при необходимости увеличьте число веб-воркеров:
 
 ```ini
-ExecStart=/var/www/incidentrelay/venv/bin/gunicorn \
+ExecStart=/var/www/beacon/venv/bin/gunicorn \
   --bind 127.0.0.1:8080 \
   --workers 4 \
   --threads 4 \
@@ -380,22 +380,22 @@ ExecStart=/var/www/incidentrelay/venv/bin/gunicorn \
 
 Для SQLite оставляйте `--workers 1`.
 
-## Обновление IncidentRelay
+## Обновление Beacon
 
 ```bash
-cd /var/www/incidentrelay
-sudo systemctl stop incidentrelay-scheduler
-sudo systemctl stop incidentrelay
+cd /var/www/beacon
+sudo systemctl stop beacon-scheduler
+sudo systemctl stop beacon
 
 sudo git pull
-sudo /var/www/incidentrelay/venv/bin/pip install -r requirements.txt
+sudo /var/www/beacon/venv/bin/pip install -r requirements.txt
 
 sudo -u www-data \
-  INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf \
-  /var/www/incidentrelay/venv/bin/python app/migrate.py migrate
+  BEACON_CONFIG_FILE=/etc/beacon/beacon.conf \
+  /var/www/beacon/venv/bin/python app/migrate.py migrate
 
-sudo systemctl start incidentrelay
-sudo systemctl start incidentrelay-scheduler
+sudo systemctl start beacon
+sudo systemctl start beacon-scheduler
 ```
 
 ## Устранение неполадок
@@ -405,14 +405,14 @@ sudo systemctl start incidentrelay-scheduler
 Проверьте:
 
 ```bash
-systemctl show incidentrelay --property=Environment
-systemctl show incidentrelay-scheduler --property=Environment
+systemctl show beacon --property=Environment
+systemctl show beacon-scheduler --property=Environment
 ```
 
 Проверьте, что файл существует:
 
 ```bash
-ls -l /etc/incidentrelay/incidentrelay.conf
+ls -l /etc/beacon/beacon.conf
 ```
 
 ### Отказ в доступе к базе данных SQLite
@@ -420,8 +420,8 @@ ls -l /etc/incidentrelay/incidentrelay.conf
 Проверьте права доступа:
 
 ```bash
-sudo -u www-data test -w /var/lib/incidentrelay
-sudo -u www-data test -r /etc/incidentrelay/incidentrelay.conf
+sudo -u www-data test -w /var/lib/beacon
+sudo -u www-data test -r /etc/beacon/beacon.conf
 ```
 
 ### Напоминания дублируются
@@ -429,7 +429,7 @@ sudo -u www-data test -r /etc/incidentrelay/incidentrelay.conf
 Проверьте, что планировщик не запущен внутри веб-воркеров и что активен только один сервис планировщика:
 
 ```bash
-systemctl status incidentrelay-scheduler
+systemctl status beacon-scheduler
 ps aux | grep scheduler
 ```
 
@@ -438,6 +438,6 @@ ps aux | grep scheduler
 Проверьте логи:
 
 ```bash
-journalctl -u incidentrelay -n 100 --no-pager
-journalctl -u incidentrelay-scheduler -n 100 --no-pager
+journalctl -u beacon -n 100 --no-pager
+journalctl -u beacon-scheduler -n 100 --no-pager
 ```

@@ -1,6 +1,6 @@
 ---
 title: Провайдерский API
-description: Как написать пользовательский голосовой провайдер IncidentRelay
+description: Как написать пользовательский голосовой провайдер Beacon
 ---
 
 # Провайдерский API
@@ -173,7 +173,7 @@ def place_call(self, request: VoiceCallRequest) -> VoiceCallResult:
 |---|---|
 | `request.phone` | Целевой номер телефона |
 | `request.text` | Текст, который должен быть произнесён во время вызова |
-| `request.alert_id` | Идентификатор алерта IncidentRelay |
+| `request.alert_id` | Идентификатор алерта Beacon |
 | `request.event_type` | Тип события уведомления: `notification`, `reminder`, `escalation`, `test` |
 | `request.callback_url` | URL колбэка для событий статуса и DTMF |
 | `request.callback_secret` | Секрет колбэка, используемый в URL колбэка |
@@ -183,7 +183,7 @@ def place_call(self, request: VoiceCallRequest) -> VoiceCallResult:
 | `request.assignee` | Читаемое имя ответственного |
 | `request.team` | Slug команды |
 | `request.action_hints` | Рекомендуемые действия с клавиатуры |
-| `request.metadata` | Дополнительные метаданные IncidentRelay |
+| `request.metadata` | Дополнительные метаданные Beacon |
 
 Пример `action_hints`:
 
@@ -220,7 +220,7 @@ return VoiceCallResult(
 
 Внешний идентификатор вызова, возвращаемый провайдером.
 
-IncidentRelay сохраняет его как `external_message_id`.
+Beacon сохраняет его как `external_message_id`.
 
 Этот идентификатор позже используется для сопоставления колбэков провайдера с исходным уведомлением об алерте.
 
@@ -273,7 +273,7 @@ return [
 | `event_type` | Нормализованный тип события: `status`, `dtmf`, `error` |
 | `status` | Статус вызова |
 | `digit` | Цифра DTMF, нажатая получателем вызова |
-| `action` | Необязательное нормализованное действие IncidentRelay |
+| `action` | Необязательное нормализованное действие Beacon |
 | `alert_id` | Необязательный идентификатор алерта |
 | `message` | Необязательное читаемое сообщение колбэка |
 | `raw` | Исходная полезная нагрузка колбэка провайдера |

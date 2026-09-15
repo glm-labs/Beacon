@@ -1,11 +1,11 @@
 ---
 title: SSO
-description: Настройка единого входа OIDC и SAML в IncidentRelay.
+description: Настройка единого входа OIDC и SAML в Beacon.
 ---
 
 # SSO
 
-IncidentRelay поддерживает аутентификацию через внешние поставщики удостоверений (Identity Provider) с использованием:
+Beacon поддерживает аутентификацию через внешние поставщики удостоверений (Identity Provider) с использованием:
 
 - OIDC
 - SAML 2.0
@@ -16,19 +16,19 @@ IncidentRelay поддерживает аутентификацию через �
 Admin → SSO
 ```
 
-Страница доступна только администраторам IncidentRelay.
+Страница доступна только администраторам Beacon.
 
 ---
 
 ## Как работает SSO
 
 1. Администратор создаёт поставщика SSO.
-2. Пользователь открывает страницу входа IncidentRelay.
+2. Пользователь открывает страницу входа Beacon.
 3. Если поставщик включён, на `/login` появляется кнопка входа через SSO.
 4. Пользователь перенаправляется к внешнему поставщику удостоверений.
-5. После успешной аутентификации поставщик удостоверений перенаправляет пользователя обратно в IncidentRelay.
-6. IncidentRelay читает утверждения (claims) пользователя и находит, связывает или создаёт локального пользователя.
-7. Если включена синхронизация групп, IncidentRelay применяет сопоставления групп.
+5. После успешной аутентификации поставщик удостоверений перенаправляет пользователя обратно в Beacon.
+6. Beacon читает утверждения (claims) пользователя и находит, связывает или создаёт локального пользователя.
+7. Если включена синхронизация групп, Beacon применяет сопоставления групп.
 
 ---
 
@@ -48,16 +48,16 @@ Scopes
 Redirect URI
 ```
 
-URL колбэка IncidentRelay:
+URL колбэка Beacon:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/<provider_slug>/callback
+https://beacon.example.com/api/auth/sso/<provider_slug>/callback
 ```
 
 Пример для slug поставщика `keycloak`:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/keycloak/callback
+https://beacon.example.com/api/auth/sso/keycloak/callback
 ```
 
 ---
@@ -79,23 +79,23 @@ SLS URL
 NameID format
 ```
 
-ACS URL IncidentRelay:
+ACS URL Beacon:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/<provider_slug>/callback
+https://beacon.example.com/api/auth/sso/<provider_slug>/callback
 ```
 
-URL метаданных SAML IncidentRelay:
+URL метаданных SAML Beacon:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/<provider_slug>/metadata
+https://beacon.example.com/api/auth/sso/<provider_slug>/metadata
 ```
 
 Пример для slug поставщика `adfs`:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/adfs/callback
-https://incidentrelay.example.com/api/auth/sso/adfs/metadata
+https://beacon.example.com/api/auth/sso/adfs/callback
+https://beacon.example.com/api/auth/sso/adfs/metadata
 ```
 
 ---
@@ -115,7 +115,7 @@ https://incidentrelay.example.com/api/auth/sso/adfs/metadata
 
 ## Утверждения (Claims)
 
-IncidentRelay использует утверждения (claims), чтобы связать внешнюю личность пользователя с локальным пользователем IncidentRelay.
+Beacon использует утверждения (claims), чтобы связать внешнюю личность пользователя с локальным пользователем Beacon.
 
 Рекомендуемые утверждения:
 
@@ -128,7 +128,7 @@ groups
 mobile
 ```
 
-### Поля утверждений в IncidentRelay
+### Поля утверждений в Beacon
 
 | Поле | Назначение                                                            |
 |---|--------------------------------------------------------------------|
@@ -215,18 +215,18 @@ groups
 
 ### Автоматическое создание пользователей
 
-Если включено, IncidentRelay автоматически создаёт локального пользователя при первом успешном входе через SSO.
+Если включено, Beacon автоматически создаёт локального пользователя при первом успешном входе через SSO.
 
 ```text
 Enabled: a new local user is created automatically.
-Disabled: only users that already exist in IncidentRelay can log in.
+Disabled: only users that already exist in Beacon can log in.
 ```
 
 ---
 
 ### Автоматическая привязка по email
 
-Если включено, IncidentRelay может связать личность SSO с существующим локальным пользователем по email.
+Если включено, Beacon может связать личность SSO с существующим локальным пользователем по email.
 
 ```text
 Enabled: an existing user with the same email is linked to the SSO identity.
@@ -239,7 +239,7 @@ Disabled: existing users are not linked automatically.
 
 ### Требовать подтверждённый email
 
-Если включено, IncidentRelay требует подтверждённый email от поставщика OIDC.
+Если включено, Beacon требует подтверждённый email от поставщика OIDC.
 
 Поставщики OIDC обычно предоставляют это как:
 
@@ -268,17 +268,17 @@ corp.example.com
 
 ## Сопоставления групп
 
-Сопоставления групп связывают группы внешнего поставщика удостоверений с группами IncidentRelay.
+Сопоставления групп связывают группы внешнего поставщика удостоверений с группами Beacon.
 
 Пример:
 
 ```text
-External group: IncidentRelay-Infra
-IncidentRelay group: Infrastructure
+External group: Beacon-Infra
+Beacon group: Infrastructure
 Role: editor
 ```
 
-Когда пользователь входит через SSO и поставщик удостоверений отправляет группу `IncidentRelay-Infra`, IncidentRelay добавляет пользователя в группу `Infrastructure` с ролью `editor`.
+Когда пользователь входит через SSO и поставщик удостоверений отправляет группу `Beacon-Infra`, Beacon добавляет пользователя в группу `Infrastructure` с ролью `editor`.
 
 ---
 
@@ -300,7 +300,7 @@ Role: editor
 
 ### Синхронизация членства в группах
 
-Если включено, IncidentRelay применяет сопоставления групп при каждом входе через SSO.
+Если включено, Beacon применяет сопоставления групп при каждом входе через SSO.
 
 ```text
 Enabled: user group memberships are updated during login.
@@ -311,11 +311,11 @@ Disabled: SSO is used only for authentication, and groups are not synchronized.
 
 ### Удаление отсутствующих членств в группах
 
-Если включено, IncidentRelay отключает членства в группах, которые ранее были добавлены через сопоставление SSO, но больше не присутствуют в утверждениях от поставщика удостоверений.
+Если включено, Beacon отключает членства в группах, которые ранее были добавлены через сопоставление SSO, но больше не присутствуют в утверждениях от поставщика удостоверений.
 
 ```text
 Enabled: strict synchronization.
-Disabled: IncidentRelay only adds new memberships and does not remove missing ones.
+Disabled: Beacon only adds new memberships and does not remove missing ones.
 ```
 
 Для первого развёртывания безопаснее оставить это отключённым.
@@ -329,16 +329,16 @@ Disabled: IncidentRelay only adds new memberships and does not remove missing on
 Используйте этот redirect URI:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/<provider_slug>/callback
+https://beacon.example.com/api/auth/sso/<provider_slug>/callback
 ```
 
 Пример:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/keycloak/callback
+https://beacon.example.com/api/auth/sso/keycloak/callback
 ```
 
-### 2. Создайте поставщика OIDC в IncidentRelay
+### 2. Создайте поставщика OIDC в Beacon
 
 Минимальные настройки:
 
@@ -370,7 +370,7 @@ Groups claim: groups
 Откройте:
 
 ```text
-https://incidentrelay.example.com/login
+https://beacon.example.com/login
 ```
 
 Кнопка входа через SSO должна быть видна на странице входа.
@@ -379,7 +379,7 @@ https://incidentrelay.example.com/login
 
 ## Настройка SAML
 
-### 1. Создайте поставщика SAML в IncidentRelay
+### 1. Создайте поставщика SAML в Beacon
 
 Минимальные настройки:
 
@@ -394,19 +394,19 @@ URL SP:
 
 ```text
 SP Entity ID:
-https://incidentrelay.example.com/api/auth/sso/adfs/metadata
+https://beacon.example.com/api/auth/sso/adfs/metadata
 
 ACS URL:
-https://incidentrelay.example.com/api/auth/sso/adfs/callback
+https://beacon.example.com/api/auth/sso/adfs/callback
 
 SLS URL:
-https://incidentrelay.example.com/api/auth/sso/adfs/callback
+https://beacon.example.com/api/auth/sso/adfs/callback
 ```
 
 URL метаданных для передачи поставщику удостоверений:
 
 ```text
-https://incidentrelay.example.com/api/auth/sso/adfs/metadata
+https://beacon.example.com/api/auth/sso/adfs/metadata
 ```
 
 ### 2. Настройте поставщика удостоверений
@@ -420,7 +420,7 @@ NameID
 Claims
 ```
 
-### 3. Заполните настройки IdP в IncidentRelay
+### 3. Заполните настройки IdP в Beacon
 
 ```text
 IdP Entity ID
@@ -447,7 +447,7 @@ Groups claim: groups
 
 ## Безопасность SAML
 
-IncidentRelay поддерживает настройки безопасности SAML для каждого поставщика.
+Beacon поддерживает настройки безопасности SAML для каждого поставщика.
 
 Для первой настройки рекомендуются следующие параметры:
 
@@ -466,7 +466,7 @@ Digest algorithm: SHA256
 
 1. Сгенерируйте сертификат SP и закрытый ключ.
 2. Загрузите открытый сертификат в поставщик удостоверений.
-3. Заполните эти поля в IncidentRelay:
+3. Заполните эти поля в Beacon:
    - `SP x509 certificate`
    - `SP private key`
 4. Включите:
@@ -484,7 +484,7 @@ Digest algorithm: SHA256
 No
 ```
 
-IncidentRelay пока не обновляет метаданные или сертификаты ADFS автоматически. Сертификат IdP x509 необходимо настраивать вручную.
+Beacon пока не обновляет метаданные или сертификаты ADFS автоматически. Сертификат IdP x509 необходимо настраивать вручную.
 
 Если сертификат ADFS меняется, обновите поле `IdP x509 certificate` в настройках поставщика SAML.
 
@@ -510,7 +510,7 @@ SHA-1 не рекомендуется.
 Not used. AuthnRequests are not signed.
 ```
 
-Если ADFS требует подписанных AuthnRequest, сгенерируйте сертификат/закрытый ключ SP и включите подписание запросов в IncidentRelay.
+Если ADFS требует подписанных AuthnRequest, сгенерируйте сертификат/закрытый ключ SP и включите подписание запросов в Beacon.
 
 ---
 
@@ -518,7 +518,7 @@ Not used. AuthnRequests are not signed.
 
 2FA должна принудительно применяться на стороне ADFS / поставщика удостоверений.
 
-IncidentRelay не выполняет собственную проверку 2FA для входов через SSO.
+Beacon не выполняет собственную проверку 2FA для входов через SSO.
 
 ---
 
@@ -540,7 +540,7 @@ groups
 
 Client Secret и закрытый ключ SAML хранятся в зашифрованном виде.
 
-IncidentRelay использует эту настройку для шифрования:
+Beacon использует эту настройку для шифрования:
 
 ```text
 SSO_SECRET_ENCRYPTION_KEY
@@ -563,16 +563,16 @@ secret_encryption_key = change-me-to-a-long-random-secret
 
 ## Публичный базовый URL
 
-Публичный URL IncidentRelay должен быть настроен, чтобы URL колбэков и метаданных генерировались корректно.
+Публичный URL Beacon должен быть настроен, чтобы URL колбэков и метаданных генерировались корректно.
 
 Пример:
 
 ```ini
 [app]
-public_base_url = https://incidentrelay.example.com
+public_base_url = https://beacon.example.com
 ```
 
-Если IncidentRelay находится за обратным прокси, убедитесь, что внешний URL использует правильный протокол, хост и порт.
+Если Beacon находится за обратным прокси, убедитесь, что внешний URL использует правильный протокол, хост и порт.
 
 ---
 
@@ -583,7 +583,7 @@ public_base_url = https://incidentrelay.example.com
 Проверьте публичный эндпоинт:
 
 ```bash
-curl -s https://incidentrelay.example.com/api/auth/sso/providers
+curl -s https://beacon.example.com/api/auth/sso/providers
 ```
 
 Он должен вернуть включённого поставщика:
@@ -629,7 +629,7 @@ provider deleted = false
 Auto create users
 ```
 
-Если это отключено, пользователь должен уже существовать в IncidentRelay.
+Если это отключено, пользователь должен уже существовать в Beacon.
 
 ---
 
@@ -702,17 +702,17 @@ Remove missing group memberships: enabled
 Публичный список поставщиков:
 
 ```bash
-curl -s https://incidentrelay.example.com/api/auth/sso/providers | jq
+curl -s https://beacon.example.com/api/auth/sso/providers | jq
 ```
 
 Метаданные SAML:
 
 ```bash
-curl -s https://incidentrelay.example.com/api/auth/sso/adfs/metadata
+curl -s https://beacon.example.com/api/auth/sso/adfs/metadata
 ```
 
 Перенаправление входа OIDC/SAML:
 
 ```bash
-curl -I https://incidentrelay.example.com/api/auth/sso/adfs/login
+curl -I https://beacon.example.com/api/auth/sso/adfs/login
 ```

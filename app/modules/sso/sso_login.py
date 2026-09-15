@@ -24,7 +24,7 @@ class SsoLoginError(Exception):
 
 
 def build_sso_login_response(user, redirect_to="/"):
-    """Issue IncidentRelay JWT cookie and redirect user to the UI."""
+    """Issue Beacon JWT cookie and redirect user to the UI."""
     token, _expires_at = create_access_token(user)
     redirect_to = normalize_auth_redirect_target(redirect_to)
 
@@ -389,7 +389,7 @@ def _fill_missing_user_fields(user, provider, claims):
 
 def _effective_group_role(mapping_role: str) -> str:
     """
-    Convert SSO mapping role to a valid IncidentRelay group role.
+    Convert SSO mapping role to a valid Beacon group role.
     """
     if mapping_role == "global_admin":
         return "user_admin"
@@ -398,8 +398,8 @@ def _effective_group_role(mapping_role: str) -> str:
 
 
 def _sync_team_membership_from_mapping(user, mapping):
-    """Sync optional IncidentRelay team membership from a matched SSO mapping."""
-    team_id = getattr(mapping, "incidentrelay_team_id", None)
+    """Sync optional Beacon team membership from a matched SSO mapping."""
+    team_id = getattr(mapping, "beacon_team_id", None)
 
     if not team_id:
         return
@@ -416,7 +416,7 @@ def _sync_team_membership_from_mapping(user, mapping):
 
 
 def _sync_group_memberships(user, provider, claims):
-    """Sync IncidentRelay group memberships from SSO group mappings."""
+    """Sync Beacon group memberships from SSO group mappings."""
     if not provider.sync_group_memberships:
         user, _active_group_ids = ensure_user_active_group(user)
         return
@@ -439,15 +439,15 @@ def _sync_group_memberships(user, provider, claims):
     # pointing at scopes deleted before cascade hardening was introduced.
     mappings = [
         mapping for mapping in mappings
-        if mapping.incidentrelay_group
-        and mapping.incidentrelay_group.active
-        and not mapping.incidentrelay_group.deleted
+        if mapping.beacon_group
+        and mapping.beacon_group.active
+        and not mapping.beacon_group.deleted
         and (
-            not mapping.incidentrelay_team_id
+            not mapping.beacon_team_id
             or (
-                mapping.incidentrelay_team
-                and mapping.incidentrelay_team.active
-                and not mapping.incidentrelay_team.deleted
+                mapping.beacon_team
+                and mapping.beacon_team.active
+                and not mapping.beacon_team.deleted
             )
         )
     ]
@@ -463,7 +463,7 @@ def _sync_group_memberships(user, provider, claims):
             raise SsoLoginError(
                 "sso_group_mapping_not_matched",
                 (
-                    "SSO login did not assign any IncidentRelay group. "
+                    "SSO login did not assign any Beacon group. "
                     "Check the configured groups claim and SSO group mappings."
                 ),
                 403,
@@ -475,7 +475,7 @@ def _sync_group_memberships(user, provider, claims):
     matched_group_ids = []
 
     for mapping in mappings:
-        group_id = mapping.incidentrelay_group_id
+        group_id = mapping.beacon_group_id
         provider_group_ids.append(group_id)
 
         if normalize_sso_group_name(mapping.external_group) not in external_groups:
@@ -511,7 +511,7 @@ def _sync_group_memberships(user, provider, claims):
         raise SsoLoginError(
             "sso_group_mapping_not_matched",
             (
-                "SSO login did not assign any IncidentRelay group. "
+                "SSO login did not assign any Beacon group. "
                 "Check the configured groups claim and SSO group mappings."
             ),
             403,

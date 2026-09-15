@@ -32,7 +32,7 @@ Channels only describe where notifications are delivered.
 
 ## Service assignment
 
-After the route is selected, IncidentRelay can attach the alert to a service.
+After the route is selected, Beacon can attach the alert to a service.
 
 Use a route default service when all alerts through the route belong to one logical system.
 

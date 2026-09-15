@@ -114,7 +114,7 @@
   "profile.caldav.subtitle": "Подключите календарь дежурств к Apple Calendar, Thunderbird, DAVx5 или другому CalDAV-клиенту.",
   "profile.caldav.url": "URL CalDAV",
   "profile.caldav.url_help": "Используйте этот URL как адрес сервера в календарном клиенте.",
-  "profile.caldav.username_help": "Используйте имя пользователя IncidentRelay или email.",
+  "profile.caldav.username_help": "Используйте имя пользователя Beacon или email.",
   "profile.caldav.password_prefix": "Используйте персональный API-токен с правом",
   "profile.caldav.password_suffix": "Не используйте пароль от учётной записи.",
   "profile.caldav.copy_url": "Копировать URL",

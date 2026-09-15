@@ -1,11 +1,11 @@
 ---
 title: Синхронизация календарей CalDAV
-description: Синхронизация расписаний дежурств команд IncidentRelay через CalDAV в режиме только для чтения.
+description: Синхронизация расписаний дежурств команд Beacon через CalDAV в режиме только для чтения.
 ---
 
 # Синхронизация календарей CalDAV
 
-IncidentRelay может предоставлять расписания дежурств (on-call) команд в виде календарей CalDAV, доступных только для чтения. Это удобно для календарных клиентов с прямой поддержкой CalDAV, таких как Apple Calendar, Thunderbird и DAVx5.
+Beacon может предоставлять расписания дежурств (on-call) команд в виде календарей CalDAV, доступных только для чтения. Это удобно для календарных клиентов с прямой поддержкой CalDAV, таких как Apple Calendar, Thunderbird и DAVx5.
 
 Каждая доступная команда предоставляется как отдельный календарь. Пользователи видят только календари тех команд, к которым им разрешён доступ на чтение.
 
@@ -28,12 +28,12 @@ IncidentRelay может предоставлять расписания деж�
 
 ## Требования
 
-- IncidentRelay должен быть доступен по HTTPS из календарного клиента.
+- Beacon должен быть доступен по HTTPS из календарного клиента.
 - У пользователя должен быть доступ хотя бы к одному календарю команды.
 - Пользователь должен создать персональный API-токен с областью `calendar:read`.
 - Пользователь должен использовать персональный API-токен в качестве пароля CalDAV.
 
-Не используйте обычный пароль пользователя IncidentRelay для CalDAV.
+Не используйте обычный пароль пользователя Beacon для CalDAV.
 
 ## Создание API-токена для CalDAV
 
@@ -51,10 +51,10 @@ IncidentRelay может предоставлять расписания деж�
 Используйте базовый эндпоинт CalDAV:
 
 ```text
-https://incidentrelay.example.com/caldav/
+https://beacon.example.com/caldav/
 ```
 
-Замените `incidentrelay.example.com` на имя хоста вашего IncidentRelay.
+Замените `beacon.example.com` на имя хоста вашего Beacon.
 
 Не используйте прямой путь к календарю команды при настройке учётной записи в Apple Calendar. Apple Calendar должен обнаруживать календари через корневой эндпоинт CalDAV.
 
@@ -66,9 +66,9 @@ https://incidentrelay.example.com/caldav/
 
 ```text
 Account Type: Advanced
-User Name: your IncidentRelay username or email
+User Name: your Beacon username or email
 Password: personal API token with calendar:read
-Server Address: incidentrelay.example.com
+Server Address: beacon.example.com
 Server Path: /caldav/
 Port: 443
 Use SSL: enabled
@@ -79,13 +79,13 @@ Use SSL: enabled
 Правильно:
 
 ```text
-incidentrelay.example.com
+beacon.example.com
 ```
 
 Неправильно:
 
 ```text
-https://incidentrelay.example.com
+https://beacon.example.com
 ```
 
 ## Apple Calendar на iOS или iPadOS
@@ -95,10 +95,10 @@ https://incidentrelay.example.com
 Используйте:
 
 ```text
-Server: incidentrelay.example.com
-User Name: your IncidentRelay username or email
+Server: beacon.example.com
+User Name: your Beacon username or email
 Password: personal API token with calendar:read
-Description: IncidentRelay
+Description: Beacon
 ```
 
 Если клиент запрашивает расширенные настройки, используйте:
@@ -117,10 +117,10 @@ Use SSL: enabled
 4. Введите URL-адрес CalDAV:
 
 ```text
-https://incidentrelay.example.com/caldav/
+https://beacon.example.com/caldav/
 ```
 
-5. Используйте имя пользователя или email IncidentRelay.
+5. Используйте имя пользователя или email Beacon.
 6. Используйте персональный API-токен в качестве пароля.
 7. Выберите календари команд, на которые вы хотите подписаться.
 
@@ -131,8 +131,8 @@ https://incidentrelay.example.com/caldav/
 3. Используйте:
 
 ```text
-Base URL: https://incidentrelay.example.com/caldav/
-User name: your IncidentRelay username or email
+Base URL: https://beacon.example.com/caldav/
+User name: your Beacon username or email
 Password: personal API token with calendar:read
 ```
 
@@ -140,7 +140,7 @@ Password: personal API token with calendar:read
 
 ## Поведение в режиме только для чтения
 
-Календари CalDAV в IncidentRelay доступны только для чтения.
+Календари CalDAV в Beacon доступны только для чтения.
 
 Разрешённые операции:
 
@@ -161,7 +161,7 @@ DELETE
 MKCALENDAR
 ```
 
-Некоторые клиенты, особенно Apple Calendar, могут отправлять `PROPPATCH` для сохранения локальных свойств календаря, таких как цвет, отображаемое имя или порядок. IncidentRelay принимает эти запросы как no-op, чтобы обновление календаря в режиме только для чтения продолжало работать.
+Некоторые клиенты, особенно Apple Calendar, могут отправлять `PROPPATCH` для сохранения локальных свойств календаря, таких как цвет, отображаемое имя или порядок. Beacon принимает эти запросы как no-op, чтобы обновление календаря в режиме только для чтения продолжало работать.
 
 ## Устранение неполадок
 
@@ -169,7 +169,7 @@ MKCALENDAR
 
 Проверьте, что:
 
-- имя пользователя — это имя пользователя или email IncidentRelay;
+- имя пользователя — это имя пользователя или email Beacon;
 - пароль — это персональный API-токен, а не пароль пользователя;
 - у токена есть область `calendar:read`;
 - токен не отозван и не истёк;
@@ -182,7 +182,7 @@ curl -i \
   -u 'user@example.com:PERSONAL_API_TOKEN' \
   -X PROPFIND \
   -H 'Depth: 0' \
-  https://incidentrelay.example.com/caldav/
+  https://beacon.example.com/caldav/
 ```
 
 Успешный ответ должен быть `207 Multi-Status`.
@@ -225,7 +225,7 @@ curl -i \
   -u 'user@example.com:PERSONAL_API_TOKEN' \
   -X PROPFIND \
   -H 'Depth: 1' \
-  https://incidentrelay.example.com/caldav/calendars/
+  https://beacon.example.com/caldav/calendars/
 ```
 
 Ответ должен содержать hrefs календарей, например:
@@ -241,4 +241,4 @@ curl -i \
 - Отзовите токен в разделе Profile, чтобы прекратить доступ по CalDAV.
 - Не логируйте заголовок `Authorization`.
 - Не публикуйте CalDAV по обычному HTTP в production.
-- CalDAV не позволяет пользователям редактировать расписания IncidentRelay из внешних календарных клиентов.
+- CalDAV не позволяет пользователям редактировать расписания Beacon из внешних календарных клиентов.

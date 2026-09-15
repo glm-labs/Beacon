@@ -5,8 +5,8 @@
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="IncidentRelay">
-    <meta name="application-name" content="IncidentRelay">
+    <meta name="apple-mobile-web-app-title" content="Beacon">
+    <meta name="application-name" content="Beacon">
 
     <link rel="apple-touch-icon" href="/static/images/pwa/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon/favicon-32x32.png') }}">
@@ -14,10 +14,10 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon/favicon.ico') }}">
     <meta id="app-theme-color" name="theme-color" content="#0b5cff">
     <meta charset="utf-8">
-    <title>IncidentRelay</title>
+    <title>Beacon</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script>
-    window.__INCIDENTRELAY_UI__ = {
+    window.__BEACON_UI__ = {
       theme: {{ current_theme | tojson }}
     };
     </script>
@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="/static/css/theme_dark.css">
 
  <script>
- window.__INCIDENTRELAY_I18N__ = {
+ window.__BEACON_I18N__ = {
   locale: {{ current_locale | tojson }},
   supportedLocales: {{ supported_locales | tojson }},
   messages: {{ i18n_messages | tojson }}
@@ -54,9 +54,9 @@
     <aside id="app-sidebar" class="sidebar">
         {% include "pages/include/menu_svg.html" %}
         <div class="brand">
-            <a href="/" class="brand-link" data-page="dashboard" title="IncidentRelay">
-                <img class="brand-logo-full" src="/static/images/incidentrelay-logo.svg" alt="IncidentRelay">
-                <img class="brand-logo-icon" src="/static/images/incidentrelay-icon.svg" alt="IncidentRelay">
+            <a href="/" class="brand-link" data-page="dashboard" title="Beacon">
+                <img class="brand-logo-full" src="/static/images/beacon-logo.svg" alt="Beacon">
+                <img class="brand-logo-icon" src="/static/images/beacon-icon.svg" alt="Beacon">
             </a>
 
             <button id="sidebar-toggle" class="sidebar-toggle" type="button" aria-label="{{ _('common.collapse_sidebar') }}" title="{{ _('common.collapse_sidebar') }}" aria-expanded="true">
@@ -205,7 +205,7 @@
         <header class="topbar">
             <div class="topbar-main">
                 <div class="topbar-title-block">
-                    <div class="topbar-kicker">IncidentRelay</div>
+                    <div class="topbar-kicker">Beacon</div>
                     <h1 id="page-title">{{ _('pages.dashboard.title') }}</h1>
                     <div id="page-subtitle" class="page-subtitle">{{ _('pages.dashboard.subtitle') }}</div>
                 </div>

@@ -1,6 +1,6 @@
 ---
 title: API
-description: Обзор API IncidentRelay, аутентификация и группы эндпоинтов.
+description: Обзор API Beacon, аутентификация и группы эндпоинтов.
 ---
 
 # API

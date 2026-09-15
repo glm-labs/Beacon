@@ -27,13 +27,13 @@ Telegram — это исходящий канал уведомлений на о
 Если используются действия или опрос Telegram, запустите сервис воркера Telegram, если ваша установка его предоставляет:
 
 ```bash
-systemctl enable --now incidentrelay-telegram-worker
+systemctl enable --now beacon-telegram-worker
 ```
 
 Для установок из RPM:
 
 ```bash
-journalctl -u incidentrelay-telegram-worker -f
+journalctl -u beacon-telegram-worker -f
 ```
 
 ## Telegram ID пользователя

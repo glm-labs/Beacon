@@ -17,7 +17,7 @@ Stakeholders are useful for:
 
 ## Stakeholder snapshots
 
-When an incident is created for a service, IncidentRelay can copy service default stakeholders into the incident stakeholder list.
+When an incident is created for a service, Beacon can copy service default stakeholders into the incident stakeholder list.
 
 This is a snapshot:
 
@@ -45,7 +45,7 @@ Stakeholder notifications are informational.
 They can be delivered through:
 
 - email, when the stakeholder has an email address;
-- browser push, when the stakeholder is an active IncidentRelay user with browser push enabled.
+- browser push, when the stakeholder is an active Beacon user with browser push enabled.
 
 Stakeholder browser push notifications do not include ACK or Resolve action buttons.
 

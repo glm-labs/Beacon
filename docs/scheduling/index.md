@@ -16,7 +16,7 @@ Use this section for on-call schedule behavior:
 
 ## Schedule calculation
 
-IncidentRelay calculates the effective on-call user from rotation layers and overrides.
+Beacon calculates the effective on-call user from rotation layers and overrides.
 
 ```text
 rotation override
@@ -28,7 +28,7 @@ Use rotation layers for recurring schedule structure and overrides for temporary
 
 ## Calendar sync
 
-On-call schedules can be viewed in IncidentRelay and exported to external calendar clients.
+On-call schedules can be viewed in Beacon and exported to external calendar clients.
 
 Read more:
 

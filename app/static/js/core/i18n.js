@@ -1,11 +1,11 @@
 (function (window, document) {
     "use strict";
 
-    const config = window.__INCIDENTRELAY_I18N__ || {};
+    const config = window.__BEACON_I18N__ || {};
     const messages = config.messages || {};
     const supportedLocales = config.supportedLocales || {};
     const locale = config.locale || "en";
-    const COOKIE_NAME = "incidentrelay_locale";
+    const COOKIE_NAME = "beacon_locale";
     const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
     function interpolate(value, params) {
@@ -163,7 +163,7 @@
             return;
         }
 
-        document.title = "IncidentRelay - " + t("login.title", {}, "Login");
+        document.title = "Beacon - " + t("login.title", {}, "Login");
         setText(".login-badge", "login.badge");
         setText(".login-form-wrap > h1", "login.heading");
         setText(".login-description", "login.description");

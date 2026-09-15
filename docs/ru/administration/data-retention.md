@@ -5,7 +5,7 @@ description: Настройка автоматического retention для 
 
 # Политика хранения данных
 
-В IncidentRelay 2.1 появилась единая секция retention для записей базы данных, объём которых со временем может постоянно расти.
+В Beacon 2.1 появилась единая секция retention для записей базы данных, объём которых со временем может постоянно расти.
 
 Удаление завершённой истории alerts по умолчанию выключено. Настройка выполняется в `[retention]`:
 
@@ -60,7 +60,7 @@ explain_trace_days = 30
 
 ## Работа scheduler
 
-IncidentRelay использует один `retention_cleanup_job` и один distributed database lock для retention-прохода 2.1. За один запуск выполняются cleanup alert history, Explain Trace и Event Orchestration retention.
+Beacon использует один `retention_cleanup_job` и один distributed database lock для retention-прохода 2.1. За один запуск выполняются cleanup alert history, Explain Trace и Event Orchestration retention.
 
 История alerts удаляется батчами, чтобы не создавать одну очень большую транзакцию. В SQLite и PostgreSQL удаление строк делает страницы базы доступными для повторного использования, но не обязательно сразу уменьшает размер файла. Для возврата уже выделенного места операционной системе используйте штатное обслуживание конкретной СУБД в подходящее maintenance window.
 
@@ -68,4 +68,4 @@ IncidentRelay использует один `retention_cleanup_job` и один 
 
 Новый конфиг должен использовать только `[retention]`.
 
-Для совместимости IncidentRelay 2.1 всё ещё читает старый `[alerts] alert_explain_trace_retention_days`, если `retention.explain_trace_days` отсутствует. Старые настройки интервала cleanup также используются как fallback, если не задан `retention.cleanup_interval_seconds`. Новые значения из `[retention]` всегда имеют приоритет.
+Для совместимости Beacon 2.1 всё ещё читает старый `[alerts] alert_explain_trace_retention_days`, если `retention.explain_trace_days` отсутствует. Старые настройки интервала cleanup также используются как fallback, если не задан `retention.cleanup_interval_seconds`. Новые значения из `[retention]` всегда имеют приоритет.

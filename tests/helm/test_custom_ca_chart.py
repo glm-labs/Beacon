@@ -7,7 +7,7 @@ import pytest
 
 
 ROOT = Path(__file__).resolve().parents[2]
-CHART = ROOT / "helm" / "incidentrelay"
+CHART = ROOT / "helm" / "beacon"
 TEMPLATES = CHART / "templates"
 
 
@@ -16,16 +16,16 @@ def _read(path):
 
 
 def test_custom_ca_values_and_helpers_are_registered():
-    values = _read("helm/incidentrelay/values.yaml")
-    helpers = _read("helm/incidentrelay/templates/_helpers.tpl")
-    configmap = _read("helm/incidentrelay/templates/configmap-custom-ca.yaml")
+    values = _read("helm/beacon/values.yaml")
+    helpers = _read("helm/beacon/templates/_helpers.tpl")
+    configmap = _read("helm/beacon/templates/configmap-custom-ca.yaml")
 
     assert "customCA:" in values
     assert 'existingConfigMap: ""' in values
     assert "existingConfigMapKey: ca.crt" in values
     assert "systemBundlePath: /etc/ssl/certs/ca-certificates.crt" in values
 
-    assert 'define "incidentrelay.customCAInitContainer"' in helpers
+    assert 'define "beacon.customCAInitContainer"' in helpers
     assert 'cat "$SYSTEM_CA_BUNDLE" > /ca-work/ca-bundle.crt' in helpers
     assert "cat /custom-ca/ca.crt >> /ca-work/ca-bundle.crt" in helpers
     assert "REQUESTS_CA_BUNDLE" in helpers
@@ -36,16 +36,16 @@ def test_custom_ca_values_and_helpers_are_registered():
     assert "ca.crt: |-" in configmap
 
 
-def test_custom_ca_is_wired_to_every_incidentrelay_component():
+def test_custom_ca_is_wired_to_every_beacon_component():
     for component in ("web", "scheduler", "slack", "telegram"):
         deployment = _read(
-            f"helm/incidentrelay/templates/deployment-{component}.yaml"
+            f"helm/beacon/templates/deployment-{component}.yaml"
         )
-        assert 'include "incidentrelay.customCAChecksum"' in deployment
-        assert 'include "incidentrelay.customCAInitContainer"' in deployment
-        assert 'include "incidentrelay.customCAEnv"' in deployment
-        assert 'include "incidentrelay.volumeMounts"' in deployment
-        assert 'include "incidentrelay.volumes"' in deployment
+        assert 'include "beacon.customCAChecksum"' in deployment
+        assert 'include "beacon.customCAInitContainer"' in deployment
+        assert 'include "beacon.customCAEnv"' in deployment
+        assert 'include "beacon.volumeMounts"' in deployment
+        assert 'include "beacon.volumes"' in deployment
 
 
 @pytest.mark.skipif(shutil.which("helm") is None, reason="helm is not installed")
@@ -68,11 +68,11 @@ def test_custom_ca_inline_bundle_renders_combined_trust_for_all_components(tmp_p
     )
 
     rendered = subprocess.check_output(
-        ["helm", "template", "incidentrelay", str(CHART), "-f", str(values)],
+        ["helm", "template", "beacon", str(CHART), "-f", str(values)],
         text=True,
     )
 
-    assert "name: incidentrelay-custom-ca" in rendered
+    assert "name: beacon-custom-ca" in rendered
     assert "TEST-CUSTOM-CA" in rendered
     assert rendered.count("name: build-ca-bundle") == 4
     assert rendered.count("name: SSL_CERT_FILE") == 4
@@ -99,13 +99,13 @@ def test_custom_ca_existing_configmap_is_reused_without_rendering_another_config
     )
 
     rendered = subprocess.check_output(
-        ["helm", "template", "incidentrelay", str(CHART), "-f", str(values)],
+        ["helm", "template", "beacon", str(CHART), "-f", str(values)],
         text=True,
     )
 
     assert "name: company-ca" in rendered
     assert "key: \"company-root.pem\"" in rendered
-    assert "name: incidentrelay-custom-ca\n" not in rendered
+    assert "name: beacon-custom-ca\n" not in rendered
     assert rendered.count("name: build-ca-bundle") == 4
 
 
@@ -127,7 +127,7 @@ def test_custom_ca_rejects_inline_and_existing_configmap_together(tmp_path):
     )
 
     result = subprocess.run(
-        ["helm", "template", "incidentrelay", str(CHART), "-f", str(values)],
+        ["helm", "template", "beacon", str(CHART), "-f", str(values)],
         text=True,
         capture_output=True,
     )

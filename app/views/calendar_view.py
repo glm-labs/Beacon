@@ -239,7 +239,7 @@ def export_calendar_feed(token):
 
     response = Response(body, mimetype="text/calendar; charset=utf-8")
     response.headers["Content-Disposition"] = (
-        f'inline; filename="incidentrelay-team-{feed.team.id}.ics"'
+        f'inline; filename="beacon-team-{feed.team.id}.ics"'
     )
     response.headers["Cache-Control"] = "no-store"
 

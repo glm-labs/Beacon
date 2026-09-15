@@ -1,6 +1,6 @@
 # RMON integration
 
-IncidentRelay can receive alerts from RMON through a dedicated inbound integration. RMON sends each alert to IncidentRelay with a route intake token, and IncidentRelay processes it through the standard routing, grouping, suppression, notification, escalation, and explain-trace pipeline.
+Beacon can receive alerts from RMON through a dedicated inbound integration. RMON sends each alert to Beacon with a route intake token, and Beacon processes it through the standard routing, grouping, suppression, notification, escalation, and explain-trace pipeline.
 
 ## Endpoint
 
@@ -8,16 +8,16 @@ IncidentRelay can receive alerts from RMON through a dedicated inbound integrati
 POST /api/integrations/rmon
 ```
 
-The endpoint requires the intake token of an active IncidentRelay route whose source is `rmon`.
+The endpoint requires the intake token of an active Beacon route whose source is `rmon`.
 
 ```http
 Authorization: Bearer <route-intake-token>
 Content-Type: application/json
 ```
 
-## Create an IncidentRelay route
+## Create an Beacon route
 
-1. Open **Routes** in IncidentRelay.
+1. Open **Routes** in Beacon.
 2. Create a route or edit an existing one.
 3. Select **RMON** as the source.
 4. Select the team that owns the alerts.
@@ -49,14 +49,14 @@ Only use stable labels for grouping. Do not group by values that change between 
 
 ## Configure RMON
 
-In the RMON IncidentRelay channel, set:
+In the RMON Beacon channel, set:
 
 ```text
-Channel name: https://incidentrelay.example.com
+Channel name: https://beacon.example.com
 Token: <route-intake-token>
 ```
 
-The channel URL must contain only the base IncidentRelay URL. RMON appends the integration path automatically:
+The channel URL must contain only the base Beacon URL. RMON appends the integration path automatically:
 
 ```text
 /api/integrations/rmon
@@ -80,7 +80,7 @@ resolved
 
 for recovery events.
 
-IncidentRelay updates the existing alert when the firing and resolved notifications use the same fingerprint.
+Beacon updates the existing alert when the firing and resolved notifications use the same fingerprint.
 
 Resolved-like values such as the following are also normalized to `resolved`:
 
@@ -134,7 +134,7 @@ Other values are treated as `firing`.
 
 | Field | Description |
 |---|---|
-| `team` | Optional IncidentRelay team slug fallback |
+| `team` | Optional Beacon team slug fallback |
 | `severity` | Alert severity |
 | `status` | Alert lifecycle status |
 | `labels` | Additional routing and grouping labels |
@@ -151,9 +151,9 @@ Additional fields are accepted and retained in the stored payload.
 
 ## Normalized labels
 
-IncidentRelay adds the following labels when corresponding values are available:
+Beacon adds the following labels when corresponding values are available:
 
-| IncidentRelay label | Source field |
+| Beacon label | Source field |
 |---|---|
 | `alertname` | `check_name` or `title` |
 | `severity` | `severity` |
@@ -173,7 +173,7 @@ Existing labels supplied by RMON are preserved.
 
 ## Team selection
 
-IncidentRelay selects the optional team hint from the first available value:
+Beacon selects the optional team hint from the first available value:
 
 1. top-level `team`;
 2. `labels.team`;
@@ -183,7 +183,7 @@ The route remains authoritative. A team hint does not bypass route token, source
 
 ## Severity
 
-IncidentRelay selects severity from:
+Beacon selects severity from:
 
 1. top-level `severity`;
 2. `labels.severity`;
@@ -191,7 +191,7 @@ IncidentRelay selects severity from:
 
 ## Deduplication
 
-When `fingerprint` is present and valid, IncidentRelay uses it as the deduplication key.
+When `fingerprint` is present and valid, Beacon uses it as the deduplication key.
 
 Values such as the following are ignored:
 
@@ -202,7 +202,7 @@ None None
 null null
 ```
 
-When a valid fingerprint is unavailable, IncidentRelay generates a stable key from:
+When a valid fingerprint is unavailable, Beacon generates a stable key from:
 
 - source `rmon`;
 - external or check identifier;
@@ -243,7 +243,7 @@ RMON should keep the same fingerprint between the firing and recovery notificati
 Save the example payload as `rmon-payload.json` and run:
 
 ```bash
-curl -X POST   "https://incidentrelay.example.com/api/integrations/rmon"   -H "Authorization: Bearer ROUTE_INTAKE_TOKEN"   -H "Content-Type: application/json"   --data-binary @rmon-payload.json
+curl -X POST   "https://beacon.example.com/api/integrations/rmon"   -H "Authorization: Bearer ROUTE_INTAKE_TOKEN"   -H "Content-Type: application/json"   --data-binary @rmon-payload.json
 ```
 
 A successful response contains one ingest result:
@@ -323,7 +323,7 @@ Set `runbook_url` to an absolute `http://` or `https://` URL. A non-URL runbook 
 
 ### Test notification behaves differently
 
-Test notifications may not contain `state_id`, check metadata, or production labels. IncidentRelay generates a fallback deduplication key when the test payload has no valid fingerprint.
+Test notifications may not contain `state_id`, check metadata, or production labels. Beacon generates a fallback deduplication key when the test payload has no valid fingerprint.
 
 Compare the labels shown in the explain trace with the route matchers.
 

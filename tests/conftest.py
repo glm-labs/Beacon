@@ -5,11 +5,11 @@ import pytest
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-TEST_DB = ROOT_DIR / "tests" / ".tmp" / "incidentrelay-ci.db"
-TEST_CONFIG = ROOT_DIR / "tests" / "incidentrelay.test.conf"
+TEST_DB = ROOT_DIR / "tests" / ".tmp" / "beacon-ci.db"
+TEST_CONFIG = ROOT_DIR / "tests" / "beacon.test.conf"
 
 # Must be set before importing app.settings/app.db/app models.
-os.environ.setdefault("INCEDENTRELAY_CONFIG_FILE", str(TEST_CONFIG))
+os.environ.setdefault("BEACON_CONFIG_FILE", str(TEST_CONFIG))
 os.environ.setdefault("PYTHONPATH", str(ROOT_DIR))
 
 (ROOT_DIR / "tests" / ".tmp").mkdir(parents=True, exist_ok=True)

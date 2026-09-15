@@ -29,7 +29,7 @@ ALLOWED_ROOTS = frozenset(
     }
 )
 
-# Existing IncidentRelay rules commonly use bare normalized-event fields such
+# Existing Beacon rules commonly use bare normalized-event fields such
 # as "severity". Keep that notation deterministic by resolving it under event.
 _BARE_EVENT_FIELD = re.compile(r"^[A-Za-z_][A-Za-z0-9_-]*$")
 _SEGMENT = re.compile(r"^[A-Za-z_][A-Za-z0-9_-]*$")

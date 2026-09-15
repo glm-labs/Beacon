@@ -1,6 +1,6 @@
 # Стандарты сервисов, готовность и события каталога
 
-Этот документ описывает модель готовности каталога сервисов в IncidentRelay: стандарты сервисов, проверки готовности, внутрипроцессный адаптер событий каталога и API хронологии сервиса.
+Этот документ описывает модель готовности каталога сервисов в Beacon: стандарты сервисов, проверки готовности, внутрипроцессный адаптер событий каталога и API хронологии сервиса.
 
 ## Цели
 
@@ -294,7 +294,7 @@ GET /api/services/{service_id}/timeline
       "event_type": "service_runbook.created",
       "title": "Service runbook created",
       "summary": "RabbitMQ cluster partition",
-      "source": "incidentrelay",
+      "source": "beacon",
       "source_ref": "service_runbook:42",
       "external_url": "https://docs.example.com/runbooks/rabbitmq",
       "actor": {

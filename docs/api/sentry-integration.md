@@ -5,7 +5,7 @@ description: Signed Sentry webhook endpoint, payload normalization and response 
 
 # Sentry integration API
 
-This document describes the IncidentRelay backend API behavior for the Sentry incoming integration.
+This document describes the Beacon backend API behavior for the Sentry incoming integration.
 
 ## Endpoint
 
@@ -15,7 +15,7 @@ POST /api/integrations/sentry/{route_id}
 
 This endpoint receives Sentry Internal Integration webhooks.
 
-Unlike Alertmanager, Zabbix and Generic Webhook integrations, the Sentry endpoint does not use an IncidentRelay intake token. Authentication is based on the route id and `Sentry-Hook-Signature` verification.
+Unlike Alertmanager, Zabbix and Generic Webhook integrations, the Sentry endpoint does not use an Beacon intake token. Authentication is based on the route id and `Sentry-Hook-Signature` verification.
 
 ## Required headers
 
@@ -58,7 +58,7 @@ API serialization must not return the secret. It should return only:
 
 ## Signature verification
 
-IncidentRelay validates the request by calculating an HMAC-SHA256 digest over the raw request body using the route's Sentry webhook secret.
+Beacon validates the request by calculating an HMAC-SHA256 digest over the raw request body using the route's Sentry webhook secret.
 
 Pseudo-code:
 
@@ -90,7 +90,7 @@ The raw request body must be used exactly as received.
 
 ## Normalized alert output
 
-The normalizer returns a list with one IncidentRelay alert object.
+The normalizer returns a list with one Beacon alert object.
 
 Example `event_alert.triggered` normalized output:
 
@@ -126,7 +126,7 @@ Example `event_alert.triggered` normalized output:
 
 ## Severity mapping
 
-| Sentry level/status | IncidentRelay severity |
+| Sentry level/status | Beacon severity |
 | --- | --- |
 | `fatal` | `critical` |
 | `critical` | `critical` |
@@ -141,7 +141,7 @@ Example `event_alert.triggered` normalized output:
 
 ## Status mapping
 
-| Sentry resource/action | IncidentRelay status |
+| Sentry resource/action | Beacon status |
 | --- | --- |
 | `event_alert.triggered` | `firing` |
 | `metric_alert.critical` | `firing` |

@@ -234,7 +234,7 @@ def _validate_group_mapping_team(data):
         raise ValueError("group_id must reference an active group")
 
     if int(team.group_id) != int(data["group_id"]):
-        raise ValueError("team_id must belong to the selected IncidentRelay group")
+        raise ValueError("team_id must belong to the selected Beacon group")
 
     return team
 
@@ -246,9 +246,9 @@ def create_group_mapping(provider_id, data):
     return SsoGroupMapping.create(
         provider=provider_id,
         external_group=data["external_group"],
-        incidentrelay_group=data["group_id"],
+        beacon_group=data["group_id"],
         group_role=data["group_role"],
-        incidentrelay_team=team.id if team else None,
+        beacon_team=team.id if team else None,
         team_role=data.get("team_role") if team else None,
         active=data.get("active", True),
         priority=data.get("priority", 100),
@@ -261,9 +261,9 @@ def update_group_mapping(mapping_id, data):
     team = _validate_group_mapping_team(data)
 
     mapping.external_group = data["external_group"]
-    mapping.incidentrelay_group = data["group_id"]
+    mapping.beacon_group = data["group_id"]
     mapping.group_role = data["group_role"]
-    mapping.incidentrelay_team = team.id if team else None
+    mapping.beacon_team = team.id if team else None
     mapping.team_role = data.get("team_role") if team else None
     mapping.active = data.get("active", True)
     mapping.priority = data.get("priority", 100)

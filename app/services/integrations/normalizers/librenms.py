@@ -10,7 +10,7 @@ from app.services.integrations.normalizers.common import (
 
 
 def normalize_librenms_status(value):
-    """Convert LibreNMS alert state/status to IncidentRelay status."""
+    """Convert LibreNMS alert state/status to Beacon status."""
     if value is None:
         return "firing"
 
@@ -34,7 +34,7 @@ def normalize_librenms_status(value):
 
 
 def normalize_librenms_severity(value):
-    """Map LibreNMS severity to IncidentRelay severity."""
+    """Map LibreNMS severity to Beacon severity."""
     severity = str(value or "").strip().lower()
 
     mapping = {

@@ -120,12 +120,12 @@ def test_azure_monitor_severity_mapping():
         "Sev4": "info",
     }
 
-    for azure_severity, incidentrelay_severity in expected.items():
+    for azure_severity, beacon_severity in expected.items():
         alert = normalize_azure_monitor(
             azure_monitor_payload(severity=azure_severity)
         )[0]
 
-        assert alert["severity"] == incidentrelay_severity
+        assert alert["severity"] == beacon_severity
 
 
 def test_azure_monitor_resolved_uses_same_dedup_key():

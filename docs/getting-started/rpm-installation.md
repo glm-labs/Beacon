@@ -1,6 +1,6 @@
 ---
 title: RPM Installation
-description: Install and verify IncidentRelay on RedHat-like distributions from the RPM repository
+description: Install and verify Beacon on RedHat-like distributions from the RPM repository
 ---
 
 # RPM Installation
@@ -15,7 +15,7 @@ Use this guide for RHEL, Rocky Linux, AlmaLinux and CentOS Stream installations.
 Repository file:
 
 ```text
-https://repo.incidentrelay.io/incidentrelay.repo
+https://repo.beacon.io/beacon.repo
 ```
 
 ## 1. Install the repository file
@@ -25,8 +25,8 @@ For DNF-based systems:
 ```bash
 sudo dnf install -y curl openssl
 sudo curl -fsSL \
-  https://repo.incidentrelay.io/incidentrelay.repo \
-  -o /etc/yum.repos.d/incidentrelay.repo
+  https://repo.beacon.io/beacon.repo \
+  -o /etc/yum.repos.d/beacon.repo
 sudo dnf makecache
 ```
 
@@ -35,50 +35,50 @@ For older yum-based systems:
 ```bash
 sudo yum install -y curl openssl
 sudo curl -fsSL \
-  https://repo.incidentrelay.io/incidentrelay.repo \
-  -o /etc/yum.repos.d/incidentrelay.repo
+  https://repo.beacon.io/beacon.repo \
+  -o /etc/yum.repos.d/beacon.repo
 sudo yum makecache
 ```
 
-## 2. Install IncidentRelay
+## 2. Install Beacon
 
 ```bash
-sudo dnf install -y incidentrelay
+sudo dnf install -y beacon
 ```
 
 Or with `yum`:
 
 ```bash
-sudo yum install -y incidentrelay
+sudo yum install -y beacon
 ```
 
 The RPM package installs the application and service files using these paths:
 
 ```text
-/var/www/incidentrelay                    # application directory
-/etc/incidentrelay/incidentrelay.conf     # main configuration file
-/var/lib/incidentrelay                    # runtime data, SQLite database by default
-/var/log/incidentrelay                    # application logs
-/usr/local/lib/incidentrelay/voice_providers # custom voice providers
+/var/www/beacon                    # application directory
+/etc/beacon/beacon.conf     # main configuration file
+/var/lib/beacon                    # runtime data, SQLite database by default
+/var/log/beacon                    # application logs
+/usr/local/lib/beacon/voice_providers # custom voice providers
 ```
 
 The package should run under the dedicated system user:
 
 ```text
-incidentrelay
+beacon
 ```
 
 ## 3. Verify the packaged Python runtime
 
-IncidentRelay requires Python 3.10 or newer. EL9 provides Python 3.9 as
+Beacon requires Python 3.10 or newer. EL9 provides Python 3.9 as
 `/usr/bin/python3`, so the web service and scheduler must use the packaged venv,
 not the system interpreter.
 
 ```bash
-rpm -q incidentrelay
-sudo test -x /var/www/incidentrelay/venv/bin/python
-/var/www/incidentrelay/venv/bin/python --version
-/var/www/incidentrelay/venv/bin/python -c \
+rpm -q beacon
+sudo test -x /var/www/beacon/venv/bin/python
+/var/www/beacon/venv/bin/python --version
+/var/www/beacon/venv/bin/python -c \
   'import flask, peewee, gunicorn, joserfc; print("Python dependencies: OK")'
 ```
 
@@ -87,23 +87,23 @@ finish without an exception.
 
 ### Repair an incomplete RPM 2.0-1 runtime on EL9
 
-Some `incidentrelay-2.0-1` builds install the application files but leave the
+Some `beacon-2.0-1` builds install the application files but leave the
 services on Python 3.9 or omit runtime dependencies. Preserve the packaged venv,
 create a Python 3.11 venv and install the application requirements:
 
 ```bash
 sudo dnf install -y python3.11 python3.11-pip
-if sudo test -e /var/www/incidentrelay/venv; then
-  sudo mv /var/www/incidentrelay/venv \
-    "/var/www/incidentrelay/venv.rpm-backup.$(date +%Y%m%d%H%M%S)"
+if sudo test -e /var/www/beacon/venv; then
+  sudo mv /var/www/beacon/venv \
+    "/var/www/beacon/venv.rpm-backup.$(date +%Y%m%d%H%M%S)"
 fi
-sudo /usr/bin/python3.11 -m venv /var/www/incidentrelay/venv
-sudo /var/www/incidentrelay/venv/bin/python -m pip install --upgrade pip
-sudo /var/www/incidentrelay/venv/bin/python -m pip install \
-  -r /var/www/incidentrelay/requirements.txt \
+sudo /usr/bin/python3.11 -m venv /var/www/beacon/venv
+sudo /var/www/beacon/venv/bin/python -m pip install --upgrade pip
+sudo /var/www/beacon/venv/bin/python -m pip install \
+  -r /var/www/beacon/requirements.txt \
   gunicorn joserfc
-sudo chown -R root:incidentrelay /var/www/incidentrelay/venv
-sudo chmod -R g+rX,o-rwx /var/www/incidentrelay/venv
+sudo chown -R root:beacon /var/www/beacon/venv
+sudo chmod -R g+rX,o-rwx /var/www/beacon/venv
 ```
 
 If a pinned dependency in the RPM requirements file is unavailable, update to a
@@ -112,12 +112,12 @@ fixed RPM build. Versions validated as a temporary recovery with 2.0-1 are
 
 After repairing the venv, repeat the import check above.
 
-## 4. Configure IncidentRelay
+## 4. Configure Beacon
 
 Edit:
 
 ```bash
-sudo vi /etc/incidentrelay/incidentrelay.conf
+sudo vi /etc/beacon/beacon.conf
 ```
 
 Generate two different secrets with `openssl rand -hex 32`, then review at least:
@@ -128,11 +128,11 @@ secret_key = replace-with-the-first-random-value
 timezone = UTC
 
 [server]
-public_base_url = https://incidentrelay.example.com
+public_base_url = https://beacon.example.com
 
 [database]
 type = sqlite
-name = /var/lib/incidentrelay/incidentrelay.db
+name = /var/lib/beacon/beacon.db
 
 [auth]
 jwt_secret = replace-with-the-second-random-value
@@ -151,8 +151,8 @@ For PostgreSQL, use:
 type = postgresql
 host = 127.0.0.1
 port = 5432
-name = incidentrelay
-user = incidentrelay
+name = beacon
+user = beacon
 password = change-me
 ```
 
@@ -161,20 +161,20 @@ The 2.0-1 example config may contain duplicate
 once and validate the complete file:
 
 ```bash
-sudo -u incidentrelay \
-  /var/www/incidentrelay/venv/bin/python -c \
-  'from configparser import ConfigParser; p="/etc/incidentrelay/incidentrelay.conf"; c=ConfigParser(interpolation=None, strict=True); c.read(p); print("Configuration: OK")'
+sudo -u beacon \
+  /var/www/beacon/venv/bin/python -c \
+  'from configparser import ConfigParser; p="/etc/beacon/beacon.conf"; c=ConfigParser(interpolation=None, strict=True); c.read(p); print("Configuration: OK")'
 ```
 
 Set restrictive permissions and ensure the runtime directories are writable by
 the service account:
 
 ```bash
-sudo chown root:incidentrelay /etc/incidentrelay/incidentrelay.conf
-sudo chmod 0640 /etc/incidentrelay/incidentrelay.conf
-sudo chown -R incidentrelay:incidentrelay \
-  /var/lib/incidentrelay /var/log/incidentrelay
-sudo chmod 0750 /var/lib/incidentrelay /var/log/incidentrelay
+sudo chown root:beacon /etc/beacon/beacon.conf
+sudo chmod 0640 /etc/beacon/beacon.conf
+sudo chown -R beacon:beacon \
+  /var/lib/beacon /var/log/beacon
+sudo chmod 0750 /var/lib/beacon /var/log/beacon
 ```
 
 ## 5. Make both systemd services use the venv
@@ -182,32 +182,32 @@ sudo chmod 0750 /var/lib/incidentrelay /var/log/incidentrelay
 Inspect the effective units:
 
 ```bash
-sudo systemctl cat incidentrelay
-sudo systemctl cat incidentrelay-scheduler
+sudo systemctl cat beacon
+sudo systemctl cat beacon-scheduler
 ```
 
 If either unit uses `/usr/bin/python3` or a global `gunicorn`, add systemd
 drop-ins. For SQLite, keep one web worker:
 
 ```bash
-sudo systemctl edit incidentrelay
+sudo systemctl edit beacon
 ```
 
 ```ini
 [Service]
 ExecStart=
-ExecStart=/var/www/incidentrelay/venv/bin/python -m gunicorn --workers 1 --threads 4 --timeout 120 --bind 127.0.0.1:8080 --access-logfile /var/log/incidentrelay/gun-incidentrelay.log --error-logfile /var/log/incidentrelay/gun-incidentrelay_error.log --capture-output app:create_app()
+ExecStart=/var/www/beacon/venv/bin/python -m gunicorn --workers 1 --threads 4 --timeout 120 --bind 127.0.0.1:8080 --access-logfile /var/log/beacon/gun-beacon.log --error-logfile /var/log/beacon/gun-beacon_error.log --capture-output app:create_app()
 UMask=0027
 ```
 
 ```bash
-sudo systemctl edit incidentrelay-scheduler
+sudo systemctl edit beacon-scheduler
 ```
 
 ```ini
 [Service]
 ExecStart=
-ExecStart=/var/www/incidentrelay/venv/bin/python -m app.scheduler_worker
+ExecStart=/var/www/beacon/venv/bin/python -m app.scheduler_worker
 UMask=0027
 ```
 
@@ -222,16 +222,16 @@ sudo systemctl daemon-reload
 The RPM package may run migrations during installation. If the database was not ready during install, run migrations manually after editing the config:
 
 ```bash
-cd /var/www/incidentrelay
-sudo -u incidentrelay env \
-  PYTHONPATH=/var/www/incidentrelay \
-  INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf \
-  /var/www/incidentrelay/venv/bin/python manage.py migrate
+cd /var/www/beacon
+sudo -u beacon env \
+  PYTHONPATH=/var/www/beacon \
+  BEACON_CONFIG_FILE=/etc/beacon/beacon.conf \
+  /var/www/beacon/venv/bin/python manage.py migrate
 
-sudo -u incidentrelay env \
-  PYTHONPATH=/var/www/incidentrelay \
-  INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf \
-  /var/www/incidentrelay/venv/bin/python -m app.check_schema
+sudo -u beacon env \
+  PYTHONPATH=/var/www/beacon \
+  BEACON_CONFIG_FILE=/etc/beacon/beacon.conf \
+  /var/www/beacon/venv/bin/python -m app.check_schema
 ```
 
 Both commands must exit with status 0.
@@ -239,11 +239,11 @@ Both commands must exit with status 0.
 ## 7. Create the first admin user
 
 ```bash
-cd /var/www/incidentrelay
-sudo -u incidentrelay env \
-  PYTHONPATH=/var/www/incidentrelay \
-  INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf \
-  /var/www/incidentrelay/venv/bin/python manage.py create-admin \
+cd /var/www/beacon
+sudo -u beacon env \
+  PYTHONPATH=/var/www/beacon \
+  BEACON_CONFIG_FILE=/etc/beacon/beacon.conf \
+  /var/www/beacon/venv/bin/python manage.py create-admin \
     --username admin \
     --password 'change-me-123' \
     --email admin@example.com
@@ -256,23 +256,23 @@ Change the password and email before production use.
 Enable and start the web service and scheduler:
 
 ```bash
-sudo systemctl enable --now incidentrelay
-sudo systemctl enable --now incidentrelay-scheduler
+sudo systemctl enable --now beacon
+sudo systemctl enable --now beacon-scheduler
 ```
 
 Check service status:
 
 ```bash
-sudo systemctl status incidentrelay
-sudo systemctl status incidentrelay-scheduler
+sudo systemctl status beacon
+sudo systemctl status beacon-scheduler
 curl -fsS http://127.0.0.1:8080/readyz
 ```
 
 Follow logs:
 
 ```bash
-sudo journalctl -u incidentrelay -f
-sudo journalctl -u incidentrelay-scheduler -f
+sudo journalctl -u beacon -f
+sudo journalctl -u beacon-scheduler -f
 ```
 
 The packaged service listens on `127.0.0.1:8080`. Do not open port 8080 to the
@@ -301,24 +301,24 @@ reliable automatic renewal. See the
 Start this service only if Telegram polling or callback processing is used:
 
 ```bash
-sudo systemctl enable --now incidentrelay-telegram-worker
+sudo systemctl enable --now beacon-telegram-worker
 ```
 
 Check logs:
 
 ```bash
-sudo journalctl -u incidentrelay-telegram-worker -f
+sudo journalctl -u beacon-telegram-worker -f
 ```
 
-## 10. Upgrade IncidentRelay
+## 10. Upgrade Beacon
 
 !!! warning "Upgrading from 1.2 to 2.1 or later"
-    IncidentRelay 2.1 blocks private/loopback/link-local/reserved outbound HTTP
+    Beacon 2.1 blocks private/loopback/link-local/reserved outbound HTTP
     destinations unless they are explicitly allowed. Existing internal OIDC
     metadata/JWKS endpoints and outgoing webhooks/API integrations can therefore
     stop working immediately after the upgrade.
 
-Before upgrading, identify internal endpoints used by IncidentRelay and add the
+Before upgrading, identify internal endpoints used by Beacon and add the
 smallest required CIDRs/IPs to the existing configuration:
 
 ```ini
@@ -326,62 +326,62 @@ smallest required CIDRs/IPs to the existing configuration:
 outbound_private_network_allowlist = 10.20.0.0/16,192.168.50.10/32
 ```
 
-The RPM installs `incidentrelay.conf` as a `noreplace` configuration file, so
+The RPM installs `beacon.conf` as a `noreplace` configuration file, so
 an existing configuration is preserved during upgrade. Check for
-`/etc/incidentrelay/incidentrelay.conf.rpmnew`, but do not assume the new
+`/etc/beacon/beacon.conf.rpmnew`, but do not assume the new
 security option was merged into your active file automatically. See
 [Outbound HTTP network policy](configuration.md#outbound-http-network-policy)
 for the DNS behavior and additional examples.
 
 ```bash
-sudo dnf update -y incidentrelay
+sudo dnf update -y beacon
 ```
 
 Or with `yum`:
 
 ```bash
-sudo yum update -y incidentrelay
+sudo yum update -y beacon
 ```
 
 After upgrade, run migrations if needed:
 
 ```bash
-cd /var/www/incidentrelay
-sudo -u incidentrelay env \
-  PYTHONPATH=/var/www/incidentrelay \
-  INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf \
-  /var/www/incidentrelay/venv/bin/python manage.py migrate
+cd /var/www/beacon
+sudo -u beacon env \
+  PYTHONPATH=/var/www/beacon \
+  BEACON_CONFIG_FILE=/etc/beacon/beacon.conf \
+  /var/www/beacon/venv/bin/python manage.py migrate
 ```
 
 Then restart services:
 
 ```bash
-sudo systemctl restart incidentrelay
-sudo systemctl restart incidentrelay-scheduler
+sudo systemctl restart beacon
+sudo systemctl restart beacon-scheduler
 ```
 
 If Telegram worker is used:
 
 ```bash
-sudo systemctl restart incidentrelay-telegram-worker
+sudo systemctl restart beacon-telegram-worker
 ```
 
-## 11. Remove IncidentRelay
+## 11. Remove Beacon
 
 ```bash
-sudo dnf remove -y incidentrelay
+sudo dnf remove -y beacon
 ```
 
 Or with `yum`:
 
 ```bash
-sudo yum remove -y incidentrelay
+sudo yum remove -y beacon
 ```
 
 Configuration and runtime data may remain on disk depending on package removal policy. Remove them manually only when you are sure the data is no longer needed:
 
 ```bash
-sudo rm -rf /etc/incidentrelay
-sudo rm -rf /var/lib/incidentrelay
-sudo rm -rf /var/log/incidentrelay
+sudo rm -rf /etc/beacon
+sudo rm -rf /var/lib/beacon
+sudo rm -rf /var/log/beacon
 ```

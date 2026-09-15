@@ -1,6 +1,6 @@
 ---
 title: Quickstart Checklist
-description: Checklist for validating a first IncidentRelay installation.
+description: Checklist for validating a first Beacon installation.
 ---
 
 # Quickstart Checklist
@@ -11,7 +11,7 @@ Use this checklist after installation.
 
 - [ ] Installed with Docker, RPM, or manual systemd guide
 - [ ] Config file exists
-- [ ] `INCIDENTRELAY_CONFIG_FILE` points to the config file
+- [ ] `BEACON_CONFIG_FILE` points to the config file
 - [ ] Web service is running
 - [ ] Scheduler service is running
 - [ ] Migrations have been applied with `python manage.py migrate`

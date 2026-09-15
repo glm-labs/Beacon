@@ -1,6 +1,6 @@
 ---
 title: Voice Call OpenAPI Notes
-description: OpenAPI notes for IncidentRelay voice call endpoints.
+description: OpenAPI notes for Beacon voice call endpoints.
 ---
 
 # Voice Call OpenAPI Notes

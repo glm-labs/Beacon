@@ -23,7 +23,7 @@ They cover:
 
 Services describe the logical affected system.
 
-Routes answer how an alert entered IncidentRelay, and services answer what system is broken.
+Routes answer how an alert entered Beacon, and services answer what system is broken.
 
 ## Common service endpoints
 

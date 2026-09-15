@@ -26,7 +26,7 @@ class _HealthyDatabase:
 class _BrokenDatabase(_HealthyDatabase):
     def execute_sql(self, query):
         raise RuntimeError(
-            "postgresql://incidentrelay:super-secret@db.internal/incidentrelay"
+            "postgresql://beacon:super-secret@db.internal/beacon"
         )
 
 

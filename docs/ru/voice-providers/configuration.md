@@ -1,22 +1,22 @@
 ---
 title: Настройка голосового провайдера
-description: Настройка голосового провайдера IncidentRelay
+description: Настройка голосового провайдера Beacon
 ---
 
 # Настройка голосового провайдера
 
-## Основная конфигурация IncidentRelay
+## Основная конфигурация Beacon
 
-IncidentRelay читает настройки голосового провайдера из основного файла конфигурации.
+Beacon читает настройки голосового провайдера из основного файла конфигурации.
 
 Пример:
 
 ```ini
 [voice]
 provider = stub
-providers_dir = /usr/local/lib/incidentrelay/voice_providers
+providers_dir = /usr/local/lib/beacon/voice_providers
 callback_secret = change-me
-text_template = IncidentRelay alert {alert_id}. {title}. Severity {severity}. {message}. Press 1 to acknowledge. Press 2 to resolve.
+text_template = Beacon alert {alert_id}. {title}. Severity {severity}. {message}. Press 1 to acknowledge. Press 2 to resolve.
 dtmf_actions = {"1": "acknowledge", "2": "resolve"}
 
 [voice_provider]
@@ -46,7 +46,7 @@ timeout = 10
 Рекомендуемое значение:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers
+/usr/local/lib/beacon/voice_providers
 ```
 
 ### callback_secret
@@ -59,7 +59,7 @@ URL колбэков провайдера используют такой фор
 /api/integrations/voice/callback/{channel_id}/{secret}
 ```
 
-Если конфигурация канала содержит `callback_secret`, IncidentRelay использует секрет канала вместо глобального.
+Если конфигурация канала содержит `callback_secret`, Beacon использует секрет канала вместо глобального.
 
 ## Имена файлов провайдеров
 
@@ -87,7 +87,7 @@ provider backup.py
 Пример файла:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers/mango.py
+/usr/local/lib/beacon/voice_providers/mango.py
 ```
 
 Имя провайдера:
@@ -106,7 +106,7 @@ provider backup.py
   "call_on_severities": ["critical", "high"],
   "test_phone": "+77001234567",
   "callback_secret": "change-me-channel-secret",
-  "text_template": "IncidentRelay alert {alert_id}. {title}. Severity {severity}. {message}. Press 1 to acknowledge. Press 2 to resolve.",
+  "text_template": "Beacon alert {alert_id}. {title}. Severity {severity}. {message}. Press 1 to acknowledge. Press 2 to resolve.",
   "dtmf_actions": {
     "1": "acknowledge",
     "2": "resolve"
@@ -138,13 +138,13 @@ provider backup.py
 "call_on_severities": ["critical", "high"]
 ```
 
-Если этот список пуст, IncidentRelay не будет звонить никому по реальным алертам.
+Если этот список пуст, Beacon не будет звонить никому по реальным алертам.
 
 ### phone
 
 Необязательный резервный номер телефона.
 
-Для реальных алертов IncidentRelay обычно использует номер телефона назначенного пользователя.
+Для реальных алертов Beacon обычно использует номер телефона назначенного пользователя.
 
 ```json
 "phone": "+77001234567"
@@ -162,7 +162,7 @@ provider backup.py
 
 Необязательный секрет колбэка на уровне канала.
 
-Если он опущен, IncidentRelay использует глобальную конфигурацию:
+Если он опущен, Beacon использует глобальную конфигурацию:
 
 ```ini
 [voice]
@@ -195,7 +195,7 @@ callback_secret = change-me
 
 ### dtmf_actions
 
-Сопоставляет цифры телефонной клавиатуры с действиями IncidentRelay.
+Сопоставляет цифры телефонной клавиатуры с действиями Beacon.
 
 ```json
 "dtmf_actions": {
@@ -215,7 +215,7 @@ resolve
 
 Настройки, специфичные для провайдера.
 
-IncidentRelay передаёт этот объект в конструктор провайдера.
+Beacon передаёт этот объект в конструктор провайдера.
 
 ```json
 "provider_config": {

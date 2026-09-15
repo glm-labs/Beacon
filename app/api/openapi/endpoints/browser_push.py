@@ -6,7 +6,7 @@ BROWSER_PUSH_PUBLIC_CONFIG_SCHEMA = {
     "properties": {
         "enabled": {
             "type": "boolean",
-            "description": "Whether browser push is enabled on this IncidentRelay instance.",
+            "description": "Whether browser push is enabled on this Beacon instance.",
             "example": True,
         },
         "public_key": {

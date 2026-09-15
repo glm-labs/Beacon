@@ -196,7 +196,7 @@ Set Business Service to operational until the alert is fixed.
 
 ## Записи влияния на бизнес
 
-Когда группа алертов влияет на бизнес-сервис, IncidentRelay сохраняет запись `BusinessServiceIncidentImpact`.
+Когда группа алертов влияет на бизнес-сервис, Beacon сохраняет запись `BusinessServiceIncidentImpact`.
 
 Эта запись хранит:
 

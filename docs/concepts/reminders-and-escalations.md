@@ -5,7 +5,7 @@ description: Reminder intervals, escalation timing and scheduler behavior.
 
 # Reminders and Escalations
 
-IncidentRelay can send repeated reminders for unacknowledged firing alerts and escalate an alert to the next on-call user after a configured number of reminders.
+Beacon can send repeated reminders for unacknowledged firing alerts and escalate an alert to the next on-call user after a configured number of reminders.
 
 ## Reminder interval
 

@@ -1,6 +1,6 @@
 ---
 title: API
-description: IncidentRelay API overview, authentication and endpoint groups.
+description: Beacon API overview, authentication and endpoint groups.
 ---
 
 # API

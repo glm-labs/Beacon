@@ -1,11 +1,11 @@
 ---
 title: New Relic
-description: Отправка уведомлений New Relic Alerts Workflow в IncidentRelay через нативный webhook-маршрут.
+description: Отправка уведомлений New Relic Alerts Workflow в Beacon через нативный webhook-маршрут.
 ---
 
 # Интеграция с New Relic
 
-IncidentRelay принимает уведомления New Relic issue из **Alerts → Workflows** через нативный входящий маршрут.
+Beacon принимает уведомления New Relic issue из **Alerts → Workflows** через нативный входящий маршрут.
 
 Эндпоинт:
 
@@ -13,7 +13,7 @@ IncidentRelay принимает уведомления New Relic issue из **A
 POST /api/integrations/new-relic
 ```
 
-## Создание маршрута IncidentRelay
+## Создание маршрута Beacon
 
 Создайте маршрут:
 
@@ -34,10 +34,10 @@ Source: New Relic
 В New Relic откройте **Alerts → Destinations**, создайте destination типа **Webhook** и укажите URL:
 
 ```text
-https://incidentrelay.example.com/api/integrations/new-relic
+https://beacon.example.com/api/integrations/new-relic
 ```
 
-Включите авторизацию **Bearer Token** и укажите intake token маршрута IncidentRelay.
+Включите авторизацию **Bearer Token** и укажите intake token маршрута Beacon.
 
 Затем создайте или измените **Alerts Workflow**, выберите созданный webhook destination и используйте JSON message template:
 
@@ -62,9 +62,9 @@ https://incidentrelay.example.com/api/integrations/new-relic
 
 ## Lifecycle и дедупликация
 
-`issueId` — предпочтительный идентификатор. Рекомендуемый шаблон передаёт его как `issue_id`, а IncidentRelay использует его как external id и deduplication key.
+`issueId` — предпочтительный идентификатор. Рекомендуемый шаблон передаёт его как `issue_id`, а Beacon использует его как external id и deduplication key.
 
-Поэтому уведомления одного New Relic issue обновляют один алерт IncidentRelay, а не создают новый алерт при каждом update.
+Поэтому уведомления одного New Relic issue обновляют один алерт Beacon, а не создают новый алерт при каждом update.
 
 Следующие состояния считаются закрытыми:
 
@@ -79,9 +79,9 @@ inactive
 
 ## Severity
 
-Приоритет/важность New Relic нормализуется стандартным механизмом IncidentRelay:
+Приоритет/важность New Relic нормализуется стандартным механизмом Beacon:
 
-| New Relic | IncidentRelay |
+| New Relic | Beacon |
 |---|---|
 | `CRITICAL` | `critical` |
 | `HIGH` | `high` |
@@ -93,7 +93,7 @@ inactive
 
 ## Labels
 
-Рекомендуемый template отправляет `accumulations.rawTag` в `labels`. Значения тегов New Relic могут быть массивами; IncidentRelay берёт первое непустое значение, чтобы label можно было использовать в matchers.
+Рекомендуемый template отправляет `accumulations.rawTag` в `labels`. Значения тегов New Relic могут быть массивами; Beacon берёт первое непустое значение, чтобы label можно было использовать в matchers.
 
 Также добавляются служебные labels:
 
@@ -135,7 +135,7 @@ Custom template всё равно рекомендуется: он делает 
 ## Тестовый запрос
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/new-relic' \
+curl -X POST 'https://beacon.example.com/api/integrations/new-relic' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer ROUTE_TOKEN' \
   -d '{

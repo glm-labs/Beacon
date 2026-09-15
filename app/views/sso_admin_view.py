@@ -177,7 +177,7 @@ def create_group_mapping(provider_id):
         "sso.group_mapping.create",
         object_type="sso_group_mapping",
         object_id=mapping.id,
-        group_id=mapping.incidentrelay_group.id,
+        group_id=mapping.beacon_group.id,
         data={
             "provider_id": provider_id,
             **data,
@@ -214,7 +214,7 @@ def update_group_mapping(mapping_id):
         "sso.group_mapping.update",
         object_type="sso_group_mapping",
         object_id=mapping.id,
-        group_id=mapping.incidentrelay_group.id,
+        group_id=mapping.beacon_group.id,
         data=data,
     )
 
@@ -229,7 +229,7 @@ def delete_group_mapping(mapping_id):
         return error
 
     mapping = sso_repo.get_group_mapping(mapping_id)
-    group_id = mapping.incidentrelay_group.id
+    group_id = mapping.beacon_group.id
     provider_id = mapping.provider.id
 
     sso_repo.delete_group_mapping(mapping_id)

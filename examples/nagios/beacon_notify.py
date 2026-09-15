@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Send Nagios Core/XI notification environment macros to IncidentRelay."""
+"""Send Nagios Core/XI notification environment macros to Beacon."""
 
 from __future__ import annotations
 
@@ -70,7 +70,7 @@ def main():
         headers={
             "Authorization": f"Bearer {args.token}",
             "Content-Type": "application/json",
-            "User-Agent": "IncidentRelay-Nagios/1",
+            "User-Agent": "Beacon-Nagios/1",
         },
     )
 
@@ -79,10 +79,10 @@ def main():
             response.read()
             return 0 if 200 <= response.status < 300 else 2
     except urllib.error.HTTPError as exc:
-        sys.stderr.write(f"IncidentRelay returned HTTP {exc.code}\n")
+        sys.stderr.write(f"Beacon returned HTTP {exc.code}\n")
         return 2
     except (urllib.error.URLError, TimeoutError, OSError) as exc:
-        sys.stderr.write(f"IncidentRelay notification failed: {exc}\n")
+        sys.stderr.write(f"Beacon notification failed: {exc}\n")
         return 2
 
 

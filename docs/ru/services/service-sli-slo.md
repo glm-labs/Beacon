@@ -1,6 +1,6 @@
 # SLI / SLO сервиса
 
-SLI/SLO в IncidentRelay добавляет целевые показатели надёжности на уровне сервиса, используя данные, которыми IncidentRelay уже владеет: группы алертов, метки времени подтверждения и разрешения, статус сервиса, окна обслуживания и метаданные каталога сервисов.
+SLI/SLO в Beacon добавляет целевые показатели надёжности на уровне сервиса, используя данные, которыми Beacon уже владеет: группы алертов, метки времени подтверждения и разрешения, статус сервиса, окна обслуживания и метаданные каталога сервисов.
 
 Функция намеренно называется **SLI / SLO** в UI и API.
 
@@ -268,7 +268,7 @@ SLI определяет, что измерять.
 | `slug` | Стабильный идентификатор внутри сервиса. |
 | `name` | Понятное человеку имя SLI. |
 | `description` | Необязательное пояснение. |
-| `sli_type` | Что измеряет IncidentRelay. |
+| `sli_type` | Что измеряет Beacon. |
 | `source` | Откуда поступают данные измерений. |
 | `severity` | Необязательный фильтр серьёзности для SLI-типов реагирования, например `critical`. |
 | `priority` | Необязательный фильтр по одному приоритету, например `p1`. Для SLI-типов влияния предпочтительнее `configuration.priority_scope`. |
@@ -287,7 +287,7 @@ incident_count
 Поддерживаемый встроенный источник:
 
 ```text
-incidentrelay_alert_groups
+beacon_alert_groups
 ```
 
 Будущие источники можно добавить позже, например Prometheus, blackbox-проверки, логи или внешние API метрик.
@@ -383,7 +383,7 @@ The SLO is still technically within target, but it can breach soon.
 
 ## Бюджет ошибок
 
-Для `incident_availability` IncidentRelay рассчитывает поля бюджета ошибок.
+Для `incident_availability` Beacon рассчитывает поля бюджета ошибок.
 
 ```text
 budget_seconds = window_seconds * (100% - target%)
@@ -415,7 +415,7 @@ SLO задержки и подсчёта инцидентов в настоящ�
 ```text
 Name: Critical alert acknowledgement latency
 SLI type: Alert acknowledgement latency
-Source: IncidentRelay alert groups
+Source: Beacon alert groups
 Severity: critical
 Enabled: yes
 ```
@@ -439,7 +439,7 @@ Enabled: yes
 ```text
 Name: P1/P2 incident availability
 SLI type: Incident-based availability
-Source: IncidentRelay alert groups
+Source: Beacon alert groups
 Priority scope: P1, P2
 Enabled: yes
 ```
@@ -463,7 +463,7 @@ Enabled: yes
 ```text
 Name: Critical incident count
 SLI type: Impact incident count
-Source: IncidentRelay alert groups
+Source: Beacon alert groups
 Severity: critical
 Enabled: yes
 ```
@@ -527,7 +527,7 @@ Content-Type: application/json
   "name": "Critical alert acknowledgement latency",
   "description": "How quickly critical alert groups are acknowledged.",
   "sli_type": "alert_ack_latency",
-  "source": "incidentrelay_alert_groups",
+  "source": "beacon_alert_groups",
   "severity": "critical",
   "enabled": true
 }
@@ -564,7 +564,7 @@ Content-Type: application/json
   "slug": "critical-incident-availability",
   "name": "Critical incident availability",
   "sli_type": "incident_availability",
-  "source": "incidentrelay_alert_groups",
+  "source": "beacon_alert_groups",
   "severity": "critical",
   "enabled": true
 }
@@ -593,7 +593,7 @@ Content-Type: application/json
   "slug": "critical-incident-count",
   "name": "Critical incident count",
   "sli_type": "incident_count",
-  "source": "incidentrelay_alert_groups",
+  "source": "beacon_alert_groups",
   "severity": "critical",
   "enabled": true
 }
@@ -703,7 +703,7 @@ Services → service row → Details → Timeline
 
 ## Текущие ограничения
 
-IncidentRelay в настоящее время поддерживает встроенные SLI на основе групп алертов и учёта инцидентов/статусов. Он пока не рассчитывает следующие внешние SLI:
+Beacon в настоящее время поддерживает встроенные SLI на основе групп алертов и учёта инцидентов/статусов. Он пока не рассчитывает следующие внешние SLI:
 
 ```text
 Prometheus latency

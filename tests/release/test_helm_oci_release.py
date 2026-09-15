@@ -6,10 +6,10 @@ import re
 from pathlib import Path
 
 
-CHART = Path("helm") / "incidentrelay" / "Chart.yaml"
+CHART = Path("helm") / "beacon" / "Chart.yaml"
 WORKFLOW = Path(".github") / "workflows" / "docker-image.yml"
-OCI_CHART = "oci://ghcr.io/roxy-wi/incidentrelay-charts/incidentrelay"
-OCI_REGISTRY = "ghcr.io/roxy-wi/incidentrelay-charts"
+OCI_CHART = "oci://ghcr.io/glm-labs/beacon-charts/beacon"
+OCI_REGISTRY = "ghcr.io/glm-labs/beacon-charts"
 
 
 def _yaml_scalar(path: Path, key: str) -> str:

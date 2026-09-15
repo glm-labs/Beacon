@@ -5,15 +5,15 @@ description: Signed Sentry issue, metric alert and lifecycle webhooks.
 
 # Sentry integration
 
-IncidentRelay can receive signed webhooks from Sentry Internal Integrations and turn Sentry issue alerts, metric alerts and issue lifecycle events into IncidentRelay alerts.
+Beacon can receive signed webhooks from Sentry Internal Integrations and turn Sentry issue alerts, metric alerts and issue lifecycle events into Beacon alerts.
 
 The Sentry integration is route-scoped: every Sentry route has its own webhook URL and its own Sentry webhook secret. The secret is stored in the route integration settings and is never returned by the API.
 
 ## Supported Sentry events
 
-IncidentRelay supports the following Sentry webhook resources:
+Beacon supports the following Sentry webhook resources:
 
-| Sentry resource | Typical action | IncidentRelay status | Notes |
+| Sentry resource | Typical action | Beacon status | Notes |
 | --- | --- | --- | --- |
 | `event_alert` | `triggered` | `firing` | Issue alert rule action fired. |
 | `metric_alert` | `critical` | `firing` | Metric alert entered critical state. |
@@ -24,20 +24,20 @@ IncidentRelay supports the following Sentry webhook resources:
 | `issue` | `resolved` | `resolved` | Issue was resolved in Sentry. |
 | `issue` | `ignored` | `resolved` | Issue was ignored or archived in Sentry. |
 
-For issue alerts, IncidentRelay uses the Sentry issue id as the deduplication key. This allows a later `issue.resolved` event to resolve the same IncidentRelay alert that was created by `event_alert.triggered`.
+For issue alerts, Beacon uses the Sentry issue id as the deduplication key. This allows a later `issue.resolved` event to resolve the same Beacon alert that was created by `event_alert.triggered`.
 
 ## Before you start
 
 You need:
 
-- an IncidentRelay team and route management permissions;
-- a public HTTPS URL for IncidentRelay that Sentry can reach;
+- an Beacon team and route management permissions;
+- a public HTTPS URL for Beacon that Sentry can reach;
 - Sentry organization admin or manager permissions to create an Internal Integration;
 - the full Sentry integration implementation deployed, including the `integration_config` migration.
 
-Do not use the legacy Sentry Webhook Plugin for this integration. Use a Sentry Internal Integration because IncidentRelay verifies the `Sentry-Hook-Signature` header sent by Internal Integration webhooks.
+Do not use the legacy Sentry Webhook Plugin for this integration. Use a Sentry Internal Integration because Beacon verifies the `Sentry-Hook-Signature` header sent by Internal Integration webhooks.
 
-## Step 1: Create a Sentry route in IncidentRelay
+## Step 1: Create a Sentry route in Beacon
 
 Open **Routes** and create a new route:
 
@@ -77,10 +77,10 @@ Recommended group by for metric alerts:
 ["project_slug", "sentry_alert_id"]
 ```
 
-After the route is created, IncidentRelay shows a webhook URL similar to:
+After the route is created, Beacon shows a webhook URL similar to:
 
 ```text
-https://incidentrelay.example.com/api/integrations/sentry/42
+https://beacon.example.com/api/integrations/sentry/42
 ```
 
 Copy this URL. You will paste it into Sentry.
@@ -95,8 +95,8 @@ Configure:
 
 | Sentry setting | Value |
 | --- | --- |
-| Name | `IncidentRelay` or a route-specific name such as `IncidentRelay Backend` |
-| Webhook URL | The URL copied from IncidentRelay, for example `https://incidentrelay.example.com/api/integrations/sentry/42` |
+| Name | `Beacon` or a route-specific name such as `Beacon Backend` |
+| Webhook URL | The URL copied from Beacon, for example `https://beacon.example.com/api/integrations/sentry/42` |
 | Alert Rule Action | Enabled |
 
 Enable webhook resources needed by your alerting flow:
@@ -107,18 +107,18 @@ Enable webhook resources needed by your alerting flow:
 
 Save the Sentry Internal Integration.
 
-## Step 3: Copy the Sentry Client Secret into IncidentRelay
+## Step 3: Copy the Sentry Client Secret into Beacon
 
 After creating the Internal Integration, Sentry shows integration credentials.
 
-Copy the **Client Secret** and paste it into the IncidentRelay route:
+Copy the **Client Secret** and paste it into the Beacon route:
 
-1. Open the Sentry route in IncidentRelay.
+1. Open the Sentry route in Beacon.
 2. Click **Edit**.
 3. Paste the value into **Sentry webhook secret**.
 4. Save the route.
 
-IncidentRelay stores the secret in `route.integration_config.sentry.webhook_secret` and uses it to verify incoming webhooks.
+Beacon stores the secret in `route.integration_config.sentry.webhook_secret` and uses it to verify incoming webhooks.
 
 The API will only expose:
 
@@ -135,7 +135,7 @@ The API will only expose:
 
 It will not return the raw secret.
 
-## Step 4: Add IncidentRelay to Sentry alert rules
+## Step 4: Add Beacon to Sentry alert rules
 
 Create or edit Sentry alert rules.
 
@@ -144,7 +144,7 @@ For issue alerts:
 1. Open the Sentry project.
 2. Go to **Alerts**.
 3. Create or edit an issue alert rule.
-4. In the actions section, select the IncidentRelay integration action.
+4. In the actions section, select the Beacon integration action.
 5. Save the rule.
 
 For metric alerts:
@@ -152,10 +152,10 @@ For metric alerts:
 1. Open the Sentry project.
 2. Go to **Alerts**.
 3. Create or edit a metric alert rule.
-4. Select the IncidentRelay integration action.
+4. Select the Beacon integration action.
 5. Save the rule.
 
-When a Sentry alert rule fires, Sentry sends a signed webhook to IncidentRelay. IncidentRelay verifies the signature and normalizes the event into an internal alert.
+When a Sentry alert rule fires, Sentry sends a signed webhook to Beacon. Beacon verifies the signature and normalizes the event into an internal alert.
 
 ## How routing works
 
@@ -229,16 +229,16 @@ sentry:metric:<sentry_alert_id>
 
 This means:
 
-- repeated Sentry issue alert triggers update the same IncidentRelay alert;
-- `issue.resolved` resolves the existing IncidentRelay alert for the same issue;
+- repeated Sentry issue alert triggers update the same Beacon alert;
+- `issue.resolved` resolves the existing Beacon alert for the same issue;
 - `metric_alert.resolved` resolves the existing metric alert;
 - Sentry issue and metric payloads can use different resources while still resolving the correct alert.
 
 ## Security model
 
-Sentry webhooks do not use an IncidentRelay intake token.
+Sentry webhooks do not use an Beacon intake token.
 
-Instead, IncidentRelay verifies:
+Instead, Beacon verifies:
 
 - route id from the URL: `/api/integrations/sentry/{route_id}`;
 - route source is `sentry`;

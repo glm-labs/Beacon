@@ -1,6 +1,6 @@
 ---
 title: Политики эскалации
-description: Настройка многошаговых цепочек эскалации алертов в IncidentRelay
+description: Настройка многошаговых цепочек эскалации алертов в Beacon
 ---
 
 # Политики эскалации
@@ -51,7 +51,7 @@ Rule 3:
 Route -> Rotation -> Team reminder-based escalation
 ```
 
-В этом режиме IncidentRelay использует настройки команды:
+В этом режиме Beacon использует настройки команды:
 
 - `Simple rotation escalation`;
 - `Simple escalation after reminders`.
@@ -66,7 +66,7 @@ Route -> Rotation -> Team reminder-based escalation
 Route -> Escalation policy -> Rules
 ```
 
-В этом режиме IncidentRelay использует правила политики и задержки правил.
+В этом режиме Beacon использует правила политики и задержки правил.
 
 Эскалация команды на основе напоминаний игнорируется для этого маршрута:
 

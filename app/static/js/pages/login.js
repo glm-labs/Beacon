@@ -77,7 +77,7 @@ function login(event) {
             password: password
         },
         function (data) {
-            localStorage.setItem("incidentrelay_jwt", data.access_token);
+            localStorage.setItem("beacon_jwt", data.access_token);
 
             setLoginStatus(
                 i18n.t("login.logged_in", {
@@ -109,7 +109,7 @@ function loadLogin() {
     /*
      * Show current login state and load SSO providers.
      */
-    const token = localStorage.getItem("incidentrelay_jwt");
+    const token = localStorage.getItem("beacon_jwt");
 
     if (token) {
         setLoginStatus(i18n.t("login.token_stored"), "info");

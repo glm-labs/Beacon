@@ -136,7 +136,7 @@ def test_caldav_requires_basic_auth(client, db):
     response = client.open("/caldav/", method="PROPFIND")
 
     assert response.status_code == 401
-    assert response.headers["WWW-Authenticate"] == 'Basic realm="IncidentRelay CalDAV"'
+    assert response.headers["WWW-Authenticate"] == 'Basic realm="Beacon CalDAV"'
 
 
 def test_caldav_rejects_invalid_token(client, db):

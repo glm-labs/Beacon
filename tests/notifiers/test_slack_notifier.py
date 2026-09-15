@@ -384,7 +384,7 @@ def test_slack_buttons_contain_alert_context():
     )
 
     assert actions_block["type"] == "actions"
-    assert actions_block["block_id"] == "incidentrelay_alert_345"
+    assert actions_block["block_id"] == "beacon_alert_345"
 
     buttons = actions_block["elements"]
 
@@ -393,12 +393,12 @@ def test_slack_buttons_contain_alert_context():
     acknowledge_button = next(
         button
         for button in buttons
-        if button["action_id"] == "incidentrelay_acknowledge"
+        if button["action_id"] == "beacon_acknowledge"
     )
     resolve_button = next(
         button
         for button in buttons
-        if button["action_id"] == "incidentrelay_resolve"
+        if button["action_id"] == "beacon_resolve"
     )
 
     acknowledge_context = json.loads(

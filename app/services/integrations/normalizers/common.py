@@ -127,7 +127,7 @@ def stable_labels(labels, *, exclude=()):
 
 
 def severity_from_priority(value):
-    """Map a P1-P5 priority to IncidentRelay severity, or return ``None``."""
+    """Map a P1-P5 priority to Beacon severity, or return ``None``."""
     priority = clean_string(value)
     if not priority:
         return None

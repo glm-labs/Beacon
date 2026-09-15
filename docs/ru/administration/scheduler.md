@@ -1,11 +1,11 @@
 ---
 title: Планировщик
-description: Запуск планировщика напоминаний и эскалаций IncidentRelay отдельно от веб-процесса
+description: Запуск планировщика напоминаний и эскалаций Beacon отдельно от веб-процесса
 ---
 
 # Планировщик
 
-IncidentRelay использует задачи планировщика для напоминаний, эскалаций и периодической логики обслуживания.
+Beacon использует задачи планировщика для напоминаний, эскалаций и периодической логики обслуживания.
 
 Планировщик должен работать как отдельный процесс и не должен запускаться внутри каждого веб-воркера.
 
@@ -28,8 +28,8 @@ gunicorn -w 4
 Рекомендуемая модель:
 
 ```text
-incidentrelay             # HTTP API, UI, incoming webhooks
-incidentrelay-scheduler   # one scheduler process
+beacon             # HTTP API, UI, incoming webhooks
+beacon-scheduler   # one scheduler process
 ```
 
 ## Интервал планировщика и интервал напоминаний
@@ -54,7 +54,7 @@ incidentrelay-scheduler   # one scheduler process
 
 ## Retention данных
 
-IncidentRelay 2.1 запускает один периодический retention job для истории alerts, Explain Trace и Event Orchestration. Периодичность настраивается в отдельной секции:
+Beacon 2.1 запускает один периодический retention job для истории alerts, Explain Trace и Event Orchestration. Периодичность настраивается в отдельной секции:
 
 ```ini
 [retention]
@@ -70,16 +70,16 @@ batch_size = 500
 Процесс планировщика должен использовать:
 
 ```text
-INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
-INCIDENTRELAY_SERVICE=scheduler
+BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
+BEACON_SERVICE=scheduler
 PYTHONUNBUFFERED=1
 ```
 
 Веб-процесс должен использовать:
 
 ```text
-INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
-INCIDENTRELAY_SERVICE=web
+BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
+BEACON_SERVICE=web
 PYTHONUNBUFFERED=1
 ```
 
@@ -96,14 +96,14 @@ python -m app.scheduler_worker
 Пакеты RPM должны устанавливать этот сервис автоматически. Для ручных установок создайте:
 
 ```text
-/etc/systemd/system/incidentrelay-scheduler.service
+/etc/systemd/system/beacon-scheduler.service
 ```
 
 Пример с virtualenv:
 
 ```ini
 [Unit]
-Description=IncidentRelay Scheduler service
+Description=Beacon Scheduler service
 After=network-online.target
 Wants=network-online.target
 
@@ -111,11 +111,11 @@ Wants=network-online.target
 Type=simple
 User=www-data
 Group=www-data
-WorkingDirectory=/var/www/incidentrelay
-Environment=INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
-Environment=INCIDENTRELAY_SERVICE=scheduler
+WorkingDirectory=/var/www/beacon
+Environment=BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
+Environment=BEACON_SERVICE=scheduler
 Environment=PYTHONUNBUFFERED=1
-ExecStart=/var/www/incidentrelay/venv/bin/python -m app.scheduler_worker
+ExecStart=/var/www/beacon/venv/bin/python -m app.scheduler_worker
 Restart=always
 RestartSec=5
 KillSignal=SIGTERM
@@ -129,15 +129,15 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable incidentrelay-scheduler
-sudo systemctl restart incidentrelay-scheduler
-sudo systemctl status incidentrelay-scheduler
+sudo systemctl enable beacon-scheduler
+sudo systemctl restart beacon-scheduler
+sudo systemctl status beacon-scheduler
 ```
 
 Логи:
 
 ```bash
-journalctl -u incidentrelay-scheduler -f
+journalctl -u beacon-scheduler -f
 ```
 
 ## Устранение неполадок
@@ -147,7 +147,7 @@ journalctl -u incidentrelay-scheduler -f
 Проверьте, что запущен только один процесс планировщика:
 
 ```bash
-systemctl status incidentrelay-scheduler
+systemctl status beacon-scheduler
 ps aux | grep scheduler
 ```
 
@@ -167,11 +167,11 @@ ps aux | grep scheduler
 Проверьте:
 
 ```bash
-systemctl show incidentrelay-scheduler --property=Environment
-sudo -u www-data test -r /etc/incidentrelay/incidentrelay.conf
+systemctl show beacon-scheduler --property=Environment
+sudo -u www-data test -r /etc/beacon/beacon.conf
 ```
 
-Для установок RPM используйте пользователя `incidentrelay` вместо `www-data`, если это пользователь сервиса из пакета.
+Для установок RPM используйте пользователя `beacon` вместо `www-data`, если это пользователь сервиса из пакета.
 
 ### База данных SQLite заблокирована
 

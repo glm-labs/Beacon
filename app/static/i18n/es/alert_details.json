@@ -89,7 +89,7 @@
   "alert_details.form.service": "Servicio",
   "alert_details.manual.service_help": "Si seleccionas un servicio, el incidente usará su propiedad y valores predeterminados de escalado.",
   "alert_details.manual.notify_team": "Notificar al equipo",
-  "alert_details.manual.notify_help": "Cuando está habilitado, IncidentRelay programará la notificación mediante el flujo normal de notificaciones de alertas.",
+  "alert_details.manual.notify_help": "Cuando está habilitado, Beacon programará la notificación mediante el flujo normal de notificaciones de alertas.",
   "alert_details.loading": "Cargando...",
   "alert_details.loading.comments": "Cargando comentarios...",
   "alert_details.loading.priority": "Cargando prioridad...",

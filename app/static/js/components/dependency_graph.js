@@ -2,7 +2,7 @@ let serviceDependencyGraphCy = null;
 let serviceDependencyGraphRenderTimer = null;
 let serviceDependencyGraphSearchTimer = null;
 let serviceDependencyGraphExpandedGroups = {};
-const SERVICE_DEPENDENCIES_VIEW_STORAGE_KEY = "incidentrelay.services.dependencies.view";
+const SERVICE_DEPENDENCIES_VIEW_STORAGE_KEY = "beacon.services.dependencies.view";
 let serviceDependenciesView = getStoredServiceDependenciesView();
 
 function getStoredServiceDependenciesView() {
@@ -1942,7 +1942,7 @@ function initializeServiceDependencyGraph() {
         });
 }
 
-document.addEventListener("incidentrelay:theme-change", function () {
+document.addEventListener("beacon:theme-change", function () {
     if (serviceDependenciesView === "graph") {
         scheduleRenderServiceDependencyGraph(0);
     }

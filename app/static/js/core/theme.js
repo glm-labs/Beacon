@@ -1,7 +1,7 @@
 (function (window, document) {
     "use strict";
 
-    const config = window.__INCIDENTRELAY_UI__ || {};
+    const config = window.__BEACON_UI__ || {};
     const supportedThemes = ["system", "light", "dark"];
     const mediaQuery = window.matchMedia
         ? window.matchMedia("(prefers-color-scheme: dark)")
@@ -67,7 +67,7 @@
         applyChartDefaults();
 
         document.dispatchEvent(
-            new CustomEvent("incidentrelay:theme-change", {
+            new CustomEvent("beacon:theme-change", {
                 detail: {
                     preference: preference,
                     colorScheme: colorScheme,

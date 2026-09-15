@@ -1,14 +1,14 @@
 [Unit]
-Description=IncidentRelay Telegram worker
+Description=Beacon Telegram worker
 After=network.target
 
 [Service]
 Type=simple
-User=incidentrelay
-Group=incidentrelay
-WorkingDirectory=/var/www/incidentrelay
+User=beacon
+Group=beacon
+WorkingDirectory=/var/www/beacon
 
-Environment=INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
+Environment=BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
 Environment=PYTHONUNBUFFERED=1
 
 ExecStart=/usr/bin/python3 -m app.telegram_worker

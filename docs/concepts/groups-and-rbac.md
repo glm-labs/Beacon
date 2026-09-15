@@ -5,7 +5,7 @@ description: Access boundaries, group roles, team roles and permissions.
 
 # Groups and RBAC
 
-IncidentRelay uses two permission layers:
+Beacon uses two permission layers:
 
 1. **Group roles** define the access boundary and group-level administration.
 2. **Team roles** define what a user can do inside a specific team.
@@ -65,7 +65,7 @@ A Group Editor cannot:
 - manage every team in the group automatically;
 - edit rotations, routes, services, channels or silences of a team where they are not a Team Manager.
 
-When a Group Editor creates a new team, IncidentRelay adds that user as `manager` of the created team.
+When a Group Editor creates a new team, Beacon adds that user as `manager` of the created team.
 
 Adding an existing user to a group changes the group boundary and is global-admin only.
 
@@ -79,7 +79,7 @@ Adding an existing user to a group changes the group boundary and is global-admi
 
 A group `editor` does not automatically become manager of every team in the group. Team write access requires the `manager` team role.
 
-When a non-admin group `editor` creates a new team, IncidentRelay should add that creator as `manager` of the created team.
+When a non-admin group `editor` creates a new team, Beacon should add that creator as `manager` of the created team.
 
 ## Permission matrix
 

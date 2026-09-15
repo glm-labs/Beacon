@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting
-description: Common IncidentRelay operational problems and checks.
+description: Common Beacon operational problems and checks.
 ---
 
 # Troubleshooting

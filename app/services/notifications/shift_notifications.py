@@ -118,7 +118,7 @@ def _build_shift_email(user, event, event_type):
         f"Starts at: {_format_dt(start_at)}",
         f"Ends at: {_format_dt(end_at)}",
         "",
-        "This notification can be disabled in your IncidentRelay profile.",
+        "This notification can be disabled in your Beacon profile.",
     ]
 
     return subject, "\n".join(lines)

@@ -5,7 +5,7 @@ description: Voice provider callbacks, statuses and keypad actions
 
 # Callbacks and DTMF
 
-IncidentRelay can receive provider callbacks for:
+Beacon can receive provider callbacks for:
 
 - call status changes;
 - DTMF phone keypad input;
@@ -13,15 +13,15 @@ IncidentRelay can receive provider callbacks for:
 
 ## Callback URL
 
-When IncidentRelay creates a call, it passes `callback_url` to the provider.
+When Beacon creates a call, it passes `callback_url` to the provider.
 
 Example:
 
 ```text
-https://incidentrelay.example.com/api/integrations/voice/rule-callback/1234
+https://beacon.example.com/api/integrations/voice/rule-callback/1234
 ```
 
-Providers must use the `request.callback_url` supplied by IncidentRelay instead
+Providers must use the `request.callback_url` supplied by Beacon instead
 of constructing callback URLs themselves. The callback credential is never part
 of the URL. Send `request.callback_secret` in one of these headers:
 
@@ -32,14 +32,14 @@ Authorization: Bearer <callback_secret>
 or:
 
 ```http
-X-IncidentRelay-Callback-Secret: <callback_secret>
+X-Beacon-Callback-Secret: <callback_secret>
 ```
 
 ## Callback flow
 
 The provider should send call events to the callback URL.
 
-IncidentRelay will:
+Beacon will:
 
 ```text
 1. Validate the callback secret from the request header.
@@ -90,7 +90,7 @@ cancelled
 unknown
 ```
 
-IncidentRelay stores the latest status in the notification record and also stores callback history.
+Beacon stores the latest status in the notification record and also stores callback history.
 
 ## DTMF callback
 
@@ -108,7 +108,7 @@ Default mapping:
 Example spoken message:
 
 ```text
-IncidentRelay alert 123.
+Beacon alert 123.
 Disk is full.
 Severity critical.
 Press 1 to acknowledge.
@@ -125,13 +125,13 @@ If the user presses `1`, provider sends:
 }
 ```
 
-IncidentRelay maps it to:
+Beacon maps it to:
 
 ```text
 acknowledge
 ```
 
-If the user presses `2`, IncidentRelay maps it to:
+If the user presses `2`, Beacon maps it to:
 
 ```text
 resolve
@@ -147,7 +147,7 @@ A provider may also send the normalized action directly:
 }
 ```
 
-In this case IncidentRelay does not need to map the digit.
+In this case Beacon does not need to map the digit.
 
 ## Error callback
 
@@ -203,7 +203,7 @@ def parse_callback(self, payload, headers=None, raw_body=None, query_args=None):
     ...
 ```
 
-IncidentRelay validates its own callback secret before calling `parse_callback()`.
+Beacon validates its own callback secret before calling `parse_callback()`.
 
 Provider-specific signature validation is optional but recommended when the provider supports it.
 

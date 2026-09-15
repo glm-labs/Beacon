@@ -1,4 +1,4 @@
-IncidentRelay {{ .Chart.AppVersion }} has been deployed.
+Beacon {{ .Chart.AppVersion }} has been deployed.
 
 Components:
   web        {{ .Values.web.replicaCount }} replica(s)
@@ -12,7 +12,7 @@ Access the web UI:
   http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}
 {{- end }}
 {{- else }}
-  kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "incidentrelay.fullname" . }} {{ .Values.service.port }}:{{ .Values.service.port }}
+  kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "beacon.fullname" . }} {{ .Values.service.port }}:{{ .Values.service.port }}
   then open http://127.0.0.1:{{ .Values.service.port }}
 {{- end }}
 
@@ -20,7 +20,7 @@ Access the web UI:
 {{- if and (not .Values.existingConfigSecret) .Values.config .Values.config.database }}{{- $dbType = .Values.config.database.type | default "" }}{{- end }}
 {{- if eq ($dbType | toString) "sqlite" }}
 
-NOTE: you are running SQLite. IncidentRelay 2.0 keeps scheduler,
+NOTE: you are running SQLite. Beacon 2.0 keeps scheduler,
 Telegram and Slack worker pods on the web pod's node so the shared
 ReadWriteOnce PVC is mounted consistently. Keep web.replicaCount at 1.
 For multi-node or horizontally scaled deployments switch to PostgreSQL.
@@ -34,7 +34,7 @@ callbacks when their dedicated values are empty. This keeps all pods on the
 same keys. Set dedicated random values under config.* if you want key separation.
 {{- else }}
 
-SECURITY: existingConfigSecret is enabled. Ensure incidentrelay.conf contains
+SECURITY: existingConfigSecret is enabled. Ensure beacon.conf contains
 a unique main.secret_key and a stable auth.jwt_secret (or lets jwt_secret fall
 back to main.secret_key) shared by every web replica.
 {{- end }}

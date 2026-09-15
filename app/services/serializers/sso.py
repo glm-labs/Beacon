@@ -61,8 +61,8 @@ def serialize_sso_provider(provider):
 
 def serialize_sso_group_mapping(mapping):
     """Serialize SSO group mapping."""
-    group = mapping.incidentrelay_group
-    team = mapping.incidentrelay_team if mapping.incidentrelay_team_id else None
+    group = mapping.beacon_group
+    team = mapping.beacon_team if mapping.beacon_team_id else None
 
     return {
         "id": mapping.id,

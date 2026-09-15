@@ -1,11 +1,11 @@
 ---
 title: New Relic
-description: Send New Relic Alerts Workflow issue notifications to IncidentRelay through a native webhook route.
+description: Send New Relic Alerts Workflow issue notifications to Beacon through a native webhook route.
 ---
 
 # New Relic integration
 
-IncidentRelay accepts New Relic issue notifications from **Alerts → Workflows** through a native incoming route.
+Beacon accepts New Relic issue notifications from **Alerts → Workflows** through a native incoming route.
 
 Endpoint:
 
@@ -13,7 +13,7 @@ Endpoint:
 POST /api/integrations/new-relic
 ```
 
-## Create the IncidentRelay route
+## Create the Beacon route
 
 Create a route with:
 
@@ -34,10 +34,10 @@ Attach the required notification channels, save the route, and copy its intake t
 In New Relic, open **Alerts → Destinations**, create a **Webhook** destination, and use:
 
 ```text
-https://incidentrelay.example.com/api/integrations/new-relic
+https://beacon.example.com/api/integrations/new-relic
 ```
 
-Enable **Bearer Token** authorization and use the IncidentRelay route intake token as the token value.
+Enable **Bearer Token** authorization and use the Beacon route intake token as the token value.
 
 Then create or edit an **Alerts Workflow**, select the webhook destination, and use the following JSON message template:
 
@@ -62,9 +62,9 @@ Use **Send test notification** in New Relic before activating the workflow.
 
 ## Lifecycle and deduplication
 
-`issueId` is the preferred identity. The recommended template maps it to `issue_id`, and IncidentRelay uses it as both the external id and deduplication key.
+`issueId` is the preferred identity. The recommended template maps it to `issue_id`, and Beacon uses it as both the external id and deduplication key.
 
-This means notifications for the same New Relic issue update one IncidentRelay alert instead of creating a new alert for every workflow update.
+This means notifications for the same New Relic issue update one Beacon alert instead of creating a new alert for every workflow update.
 
 Resolved-like values are mapped to `resolved`:
 
@@ -79,9 +79,9 @@ Other issue states remain `firing`. A non-empty `issueClosedAt` field in a nativ
 
 ## Severity mapping
 
-IncidentRelay maps New Relic issue priority/severity directly through the common severity normalizer:
+Beacon maps New Relic issue priority/severity directly through the common severity normalizer:
 
-| New Relic | IncidentRelay |
+| New Relic | Beacon |
 |---|---|
 | `CRITICAL` | `critical` |
 | `HIGH` | `high` |
@@ -93,9 +93,9 @@ If neither priority nor severity is present, the event uses `info`.
 
 ## Labels
 
-The recommended template sends `accumulations.rawTag` as `labels`. New Relic tag values can be arrays; IncidentRelay flattens each label to its first non-empty value so it can be used by matchers.
+The recommended template sends `accumulations.rawTag` as `labels`. New Relic tag values can be arrays; Beacon flattens each label to its first non-empty value so it can be used by matchers.
 
-IncidentRelay also adds normalized metadata labels:
+Beacon also adds normalized metadata labels:
 
 ```text
 new_relic_issue_id
@@ -135,7 +135,7 @@ A custom template is still recommended because it makes the integration contract
 ## Test request
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/new-relic' \
+curl -X POST 'https://beacon.example.com/api/integrations/new-relic' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer ROUTE_TOKEN' \
   -d '{

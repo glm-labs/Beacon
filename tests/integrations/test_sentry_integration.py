@@ -281,7 +281,7 @@ def test_sentry_endpoint_rejects_invalid_signature(client, db):
     assert response.get_json()["error"] == "sentry_signature_invalid"
 
 
-def test_sentry_endpoint_accepts_valid_signature_without_incidentrelay_token(
+def test_sentry_endpoint_accepts_valid_signature_without_beacon_token(
     client,
     monkeypatch,
     db,

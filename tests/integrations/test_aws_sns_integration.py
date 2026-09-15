@@ -34,7 +34,7 @@ from app.modules.db.models import (
 
 TOPIC_ARN = (
     "arn:aws:sns:eu-west-1:"
-    "123456789012:incidentrelay-alerts"
+    "123456789012:beacon-alerts"
 )
 
 CERT_URL = (
@@ -592,7 +592,7 @@ def sns_subscription_confirmation():
             "?Action=ConfirmSubscription"
             "&TopicArn="
             "arn%3Aaws%3Asns%3Aeu-west-1%3A"
-            "123456789012%3Aincidentrelay-alerts"
+            "123456789012%3Abeacon-alerts"
             "&Token=confirmation-token"
         ),
         "Timestamp": "2026-06-21T09:00:00.000Z",

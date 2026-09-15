@@ -1,6 +1,6 @@
 ---
 title: Alert comments
-description: Creating, viewing, editing and deleting alert group comments in IncidentRelay
+description: Creating, viewing, editing and deleting alert group comments in Beacon
 ---
 
 # Alert comments

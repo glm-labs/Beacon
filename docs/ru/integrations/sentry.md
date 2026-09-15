@@ -5,15 +5,15 @@ description: Подписанные вебхуки Sentry для issue, метр
 
 # Интеграция с Sentry
 
-IncidentRelay может получать подписанные вебхуки от Sentry Internal Integrations и превращать алерты по issue, метрические алерты и события жизненного цикла issue из Sentry в алерты IncidentRelay.
+Beacon может получать подписанные вебхуки от Sentry Internal Integrations и превращать алерты по issue, метрические алерты и события жизненного цикла issue из Sentry в алерты Beacon.
 
 Интеграция с Sentry привязана к маршруту: у каждого маршрута Sentry есть свой URL вебхука и свой секрет вебхука Sentry. Секрет хранится в настройках интеграции маршрута и никогда не возвращается API.
 
 ## Поддерживаемые события Sentry
 
-IncidentRelay поддерживает следующие ресурсы вебхуков Sentry:
+Beacon поддерживает следующие ресурсы вебхуков Sentry:
 
-| Ресурс Sentry | Типичное действие | Статус IncidentRelay | Примечания |
+| Ресурс Sentry | Типичное действие | Статус Beacon | Примечания |
 | --- | --- | --- | --- |
 | `event_alert` | `triggered` | `firing` | Сработало действие правила алерта по issue. |
 | `metric_alert` | `critical` | `firing` | Метрический алерт перешёл в критическое состояние. |
@@ -24,20 +24,20 @@ IncidentRelay поддерживает следующие ресурсы веб�
 | `issue` | `resolved` | `resolved` | Issue был разрешён в Sentry. |
 | `issue` | `ignored` | `resolved` | Issue был проигнорирован или архивирован в Sentry. |
 
-Для алертов по issue IncidentRelay использует id issue из Sentry как ключ дедупликации. Это позволяет более позднему событию `issue.resolved` разрешить тот же алерт IncidentRelay, который был создан событием `event_alert.triggered`.
+Для алертов по issue Beacon использует id issue из Sentry как ключ дедупликации. Это позволяет более позднему событию `issue.resolved` разрешить тот же алерт Beacon, который был создан событием `event_alert.triggered`.
 
 ## Прежде чем начать
 
 Вам понадобится:
 
-- команда IncidentRelay и права на управление маршрутами;
-- публичный HTTPS URL для IncidentRelay, до которого может достучаться Sentry;
+- команда Beacon и права на управление маршрутами;
+- публичный HTTPS URL для Beacon, до которого может достучаться Sentry;
 - права администратора или менеджера организации Sentry для создания Internal Integration;
 - полностью развёрнутая реализация интеграции с Sentry, включая миграцию `integration_config`.
 
-Не используйте устаревший Sentry Webhook Plugin для этой интеграции. Используйте Sentry Internal Integration, потому что IncidentRelay проверяет заголовок `Sentry-Hook-Signature`, отправляемый вебхуками Internal Integration.
+Не используйте устаревший Sentry Webhook Plugin для этой интеграции. Используйте Sentry Internal Integration, потому что Beacon проверяет заголовок `Sentry-Hook-Signature`, отправляемый вебхуками Internal Integration.
 
-## Шаг 1: Создайте маршрут Sentry в IncidentRelay
+## Шаг 1: Создайте маршрут Sentry в Beacon
 
 Откройте **Routes** и создайте новый маршрут:
 
@@ -77,10 +77,10 @@ IncidentRelay поддерживает следующие ресурсы веб�
 ["project_slug", "sentry_alert_id"]
 ```
 
-После создания маршрута IncidentRelay показывает URL вебхука, похожий на:
+После создания маршрута Beacon показывает URL вебхука, похожий на:
 
 ```text
-https://incidentrelay.example.com/api/integrations/sentry/42
+https://beacon.example.com/api/integrations/sentry/42
 ```
 
 Скопируйте этот URL. Вы вставите его в Sentry.
@@ -95,8 +95,8 @@ https://incidentrelay.example.com/api/integrations/sentry/42
 
 | Настройка Sentry | Значение |
 | --- | --- |
-| Name | `IncidentRelay` или имя, специфичное для маршрута, например `IncidentRelay Backend` |
-| Webhook URL | URL, скопированный из IncidentRelay, например `https://incidentrelay.example.com/api/integrations/sentry/42` |
+| Name | `Beacon` или имя, специфичное для маршрута, например `Beacon Backend` |
+| Webhook URL | URL, скопированный из Beacon, например `https://beacon.example.com/api/integrations/sentry/42` |
 | Alert Rule Action | Включено |
 
 Включите ресурсы вебхуков, необходимые для вашего потока алертов:
@@ -107,18 +107,18 @@ https://incidentrelay.example.com/api/integrations/sentry/42
 
 Сохраните Sentry Internal Integration.
 
-## Шаг 3: Скопируйте Sentry Client Secret в IncidentRelay
+## Шаг 3: Скопируйте Sentry Client Secret в Beacon
 
 После создания Internal Integration Sentry показывает учётные данные интеграции.
 
-Скопируйте **Client Secret** и вставьте его в маршрут IncidentRelay:
+Скопируйте **Client Secret** и вставьте его в маршрут Beacon:
 
-1. Откройте маршрут Sentry в IncidentRelay.
+1. Откройте маршрут Sentry в Beacon.
 2. Нажмите **Edit**.
 3. Вставьте значение в **Sentry webhook secret**.
 4. Сохраните маршрут.
 
-IncidentRelay хранит секрет в `route.integration_config.sentry.webhook_secret` и использует его для проверки входящих вебхуков.
+Beacon хранит секрет в `route.integration_config.sentry.webhook_secret` и использует его для проверки входящих вебхуков.
 
 API предоставит только:
 
@@ -135,7 +135,7 @@ API предоставит только:
 
 Он не вернёт сырой секрет.
 
-## Шаг 4: Добавьте IncidentRelay в правила алертов Sentry
+## Шаг 4: Добавьте Beacon в правила алертов Sentry
 
 Создайте или отредактируйте правила алертов Sentry.
 
@@ -144,7 +144,7 @@ API предоставит только:
 1. Откройте проект Sentry.
 2. Перейдите в **Alerts**.
 3. Создайте или отредактируйте правило алерта по issue.
-4. В разделе действий выберите действие интеграции IncidentRelay.
+4. В разделе действий выберите действие интеграции Beacon.
 5. Сохраните правило.
 
 Для метрических алертов:
@@ -152,10 +152,10 @@ API предоставит только:
 1. Откройте проект Sentry.
 2. Перейдите в **Alerts**.
 3. Создайте или отредактируйте правило метрического алерта.
-4. Выберите действие интеграции IncidentRelay.
+4. Выберите действие интеграции Beacon.
 5. Сохраните правило.
 
-Когда срабатывает правило алерта Sentry, Sentry отправляет подписанный вебхук в IncidentRelay. IncidentRelay проверяет подпись и нормализует событие во внутренний алерт.
+Когда срабатывает правило алерта Sentry, Sentry отправляет подписанный вебхук в Beacon. Beacon проверяет подпись и нормализует событие во внутренний алерт.
 
 ## Как работает маршрутизация
 
@@ -229,16 +229,16 @@ sentry:metric:<sentry_alert_id>
 
 Это означает:
 
-- повторные срабатывания алертов по issue Sentry обновляют тот же алерт IncidentRelay;
-- `issue.resolved` разрешает существующий алерт IncidentRelay по тому же issue;
+- повторные срабатывания алертов по issue Sentry обновляют тот же алерт Beacon;
+- `issue.resolved` разрешает существующий алерт Beacon по тому же issue;
 - `metric_alert.resolved` разрешает существующий метрический алерт;
 - payload issue и метрик Sentry могут использовать разные ресурсы, при этом разрешая корректный алерт.
 
 ## Модель безопасности
 
-Вебхуки Sentry не используют токен приёма IncidentRelay.
+Вебхуки Sentry не используют токен приёма Beacon.
 
-Вместо этого IncidentRelay проверяет:
+Вместо этого Beacon проверяет:
 
 - id маршрута из URL: `/api/integrations/sentry/{route_id}`;
 - источник маршрута — `sentry`;

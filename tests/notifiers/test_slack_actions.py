@@ -31,7 +31,7 @@ def make_action_body(
         "actions": [
             {
                 "action_id": (
-                    f"incidentrelay_{action}"
+                    f"beacon_{action}"
                 ),
                 "value": json.dumps(
                     {

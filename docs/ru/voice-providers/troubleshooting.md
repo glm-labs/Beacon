@@ -16,10 +16,10 @@ voice provider not found: mango
 Проверьте:
 
 ```text
-- File exists: /usr/local/lib/incidentrelay/voice_providers/mango.py
+- File exists: /usr/local/lib/beacon/voice_providers/mango.py
 - Channel config has: "provider": "mango"
 - File name contains only letters, numbers and underscore
-- IncidentRelay was restarted after adding the file
+- Beacon was restarted after adding the file
 ```
 
 ## Отсутствует класс провайдера
@@ -61,12 +61,12 @@ mango config requires: api_url, api_token
 "api_token": "${VOICE_API_TOKEN}"
 ```
 
-Проверьте, что переменная окружения существует для процесса IncidentRelay.
+Проверьте, что переменная окружения существует для процесса Beacon.
 
 Для systemd:
 
 ```bash
-sudo systemctl show incidentrelay --property=Environment
+sudo systemctl show beacon --property=Environment
 ```
 
 Или проверьте свой service unit / файл окружения.
@@ -114,7 +114,7 @@ sudo systemctl show incidentrelay --property=Environment
 ```text
 - Provider returned call_id from place_call().
 - Provider sends the same call_id in callbacks.
-- IncidentRelay stored external_message_id for the notification.
+- Beacon stored external_message_id for the notification.
 - Callback is sent to the same channel_id that created the call.
 ```
 
@@ -124,7 +124,7 @@ sudo systemctl show incidentrelay --property=Environment
 
 ```text
 - All HTTP requests have timeouts.
-- Provider API endpoint is reachable from IncidentRelay.
+- Provider API endpoint is reachable from Beacon.
 - DNS resolution works.
 - Firewall allows outbound provider traffic.
 ```
@@ -150,13 +150,13 @@ requests.post(url, json=payload)
 2. Set test_phone.
 3. Configure only one test severity, for example critical.
 4. Trigger a test notification.
-5. Check IncidentRelay logs.
+5. Check Beacon logs.
 6. Check provider-side logs or dashboard.
 7. Confirm that call_id is returned.
 8. Confirm that call status callbacks are received.
 9. Confirm that DTMF callback with digit 1 acknowledges the alert.
 10. Confirm that DTMF callback with digit 2 resolves the alert.
-11. Confirm that provider errors are visible in IncidentRelay logs.
+11. Confirm that provider errors are visible in Beacon logs.
 12. Confirm that secrets and full phone numbers are not logged.
 13. Enable the provider for real alert routes.
 ```

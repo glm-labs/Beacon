@@ -1,13 +1,13 @@
-# PagerDuty → IncidentRelay migration tool
+# PagerDuty → Beacon migration tool
 
-`migrate_pagerduty.py` transfers PagerDuty configuration to IncidentRelay through the public HTTP APIs of both products. It does not access either database directly.
+`migrate_pagerduty.py` transfers PagerDuty configuration to Beacon through the public HTTP APIs of both products. It does not access either database directly.
 
 The command is **dry-run by default**. Add `--apply` only after reviewing the generated report.
 
 ## Migrated resources
 
 - users, matched by email;
-- IncidentRelay group membership;
+- Beacon group membership;
 - PagerDuty teams and team membership;
 - legacy PagerDuty schedules;
 - schedule layers and participant order;
@@ -15,7 +15,7 @@ The command is **dry-run by default**. Add `--apply` only after reviewing the ge
 - future schedule overrides;
 - escalation policies and targets;
 - services;
-- IncidentRelay Webhook routes compatible with PagerDuty Events API v2;
+- Beacon Webhook routes compatible with PagerDuty Events API v2;
 - active and future maintenance windows.
 
 ## Deliberate limitations
@@ -24,17 +24,17 @@ The command is **dry-run by default**. Add `--apply` only after reviewing the ge
 - Event Orchestrations and Rulesets are not converted.
 - PagerDuty V3 shift-based schedules are saved to the source snapshot but not imported.
 - User phone numbers, contact methods, notification rules and notification channels are not copied.
-- PagerDuty services with several teams are assigned to the first mapped IncidentRelay team and reported as degraded.
-- A PagerDuty schedule or escalation policy shared by several teams is cloned because IncidentRelay rotations and policies belong to one team.
-- Parallel targets in one PagerDuty escalation rule are converted to consecutive IncidentRelay rules. The first target keeps the original delay; additional targets use zero delay. This approximation is recorded in the report.
-- Created routes have no notification channels. Configure channels or notification policies in IncidentRelay before production cutover.
+- PagerDuty services with several teams are assigned to the first mapped Beacon team and reported as degraded.
+- A PagerDuty schedule or escalation policy shared by several teams is cloned because Beacon rotations and policies belong to one team.
+- Parallel targets in one PagerDuty escalation rule are converted to consecutive Beacon rules. The first target keeps the original delay; additional targets use zero delay. This approximation is recorded in the report.
+- Created routes have no notification channels. Configure channels or notification policies in Beacon before production cutover.
 
 ## Requirements
 
 - Python 3.10 or newer;
 - a PagerDuty REST API token with read access to the resources being migrated;
-- an IncidentRelay personal API token associated with a global administrator;
-- an existing IncidentRelay group ID that will own the imported teams.
+- an Beacon personal API token associated with a global administrator;
+- an existing Beacon group ID that will own the imported teams.
 
 No third-party Python modules are required.
 
@@ -44,8 +44,8 @@ Environment variables are preferable to command-line secrets:
 
 ```bash
 export PAGERDUTY_TOKEN='pd-rest-api-token'
-export INCIDENTRELAY_URL='https://incidentrelay.example.com'
-export INCIDENTRELAY_TOKEN='ir-admin-api-token'
+export BEACON_URL='https://beacon.example.com'
+export BEACON_TOKEN='ir-admin-api-token'
 ```
 
 For a PagerDuty EU account:
@@ -64,7 +64,7 @@ python migrate_pagerduty.py \
   --output-dir ./pagerduty-migration-output
 ```
 
-A dry-run reads both APIs but performs no writes in IncidentRelay.
+A dry-run reads both APIs but performs no writes in Beacon.
 
 Review:
 
@@ -100,7 +100,7 @@ python migrate_pagerduty.py \
 The apply run additionally creates:
 
 ```text
-state.json             resumable PagerDuty ID → IncidentRelay ID mappings
+state.json             resumable PagerDuty ID → Beacon ID mappings
 route-secrets.json     generated Webhook intake tokens
 route-switch-map.csv   endpoint and routing_key cutover table
 ```
@@ -114,14 +114,14 @@ Do not delete `state.json` between retries. The tool saves progress after every 
 For each migrated PagerDuty service, the CSV contains:
 
 ```text
-endpoint=https://incidentrelay.example.com/api/integrations/webhook
-routing_key=<generated IncidentRelay route intake token>
+endpoint=https://beacon.example.com/api/integrations/webhook
+routing_key=<generated Beacon route intake token>
 ```
 
-A PagerDuty Events API v2-compatible event can then be sent to IncidentRelay:
+A PagerDuty Events API v2-compatible event can then be sent to Beacon:
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
+curl -X POST 'https://beacon.example.com/api/integrations/webhook' \
   -H 'Content-Type: application/json' \
   -d '{
     "routing_key": "<routing_key from route-switch-map.csv>",
@@ -147,7 +147,7 @@ python migrate_pagerduty.py --group-id 1 --only users,teams,schedules
 
 Dependencies are migrated automatically. For example, the `services` stage also prepares required users, teams, schedules and escalation policies.
 
-Skip users that do not already exist in IncidentRelay:
+Skip users that do not already exist in Beacon:
 
 ```bash
 python migrate_pagerduty.py --group-id 1 --missing-users skip
@@ -180,14 +180,14 @@ python migrate_pagerduty.py --group-id 1 --strict
 ## Recommended cutover sequence
 
 1. Run dry-run and resolve all unexpected warnings.
-2. Back up IncidentRelay.
-3. Run `--apply` in a non-production IncidentRelay environment first.
+2. Back up Beacon.
+3. Run `--apply` in a non-production Beacon environment first.
 4. Compare teams, rotations and escalation policies with PagerDuty.
-5. Configure IncidentRelay notification channels and notification policies.
+5. Configure Beacon notification channels and notification policies.
 6. Send test `trigger`, `acknowledge` and `resolve` Events API v2 payloads.
 7. Switch one low-risk service using `route-switch-map.csv`.
 8. Observe one on-call cycle before switching the remaining services.
-9. Keep PagerDuty configuration unchanged until the IncidentRelay cutover is verified.
+9. Keep PagerDuty configuration unchanged until the Beacon cutover is verified.
 
 ## Validation
 

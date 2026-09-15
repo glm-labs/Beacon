@@ -1,6 +1,6 @@
 # Service SLI / SLO
 
-IncidentRelay SLI/SLO adds service-level reliability targets using the data IncidentRelay already owns: alert groups, acknowledgement and resolution timestamps, service status, maintenance windows, and service catalog metadata.
+Beacon SLI/SLO adds service-level reliability targets using the data Beacon already owns: alert groups, acknowledgement and resolution timestamps, service status, maintenance windows, and service catalog metadata.
 
 The feature is intentionally named **SLI / SLO** in the UI and API.
 
@@ -268,7 +268,7 @@ Common fields:
 | `slug` | Stable identifier inside the service. |
 | `name` | Human-readable SLI name. |
 | `description` | Optional explanation. |
-| `sli_type` | What IncidentRelay measures. |
+| `sli_type` | What Beacon measures. |
 | `source` | Where measurement data comes from. |
 | `severity` | Optional severity filter for response SLI types, for example `critical`. |
 | `priority` | Optional single priority filter, for example `p1`. For impact SLI types prefer `configuration.priority_scope`. |
@@ -287,7 +287,7 @@ incident_count
 Supported first-party source:
 
 ```text
-incidentrelay_alert_groups
+beacon_alert_groups
 ```
 
 Future sources can be added later, for example Prometheus, blackbox checks, logs or external metrics APIs.
@@ -383,7 +383,7 @@ There are no matching events in the window or the SLO cannot be evaluated.
 
 ## Error budget
 
-For `incident_availability`, IncidentRelay calculates error budget fields.
+For `incident_availability`, Beacon calculates error budget fields.
 
 ```text
 budget_seconds = window_seconds * (100% - target%)
@@ -415,7 +415,7 @@ Create SLI:
 ```text
 Name: Critical alert acknowledgement latency
 SLI type: Alert acknowledgement latency
-Source: IncidentRelay alert groups
+Source: Beacon alert groups
 Severity: critical
 Enabled: yes
 ```
@@ -439,7 +439,7 @@ Create SLI:
 ```text
 Name: P1/P2 incident availability
 SLI type: Incident-based availability
-Source: IncidentRelay alert groups
+Source: Beacon alert groups
 Priority scope: P1, P2
 Enabled: yes
 ```
@@ -463,7 +463,7 @@ Create SLI:
 ```text
 Name: Critical incident count
 SLI type: Impact incident count
-Source: IncidentRelay alert groups
+Source: Beacon alert groups
 Severity: critical
 Enabled: yes
 ```
@@ -527,7 +527,7 @@ Content-Type: application/json
   "name": "Critical alert acknowledgement latency",
   "description": "How quickly critical alert groups are acknowledged.",
   "sli_type": "alert_ack_latency",
-  "source": "incidentrelay_alert_groups",
+  "source": "beacon_alert_groups",
   "severity": "critical",
   "enabled": true
 }
@@ -564,7 +564,7 @@ Create SLI:
   "slug": "critical-incident-availability",
   "name": "Critical incident availability",
   "sli_type": "incident_availability",
-  "source": "incidentrelay_alert_groups",
+  "source": "beacon_alert_groups",
   "severity": "critical",
   "enabled": true
 }
@@ -593,7 +593,7 @@ Create SLI:
   "slug": "critical-incident-count",
   "name": "Critical incident count",
   "sli_type": "incident_count",
-  "source": "incidentrelay_alert_groups",
+  "source": "beacon_alert_groups",
   "severity": "critical",
   "enabled": true
 }
@@ -703,7 +703,7 @@ Services → service row → Details → Timeline
 
 ## Current limitations
 
-IncidentRelay currently supports first-party SLIs based on alert groups and incident/status accounting. It does not yet calculate these external SLIs:
+Beacon currently supports first-party SLIs based on alert groups and incident/status accounting. It does not yet calculate these external SLIs:
 
 ```text
 Prometheus latency

@@ -63,7 +63,7 @@ def propfind_root():
 
     add_response(root, "/caldav/", [
         collection_resource_type(),
-        text_prop(DAV_NS, "displayname", "IncidentRelay CalDAV"),
+        text_prop(DAV_NS, "displayname", "Beacon CalDAV"),
         current_user_principal(principal_href),
         principal_url(principal_href),
         calendar_home_set(calendar_home_href),
@@ -107,7 +107,7 @@ def propfind_calendar_home():
 
     add_response(root, "/caldav/calendars/", [
         collection_resource_type(),
-        text_prop(DAV_NS, "displayname", "IncidentRelay calendars"),
+        text_prop(DAV_NS, "displayname", "Beacon calendars"),
         current_user_privilege_set(read_only=True),
     ])
 
@@ -213,7 +213,7 @@ def proppatch_multistatus_response(href):
     """Return successful WebDAV PROPPATCH response.
 
     Apple Calendar sends PROPPATCH to store client-side calendar properties
-    like color, display name or order. IncidentRelay is read-only, but these
+    like color, display name or order. Beacon is read-only, but these
     client-side updates are harmless, so we accept them as no-op.
     """
     root = multistatus()
@@ -267,7 +267,7 @@ def proppatch_team_calendar(team_id):
 @caldav_bp.route("/principals/<path:any_path>", methods=["PUT", "DELETE", "MKCALENDAR"])
 @caldav_bp.route("/calendars/<path:any_path>", methods=["PUT", "DELETE", "MKCALENDAR"])
 def readonly_methods(**kwargs):
-    return Response("IncidentRelay CalDAV is read-only\n", status=403)
+    return Response("Beacon CalDAV is read-only\n", status=403)
 
 
 def get_report_kind():

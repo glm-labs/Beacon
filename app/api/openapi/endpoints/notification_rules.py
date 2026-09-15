@@ -184,7 +184,7 @@ def paths():
                 "description": (
                     "Returns profile notification rules owned by the current user. "
                     "Rules are ordered by position. If the user has no custom rules, "
-                    "IncidentRelay may still send default browser push notifications "
+                    "Beacon may still send default browser push notifications "
                     "when browser push is enabled in the profile."
                 ),
                 "operationId": "listProfileNotificationRules",

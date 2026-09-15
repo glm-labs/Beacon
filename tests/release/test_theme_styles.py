@@ -143,7 +143,7 @@ def test_dependency_graph_reads_shared_theme_tokens_and_reacts_to_theme_change()
     assert "serviceDependencyGraphThemeColor" in source
     assert '"--md-surface"' in source
     assert '"--md-partial-outage"' in source
-    assert '"incidentrelay:theme-change"' in source
+    assert '"beacon:theme-change"' in source
     assert '"border-color": theme.majorOutage' in source
     assert '"border-color": theme.maintenance' in source
 

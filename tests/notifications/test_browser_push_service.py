@@ -242,7 +242,7 @@ def test_build_alert_push_payload_for_firing_group_creates_ack_and_resolve_token
     assert payload["title"] == "CRITICAL: [P1] DiskFull"
     assert payload["alert_id"] == alert_group.id
     assert payload["alert_group_id"] == alert_group.id
-    assert payload["tag"] == f"incidentrelay-alert-group-{alert_group.id}"
+    assert payload["tag"] == f"beacon-alert-group-{alert_group.id}"
     assert payload["require_interaction"] is True
     assert payload["renotify"] is True
     assert payload["silent"] is False

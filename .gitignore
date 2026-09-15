@@ -24,7 +24,7 @@ logs/
 *.db
 
 # Local config (operators put real secrets here)
-incidentrelay.conf
+beacon.conf
 *.local.conf
 
 # IDE / editor

@@ -1,11 +1,11 @@
 ---
 title: CalDAV calendar sync
-description: Read-only CalDAV sync for IncidentRelay team on-call schedules.
+description: Read-only CalDAV sync for Beacon team on-call schedules.
 ---
 
 # CalDAV calendar sync
 
-IncidentRelay can expose team on-call schedules as read-only CalDAV calendars. This is useful for calendar clients that support CalDAV directly, such as Apple Calendar, Thunderbird and DAVx5.
+Beacon can expose team on-call schedules as read-only CalDAV calendars. This is useful for calendar clients that support CalDAV directly, such as Apple Calendar, Thunderbird and DAVx5.
 
 Each accessible team is exposed as a separate calendar. Users only see calendars for teams they are allowed to read.
 
@@ -28,12 +28,12 @@ For Outlook and Google Calendar, use [ICS calendar feeds](ics-calendar-feed.md).
 
 ## Requirements
 
-- IncidentRelay must be reachable over HTTPS from the calendar client.
+- Beacon must be reachable over HTTPS from the calendar client.
 - The user must have access to at least one team calendar.
 - The user must create a personal API token with the `calendar:read` scope.
 - The user must use the personal API token as the CalDAV password.
 
-Do not use the user's normal IncidentRelay password for CalDAV.
+Do not use the user's normal Beacon password for CalDAV.
 
 ## Create a CalDAV API token
 
@@ -51,10 +51,10 @@ The token is shown only once. If it is lost, revoke it and create a new one.
 Use the base CalDAV endpoint:
 
 ```text
-https://incidentrelay.example.com/caldav/
+https://beacon.example.com/caldav/
 ```
 
-Replace `incidentrelay.example.com` with your IncidentRelay hostname.
+Replace `beacon.example.com` with your Beacon hostname.
 
 Do not use a direct team calendar path during Apple Calendar account setup. Apple Calendar should discover calendars through the CalDAV root endpoint.
 
@@ -66,9 +66,9 @@ Use these values:
 
 ```text
 Account Type: Advanced
-User Name: your IncidentRelay username or email
+User Name: your Beacon username or email
 Password: personal API token with calendar:read
-Server Address: incidentrelay.example.com
+Server Address: beacon.example.com
 Server Path: /caldav/
 Port: 443
 Use SSL: enabled
@@ -79,13 +79,13 @@ Important: the **Server Address** field must contain only the hostname. Do not i
 Correct:
 
 ```text
-incidentrelay.example.com
+beacon.example.com
 ```
 
 Incorrect:
 
 ```text
-https://incidentrelay.example.com
+https://beacon.example.com
 ```
 
 ## Apple Calendar on iOS or iPadOS
@@ -95,10 +95,10 @@ Open **Settings → Calendar → Accounts → Add Account → Other → Add CalD
 Use:
 
 ```text
-Server: incidentrelay.example.com
-User Name: your IncidentRelay username or email
+Server: beacon.example.com
+User Name: your Beacon username or email
 Password: personal API token with calendar:read
-Description: IncidentRelay
+Description: Beacon
 ```
 
 If the client asks for advanced settings, use:
@@ -117,10 +117,10 @@ Use SSL: enabled
 4. Enter the CalDAV URL:
 
 ```text
-https://incidentrelay.example.com/caldav/
+https://beacon.example.com/caldav/
 ```
 
-5. Use your IncidentRelay username or email.
+5. Use your Beacon username or email.
 6. Use the personal API token as the password.
 7. Select the team calendars you want to subscribe to.
 
@@ -131,8 +131,8 @@ https://incidentrelay.example.com/caldav/
 3. Use:
 
 ```text
-Base URL: https://incidentrelay.example.com/caldav/
-User name: your IncidentRelay username or email
+Base URL: https://beacon.example.com/caldav/
+User name: your Beacon username or email
 Password: personal API token with calendar:read
 ```
 
@@ -140,7 +140,7 @@ Password: personal API token with calendar:read
 
 ## Read-only behavior
 
-IncidentRelay CalDAV calendars are read-only.
+Beacon CalDAV calendars are read-only.
 
 Allowed operations:
 
@@ -161,7 +161,7 @@ DELETE
 MKCALENDAR
 ```
 
-Some clients, especially Apple Calendar, may send `PROPPATCH` to store local calendar properties such as color, display name or order. IncidentRelay accepts these requests as no-op so that read-only calendar refresh continues to work.
+Some clients, especially Apple Calendar, may send `PROPPATCH` to store local calendar properties such as color, display name or order. Beacon accepts these requests as no-op so that read-only calendar refresh continues to work.
 
 ## Troubleshooting
 
@@ -169,7 +169,7 @@ Some clients, especially Apple Calendar, may send `PROPPATCH` to store local cal
 
 Check that:
 
-- the username is the IncidentRelay username or email;
+- the username is the Beacon username or email;
 - the password is a personal API token, not the user password;
 - the token has the `calendar:read` scope;
 - the token is not revoked or expired;
@@ -182,7 +182,7 @@ curl -i \
   -u 'user@example.com:PERSONAL_API_TOKEN' \
   -X PROPFIND \
   -H 'Depth: 0' \
-  https://incidentrelay.example.com/caldav/
+  https://beacon.example.com/caldav/
 ```
 
 A successful response should be `207 Multi-Status`.
@@ -225,7 +225,7 @@ curl -i \
   -u 'user@example.com:PERSONAL_API_TOKEN' \
   -X PROPFIND \
   -H 'Depth: 1' \
-  https://incidentrelay.example.com/caldav/calendars/
+  https://beacon.example.com/caldav/calendars/
 ```
 
 The response should include calendar hrefs like:
@@ -241,4 +241,4 @@ The response should include calendar hrefs like:
 - Revoke the token from Profile to stop CalDAV access.
 - Do not log the `Authorization` header.
 - Do not expose CalDAV over plain HTTP in production.
-- CalDAV does not allow users to edit IncidentRelay schedules from external calendar clients.
+- CalDAV does not allow users to edit Beacon schedules from external calendar clients.

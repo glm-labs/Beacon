@@ -1,40 +1,40 @@
 ---
 title: Logging
-description: IncidentRelay logging locations, fields and troubleshooting notes.
+description: Beacon logging locations, fields and troubleshooting notes.
 ---
 
 # Logging
 
-IncidentRelay writes structured JSON-style logs for alert intake, notifications, scheduler activity and errors.
+Beacon writes structured JSON-style logs for alert intake, notifications, scheduler activity and errors.
 
 ## Where to look
 
 Systemd installations:
 
 ```bash
-journalctl -u incidentrelay -f
-journalctl -u incidentrelay-scheduler -f
+journalctl -u beacon -f
+journalctl -u beacon-scheduler -f
 ```
 
 RPM installations use the same service names:
 
 ```bash
-journalctl -u incidentrelay -f
-journalctl -u incidentrelay-scheduler -f
-journalctl -u incidentrelay-telegram-worker -f
+journalctl -u beacon -f
+journalctl -u beacon-scheduler -f
+journalctl -u beacon-telegram-worker -f
 ```
 
 Docker installations:
 
 ```bash
-docker compose logs -f incidentrelay
-docker compose logs -f incidentrelay-scheduler
+docker compose logs -f beacon
+docker compose logs -f beacon-scheduler
 ```
 
 If file logging is configured:
 
 ```bash
-tail -f /var/log/incidentrelay/incidentrelay.log
+tail -f /var/log/beacon/beacon.log
 ```
 
 ## Useful fields
@@ -68,6 +68,6 @@ error
 
 ## Notification logs
 
-`notification sent` means IncidentRelay handed the message to the downstream provider or SMTP relay without an exception. It does not guarantee final delivery.
+`notification sent` means Beacon handed the message to the downstream provider or SMTP relay without an exception. It does not guarantee final delivery.
 
 If a user did not receive a message, check the downstream service logs as well.

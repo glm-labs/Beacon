@@ -1,11 +1,11 @@
 ---
-title: README проекта IncidentRelay
+title: README проекта Beacon
 description: Обзор репозитория, рабочий процесс, установка и сводка по API.
 ---
 
-# IncidentRelay
+# Beacon
 
-IncidentRelay — это self-hosted сервис для планирования дежурств (on-call), маршрутизации алертов и уведомлений.
+Beacon — это self-hosted сервис для планирования дежурств (on-call), маршрутизации алертов и уведомлений.
 
 Он предоставляет:
 
@@ -28,7 +28,7 @@ IncidentRelay — это self-hosted сервис для планировани�
 Monitoring system -> Route -> Service -> Team -> Rotation -> Notification channels -> ACK / Resolve
 ```
 
-Маршруты определяют, как алерты попадают в IncidentRelay. Сервисы описывают, какая логическая система затронута.
+Маршруты определяют, как алерты попадают в Beacon. Сервисы описывают, какая логическая система затронута.
 
 Порядок отображения сервиса и команды:
 
@@ -48,27 +48,27 @@ name -> slug -> "-"
 
 ## Сервисы времени выполнения
 
-IncidentRelay следует запускать как отдельные сервисы:
+Beacon следует запускать как отдельные сервисы:
 
 ```text
-incidentrelay           # web API, UI, incoming webhooks
-incidentrelay-scheduler # reminders, escalations, periodic jobs
+beacon           # web API, UI, incoming webhooks
+beacon-scheduler # reminders, escalations, periodic jobs
 ```
 
 Telegram-воркер опционален и нужен только тогда, когда используются опрос (polling) или действия Telegram.
 
 ## Настройка
 
-IncidentRelay читает путь к конфигурации из:
+Beacon читает путь к конфигурации из:
 
 ```text
-INCIDENTRELAY_CONFIG_FILE
+BEACON_CONFIG_FILE
 ```
 
 Пример:
 
 ```bash
-export INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
+export BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
 ```
 
 Не используйте старое имя `ONCALL_CONFIG_FILE`.

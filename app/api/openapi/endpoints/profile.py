@@ -117,7 +117,7 @@ PROFILE_SCHEMA = {
             "nullable": True,
             "description": (
                 "Slack user ID used to attribute interactive Slack "
-                "ACK/Resolve actions to an IncidentRelay user."
+                "ACK/Resolve actions to an Beacon user."
             ),
             "example": "U012ABCDEF",
         },
@@ -126,7 +126,7 @@ PROFILE_SCHEMA = {
             "nullable": True,
             "description": (
                 "Mattermost user id. Used to map Mattermost interactive "
-                "button clicks to an IncidentRelay user."
+                "button clicks to an Beacon user."
             ),
             "example": "9x8y7z6abc",
         },

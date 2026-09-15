@@ -1690,7 +1690,7 @@ function getRouteIntakeUrl(route) {
 
 function getAzureMonitorWebhookUrl(route, token) {
     const url = new URL(getRouteIntakeUrl(route));
-    url.username = "incidentrelay";
+    url.username = "beacon";
     url.password = token || "<route-token>";
     return url.toString();
 }
@@ -1742,7 +1742,7 @@ function buildRouteIntakeCurl(route, token) {
             "# " + i18n.t("routes.intake.azure_monitor_example_comment"),
             `curl -X POST '${url}' \\`,
             "  -H 'Content-Type: application/json' \\",
-            `  -u 'incidentrelay:${token || "<route-token>"}' \\`,
+            `  -u 'beacon:${token || "<route-token>"}' \\`,
             "  -d '{\"schemaId\":\"azureMonitorCommonAlertSchema\",\"data\":{\"essentials\":{\"alertId\":\"/subscriptions/example/providers/Microsoft.AlertsManagement/alerts/example-1\",\"alertRule\":\"Example alert\",\"severity\":\"Sev1\",\"signalType\":\"Metric\",\"monitorCondition\":\"Fired\",\"monitoringService\":\"Platform\"},\"customProperties\":{\"team\":\"sre\",\"service\":\"api\"}}}'"
         ].join("\n");
     }

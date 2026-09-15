@@ -71,7 +71,7 @@ def _nested_first(mapping, *names):
 
 
 def normalize_new_relic_status(*values):
-    """Map New Relic issue/workflow state to IncidentRelay firing/resolved."""
+    """Map New Relic issue/workflow state to Beacon firing/resolved."""
 
     for value in values:
         normalized = clean_string(value)
@@ -87,7 +87,7 @@ def normalize_new_relic_status(*values):
 
 
 def normalize_new_relic_severity(priority=None, severity=None):
-    """Map New Relic issue priority/severity to IncidentRelay severity."""
+    """Map New Relic issue priority/severity to Beacon severity."""
 
     for value in (severity, priority):
         value = clean_string(value)

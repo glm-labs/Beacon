@@ -14,7 +14,7 @@ from app.modules.db.models import (
 
 def grafana_payload():
     return {
-        "receiver": "incidentrelay",
+        "receiver": "beacon",
         "status": "firing",
         "orgId": 1,
         "groupKey": "{}:{alertname=\"DiskFull\"}",
@@ -91,7 +91,7 @@ def test_normalize_grafana_alert():
     assert alert["labels"]["environment"] == "production"
     assert alert["labels"]["instance"] == "host1"
     assert alert["labels"]["grafana_org_id"] == "1"
-    assert alert["labels"]["grafana_receiver"] == "incidentrelay"
+    assert alert["labels"]["grafana_receiver"] == "beacon"
 
     assert alert["labels"]["event_link"] == (
         "https://grafana.example.com/d/system-overview"

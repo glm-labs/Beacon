@@ -74,7 +74,7 @@ SSO_PROVIDER_SCHEMA = {
         "sync_group_memberships": {"type": "boolean", "default": True},
         "remove_missing_group_memberships": {"type": "boolean", "default": False},
 
-        "client_id": {"type": "string", "nullable": True, "example": "incidentrelay"},
+        "client_id": {"type": "string", "nullable": True, "example": "beacon"},
         "client_secret": {
             "type": "string",
             "nullable": True,
@@ -219,7 +219,7 @@ def paths():
             "get": {
                 "tags": ["SSO"],
                 "summary": "Complete OIDC SSO login",
-                "description": "OIDC callback endpoint. On success, creates IncidentRelay JWT cookie and redirects to UI.",
+                "description": "OIDC callback endpoint. On success, creates Beacon JWT cookie and redirects to UI.",
                 "operationId": "completeOidcSsoLogin",
                 "parameters": [slug_param()],
                 "responses": {
@@ -232,7 +232,7 @@ def paths():
             "post": {
                 "tags": ["SSO"],
                 "summary": "Complete SAML SSO login",
-                "description": "SAML ACS endpoint. On success, creates IncidentRelay JWT cookie and redirects to UI.",
+                "description": "SAML ACS endpoint. On success, creates Beacon JWT cookie and redirects to UI.",
                 "operationId": "completeSamlSsoLogin",
                 "parameters": [slug_param()],
                 "responses": {
@@ -350,7 +350,7 @@ def paths():
             "post": {
                 "tags": ["Admin SSO"],
                 "summary": "Create SSO group mapping",
-                "description": "Maps external SSO group value to IncidentRelay group role. Admin permission is required.",
+                "description": "Maps external SSO group value to Beacon group role. Admin permission is required.",
                 "operationId": "createSsoGroupMapping",
                 "security": [{"bearerAuth": []}],
                 "parameters": [path_param("provider_id", "SSO provider id.")],

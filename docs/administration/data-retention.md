@@ -5,7 +5,7 @@ description: Configure automatic retention for resolved alert history and diagno
 
 # Data Retention
 
-IncidentRelay 2.1 adds a single retention policy section for database records that can grow continuously over time.
+Beacon 2.1 adds a single retention policy section for database records that can grow continuously over time.
 
 Retention of resolved alert history is disabled by default. Configure it in `[retention]`:
 
@@ -60,7 +60,7 @@ General Event Orchestration execution traces inherit `alert_days` unless `orches
 
 ## Scheduler behavior
 
-IncidentRelay uses one `retention_cleanup_job` and one distributed database lock for the 2.1 retention pass. A run performs alert-history cleanup, Explain Trace cleanup, and Event Orchestration retention cleanup together.
+Beacon uses one `retention_cleanup_job` and one distributed database lock for the 2.1 retention pass. A run performs alert-history cleanup, Explain Trace cleanup, and Event Orchestration retention cleanup together.
 
 Deletion of alert history is batched to avoid one very large transaction. For SQLite and PostgreSQL, deleting rows makes database pages reusable by future writes but does not necessarily shrink the database file immediately. Returning already allocated disk space to the operating system should use the database engine's normal maintenance procedure during an appropriate maintenance window.
 
@@ -68,4 +68,4 @@ Deletion of alert history is batched to avoid one very large transaction. For SQ
 
 New configuration should use only `[retention]`.
 
-For compatibility, IncidentRelay 2.1 still reads the old `[alerts] alert_explain_trace_retention_days` value when `retention.explain_trace_days` is absent. It also accepts the previous cleanup interval settings as fallbacks when `retention.cleanup_interval_seconds` is absent. New `[retention]` values always take precedence.
+For compatibility, Beacon 2.1 still reads the old `[alerts] alert_explain_trace_retention_days` value when `retention.explain_trace_days` is absent. It also accepts the previous cleanup interval settings as fallbacks when `retention.cleanup_interval_seconds` is absent. New `[retention]` values always take precedence.

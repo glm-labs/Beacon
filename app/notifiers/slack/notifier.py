@@ -370,7 +370,7 @@ class SlackNotifier(IncomingWebhookNotifier):
         if alert_url:
             link_elements.append({
                 "type": "mrkdwn",
-                "text": f"<{alert_url}|Open alert in IncidentRelay>",
+                "text": f"<{alert_url}|Open alert in Beacon>",
             })
 
         if source_event_url:
@@ -623,7 +623,7 @@ class SlackNotifier(IncomingWebhookNotifier):
 
         return {
             "type": "actions",
-            "block_id": f"incidentrelay_alert_{alert.id}",
+            "block_id": f"beacon_alert_{alert.id}",
             "elements": elements,
         }
 
@@ -650,7 +650,7 @@ class SlackNotifier(IncomingWebhookNotifier):
                 "text": label,
                 "emoji": True,
             },
-            "action_id": f"incidentrelay_{action}",
+            "action_id": f"beacon_{action}",
             "value": json.dumps(
                 context,
                 separators=(",", ":"),

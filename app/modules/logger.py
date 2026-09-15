@@ -82,8 +82,7 @@ def _normalize_log_role(log_role=None):
     """Return normalized runtime log role."""
     value = (
         log_role
-        or os.environ.get("INCIDENTRELAY_LOG_ROLE")
-        or os.environ.get("INCEDENTRELAY_LOG_ROLE")
+        or os.environ.get("BEACON_LOG_ROLE")
         or LOG_ROLE_APP
     )
 

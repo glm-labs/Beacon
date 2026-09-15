@@ -9,9 +9,9 @@
     <meta name="theme-color" content="#0b5cff">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IncidentRelay - {{ _('login.title') }}</title>
+    <title>Beacon - {{ _('login.title') }}</title>
     <script>
-    window.__INCIDENTRELAY_UI__ = { theme: "system" };
+    window.__BEACON_UI__ = { theme: "system" };
     </script>
     <script src="/static/js/core/theme.js"></script>
     <link rel="stylesheet" href="/static/css/login.css">
@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="/static/css/theme_dark.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/vendor/fontawesome/all.min.css') }}">
     <script>
- window.__INCIDENTRELAY_I18N__ = {
+ window.__BEACON_I18N__ = {
   locale: {{ current_locale | tojson }},
   supportedLocales: {{ supported_locales | tojson }},
   messages: {{ i18n_messages | tojson }}
@@ -37,11 +37,11 @@
 <div class="login-page">
     <div class="login-card">
         <div class="login-brand-block">
-            <a href="/" class="login-brand-link" title="IncidentRelay">
+            <a href="/" class="login-brand-link" title="Beacon">
                 <img
                     class="login-brand-logo"
-                    src="/static/images/incidentrelay-logo.svg"
-                    alt="IncidentRelay"
+                    src="/static/images/beacon-logo.svg"
+                    alt="Beacon"
                 >
             </a>
         </div>

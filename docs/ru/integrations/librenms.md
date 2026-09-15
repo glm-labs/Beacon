@@ -1,11 +1,11 @@
 ---
 title: Интеграция с LibreNMS
-description: Приём алертов LibreNMS через API Transport и их нормализация в инциденты IncidentRelay.
+description: Приём алертов LibreNMS через API Transport и их нормализация в инциденты Beacon.
 ---
 
 # Интеграция с LibreNMS
 
-IncidentRelay может получать алерты LibreNMS через LibreNMS **API Transport** и нормализовать их в обычные инциденты IncidentRelay.
+Beacon может получать алерты LibreNMS через LibreNMS **API Transport** и нормализовать их в обычные инциденты Beacon.
 
 LibreNMS API Transport должен отправлять JSON payload на:
 
@@ -13,7 +13,7 @@ LibreNMS API Transport должен отправлять JSON payload на:
 POST /api/integrations/librenms
 ```
 
-Токен приёма маршрута должен принадлежать маршруту IncidentRelay с:
+Токен приёма маршрута должен принадлежать маршруту Beacon с:
 
 ```text
 source = librenms
@@ -21,9 +21,9 @@ source = librenms
 
 ## Поведение
 
-IncidentRelay нормализует каждый payload транспорта LibreNMS в одно событие алерта:
+Beacon нормализует каждый payload транспорта LibreNMS в одно событие алерта:
 
-| Поле LibreNMS | Поле IncidentRelay |
+| Поле LibreNMS | Поле Beacon |
 |---|---|
 | `uid`, `alert_uid`, `id`, `alert_id` | `external_id` |
 | `fingerprint` | явный `dedup_key` |
@@ -33,13 +33,13 @@ IncidentRelay нормализует каждый payload транспорта L
 | `severity` | severity алерта |
 | `hostname`, `display`, `sysName` | метка `hostname` |
 | `device_id` | метка `device_id` |
-| `team` | переопределение slug команды IncidentRelay |
+| `team` | переопределение slug команды Beacon |
 | `event_link`, `event_url`, `alert_url`, `source_url`, `device_url` | внешняя ссылка на алерт |
 | `librenms_url` + `hostname` или `device_id` | сгенерированная ссылка на устройство LibreNMS |
 
 ## Сопоставление статусов
 
-IncidentRelay трактует следующие состояния/статусы LibreNMS как разрешённые:
+Beacon трактует следующие состояния/статусы LibreNMS как разрешённые:
 
 ```text
 0, ok, clear, cleared, recover, recovery, recovered, resolve, resolved, closed
@@ -49,7 +49,7 @@ IncidentRelay трактует следующие состояния/стату�
 
 Примеры:
 
-| Состояние LibreNMS | Статус IncidentRelay |
+| Состояние LibreNMS | Статус Beacon |
 |---|---|
 | `1` | `firing` |
 | `2` | `firing` |
@@ -60,7 +60,7 @@ IncidentRelay трактует следующие состояния/стату�
 
 ## Сопоставление severity
 
-| Severity LibreNMS | Severity IncidentRelay |
+| Severity LibreNMS | Severity Beacon |
 |---|---|
 | `critical`, `crit`, `error`, `err`, `high` | `critical` |
 | `warning`, `warn`, `medium` | `warning` |
@@ -70,7 +70,7 @@ IncidentRelay трактует следующие состояния/стату�
 
 ## Дедупликация
 
-IncidentRelay использует первое доступное значение из этого списка как `external_id`:
+Beacon использует первое доступное значение из этого списка как `external_id`:
 
 ```text
 uid, alert_uid, id, alert_id
@@ -78,7 +78,7 @@ uid, alert_uid, id, alert_id
 
 Если предоставлен `fingerprint`, он используется как явный ключ дедупликации.
 
-Если явного fingerprint нет, IncidentRelay строит стабильный ключ дедупликации из:
+Если явного fingerprint нет, Beacon строит стабильный ключ дедупликации из:
 
 ```text
 source=librenms
@@ -90,7 +90,7 @@ device_id
 
 Для надёжной корреляции firing/recovery настройте LibreNMS отправлять одинаковый `uid` или `id` для событий алерта и восстановления.
 
-## Создание маршрута IncidentRelay
+## Создание маршрута Beacon
 
 Создайте или обновите маршрут алертов с источником `librenms`.
 
@@ -118,8 +118,8 @@ device_id
 | Настройка | Значение |
 |---|---|
 | API Method | `POST` |
-| API URL | `https://incidentrelay.example.com/api/integrations/librenms` |
-| API Headers | `Authorization=Bearer INCIDENTRELAY_ROUTE_TOKEN` |
+| API URL | `https://beacon.example.com/api/integrations/librenms` |
+| API Headers | `Authorization=Bearer BEACON_ROUTE_TOKEN` |
 | API Headers | `Content-Type=application/json` |
 | API Body | JSON-тело из примера ниже |
 
@@ -152,9 +152,9 @@ device_id
 }
 ```
 
-`team` необязательно. Используйте его только когда хотите, чтобы payload переопределял маршрутизацию на конкретный slug команды IncidentRelay.
+`team` необязательно. Используйте его только когда хотите, чтобы payload переопределял маршрутизацию на конкретный slug команды Beacon.
 
-`librenms_url` необязательно. Когда оно задано, IncidentRelay может сгенерировать ссылку на устройство LibreNMS из `librenms_url` и `hostname` или `device_id`.
+`librenms_url` необязательно. Когда оно задано, Beacon может сгенерировать ссылку на устройство LibreNMS из `librenms_url` и `hostname` или `device_id`.
 
 ## Пользовательские метки
 
@@ -176,7 +176,7 @@ device_id
 }
 ```
 
-IncidentRelay копирует `labels` в нормализованные метки алерта, а также добавляет нормализованные метки LibreNMS, такие как:
+Beacon копирует `labels` в нормализованные метки алерта, а также добавляет нормализованные метки LibreNMS, такие как:
 
 ```text
 hostname
@@ -266,8 +266,8 @@ event_link
 ## Тест с curl
 
 ```bash
-curl -X POST "https://incidentrelay.example.com/api/integrations/librenms" \
-  -H "Authorization: Bearer INCIDENTRELAY_ROUTE_TOKEN" \
+curl -X POST "https://beacon.example.com/api/integrations/librenms" \
+  -H "Authorization: Bearer BEACON_ROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "id": "12345",
@@ -284,7 +284,7 @@ curl -X POST "https://incidentrelay.example.com/api/integrations/librenms" \
   }'
 ```
 
-Ожидаемый ответ имеет ту же форму, что и у других входящих интеграций алертов IncidentRelay: запрос должен быть принят и направлен через совпадающий маршрут `librenms`.
+Ожидаемый ответ имеет ту же форму, что и у других входящих интеграций алертов Beacon: запрос должен быть принят и направлен через совпадающий маршрут `librenms`.
 
 ## Устранение неполадок
 
@@ -293,7 +293,7 @@ curl -X POST "https://incidentrelay.example.com/api/integrations/librenms" \
 Проверьте, что заголовок `Authorization` содержит токен приёма маршрута:
 
 ```text
-Authorization=Bearer INCIDENTRELAY_ROUTE_TOKEN
+Authorization=Bearer BEACON_ROUTE_TOKEN
 ```
 
 Также проверьте, что токен принадлежит маршруту с:
@@ -328,4 +328,4 @@ uid or id
 event_link, event_url, alert_url, source_url, device_url
 ```
 
-Или отправьте `librenms_url` вместе с `hostname` или `device_id`, чтобы IncidentRelay мог сгенерировать ссылку на устройство.
+Или отправьте `librenms_url` вместе с `hostname` или `device_id`, чтобы Beacon мог сгенерировать ссылку на устройство.

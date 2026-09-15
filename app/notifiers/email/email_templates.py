@@ -41,7 +41,7 @@ DEFAULT_EMAIL_HTML_TEMPLATE = """<!doctype html>
           <table role="presentation" width="640" cellspacing="0" cellpadding="0" style="max-width:640px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e4e8f0;">
             <tr>
               <td style="padding:22px 26px;background:#111827;color:#ffffff;">
-                <div style="font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.8;">IncidentRelay</div>
+                <div style="font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.8;">Beacon</div>
                 <h1 style="margin:8px 0 0;font-size:22px;line-height:1.3;">{event_type}: {title}</h1>
               </td>
             </tr>
@@ -81,7 +81,7 @@ DEFAULT_EMAIL_HTML_TEMPLATE = """<!doctype html>
             </tr>
             <tr>
               <td style="padding:16px 26px;background:#f8fafc;color:#64748b;font-size:12px;">
-                Sent by IncidentRelay. You can customize this email template in the channel settings.
+                Sent by Beacon. You can customize this email template in the channel settings.
               </td>
             </tr>
           </table>

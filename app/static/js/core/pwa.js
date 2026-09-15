@@ -1,7 +1,7 @@
-let incidentRelayInstallPrompt = null;
-let incidentRelayPwaRefreshing = false;
+let beaconInstallPrompt = null;
+let beaconPwaRefreshing = false;
 
-function currentIncidentRelayLocale() {
+function currentBeaconLocale() {
     if (window.i18n && i18n.locale) {
         return i18n.locale;
     }
@@ -9,7 +9,7 @@ function currentIncidentRelayLocale() {
     return document.documentElement.lang || navigator.language || "en";
 }
 
-function syncIncidentRelayServiceWorkerLocale(registration) {
+function syncBeaconServiceWorkerLocale(registration) {
     if (!registration) {
         return;
     }
@@ -19,12 +19,12 @@ function syncIncidentRelayServiceWorkerLocale(registration) {
     if (worker) {
         worker.postMessage({
             type: "SET_LOCALE",
-            locale: currentIncidentRelayLocale()
+            locale: currentBeaconLocale()
         });
     }
 }
 
-function isIncidentRelayPwaStandalone() {
+function isBeaconPwaStandalone() {
     return (
         window.matchMedia("(display-mode: standalone)").matches
         || window.navigator.standalone === true
@@ -41,20 +41,20 @@ function setPwaInstallButtonVisible(visible) {
     button.toggleClass("is-hidden", !visible);
 }
 
-function installIncidentRelayPwa() {
-    if (!incidentRelayInstallPrompt) {
+function installBeaconPwa() {
+    if (!beaconInstallPrompt) {
         return;
     }
 
-    incidentRelayInstallPrompt.prompt();
+    beaconInstallPrompt.prompt();
 
-    incidentRelayInstallPrompt.userChoice.finally(function () {
-        incidentRelayInstallPrompt = null;
+    beaconInstallPrompt.userChoice.finally(function () {
+        beaconInstallPrompt = null;
         setPwaInstallButtonVisible(false);
     });
 }
 
-function registerIncidentRelayServiceWorker() {
+function registerBeaconServiceWorker() {
     if (!("serviceWorker" in navigator)) {
         return;
     }
@@ -62,7 +62,7 @@ function registerIncidentRelayServiceWorker() {
     navigator.serviceWorker.register("/service-worker.js", {
         scope: "/"
     }).then(function (registration) {
-        syncIncidentRelayServiceWorkerLocale(registration);
+        syncBeaconServiceWorkerLocale(registration);
 
         if (registration.waiting) {
             registration.waiting.postMessage({type: "SKIP_WAITING"});
@@ -85,47 +85,47 @@ function registerIncidentRelayServiceWorker() {
             });
         });
     }).catch(function (error) {
-        console.warn("IncidentRelay service worker registration failed", error);
+        console.warn("Beacon service worker registration failed", error);
     });
 
     navigator.serviceWorker.addEventListener("controllerchange", function () {
-        if (incidentRelayPwaRefreshing) {
+        if (beaconPwaRefreshing) {
             return;
         }
 
-        incidentRelayPwaRefreshing = true;
+        beaconPwaRefreshing = true;
 
         navigator.serviceWorker.ready.then(function (registration) {
-            syncIncidentRelayServiceWorkerLocale(registration);
+            syncBeaconServiceWorkerLocale(registration);
         });
 
         window.location.reload();
     });
 }
 
-function setupIncidentRelayPwaInstallPrompt() {
-    if (isIncidentRelayPwaStandalone()) {
+function setupBeaconPwaInstallPrompt() {
+    if (isBeaconPwaStandalone()) {
         setPwaInstallButtonVisible(false);
         return;
     }
 
     window.addEventListener("beforeinstallprompt", function (event) {
         event.preventDefault();
-        incidentRelayInstallPrompt = event;
+        beaconInstallPrompt = event;
         setPwaInstallButtonVisible(true);
     });
 
     window.addEventListener("appinstalled", function () {
-        incidentRelayInstallPrompt = null;
+        beaconInstallPrompt = null;
         setPwaInstallButtonVisible(false);
     });
 
     $(document).on("click", "#topbar-install-app", function () {
-        installIncidentRelayPwa();
+        installBeaconPwa();
     });
 }
 
 $(document).ready(function () {
-    setupIncidentRelayPwaInstallPrompt();
-    registerIncidentRelayServiceWorker();
+    setupBeaconPwaInstallPrompt();
+    registerBeaconServiceWorker();
 });

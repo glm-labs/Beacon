@@ -1,11 +1,11 @@
 ---
 title: ICS calendar feeds
-description: Tokenized ICS subscription feeds for IncidentRelay team on-call schedules.
+description: Tokenized ICS subscription feeds for Beacon team on-call schedules.
 ---
 
 # ICS calendar feeds
 
-IncidentRelay can generate tokenized ICS subscription feeds for team on-call schedules. This is useful for calendar clients that do not support CalDAV well, especially Outlook and Google Calendar.
+Beacon can generate tokenized ICS subscription feeds for team on-call schedules. This is useful for calendar clients that do not support CalDAV well, especially Outlook and Google Calendar.
 
 An ICS feed is a secret URL ending with `.ics`. Anyone with the URL can read that team's exported on-call calendar, so treat the URL like a password.
 
@@ -34,7 +34,7 @@ For Apple Calendar, Thunderbird and DAVx5, see [CalDAV calendar sync](caldav.md)
 The feed URL looks like this:
 
 ```text
-https://incidentrelay.example.com/api/calendar/feeds/<secret-token>.ics
+https://beacon.example.com/api/calendar/feeds/<secret-token>.ics
 ```
 
 The token is shown when the feed is created or regenerated. Existing feed list responses should not expose the token again.
@@ -46,7 +46,7 @@ In Outlook on the web or new Outlook:
 1. Open **Calendar**.
 2. Choose **Add calendar**.
 3. Choose **Subscribe from web**.
-4. Paste the IncidentRelay `.ics` URL.
+4. Paste the Beacon `.ics` URL.
 5. Choose a name and color.
 6. Save.
 
@@ -59,7 +59,7 @@ In Google Calendar:
 1. Open **Other calendars**.
 2. Click **+**.
 3. Choose **From URL**.
-4. Paste the IncidentRelay `.ics` URL.
+4. Paste the Beacon `.ics` URL.
 5. Click **Add calendar**.
 
 Google Calendar refresh frequency is controlled by Google and may take time.
@@ -72,7 +72,7 @@ On macOS:
 
 1. Open **Calendar**.
 2. Choose **File → New Calendar Subscription**.
-3. Paste the IncidentRelay `.ics` URL.
+3. Paste the Beacon `.ics` URL.
 4. Configure auto-refresh.
 
 If you want automatic discovery of all accessible teams, use CalDAV instead.
@@ -101,7 +101,7 @@ If the team or its group becomes inactive, the feed returns `403 Forbidden`.
 
 ## API endpoints
 
-Management endpoints require normal IncidentRelay API authentication and permissions.
+Management endpoints require normal Beacon API authentication and permissions.
 
 ```text
 GET    /api/calendar/feeds?team_id=<team_id>
@@ -125,16 +125,16 @@ Create a feed:
 ```bash
 curl -s \
   -X POST \
-  -H 'Authorization: Bearer INCIDENTRELAY_API_TOKEN' \
+  -H 'Authorization: Bearer BEACON_API_TOKEN' \
   -H 'Content-Type: application/json' \
   -d '{"team_id":1,"name":"Cloud OPS subscription","past_days":7,"future_days":90}' \
-  https://incidentrelay.example.com/api/calendar/feeds
+  https://beacon.example.com/api/calendar/feeds
 ```
 
 Download the feed:
 
 ```bash
-curl -i https://incidentrelay.example.com/api/calendar/feeds/<secret-token>.ics
+curl -i https://beacon.example.com/api/calendar/feeds/<secret-token>.ics
 ```
 
 A successful response should have:
@@ -161,7 +161,7 @@ Cache-Control: no-store
 Check that the URL ends with `.ics` and is reachable from the client network.
 
 ```text
-https://incidentrelay.example.com/api/calendar/feeds/<secret-token>.ics
+https://beacon.example.com/api/calendar/feeds/<secret-token>.ics
 ```
 
 ### Feed returns 404
@@ -178,7 +178,7 @@ Reactivate the team/group or create a feed for an active team.
 
 ### Events do not update immediately
 
-Outlook and Google Calendar control their own refresh intervals. IncidentRelay returns the current ICS content, but the external service may cache the subscription.
+Outlook and Google Calendar control their own refresh intervals. Beacon returns the current ICS content, but the external service may cache the subscription.
 
 ### Feed is empty
 

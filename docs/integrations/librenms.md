@@ -1,11 +1,11 @@
 ---
 title: LibreNMS Integration
-description: Receive LibreNMS API Transport alerts and normalize them into IncidentRelay incidents.
+description: Receive LibreNMS API Transport alerts and normalize them into Beacon incidents.
 ---
 
 # LibreNMS integration
 
-IncidentRelay can receive LibreNMS alerts through the LibreNMS **API Transport** and normalize them into regular IncidentRelay incidents.
+Beacon can receive LibreNMS alerts through the LibreNMS **API Transport** and normalize them into regular Beacon incidents.
 
 LibreNMS API Transport should send a JSON payload to:
 
@@ -13,7 +13,7 @@ LibreNMS API Transport should send a JSON payload to:
 POST /api/integrations/librenms
 ```
 
-The route intake token must belong to an IncidentRelay route with:
+The route intake token must belong to an Beacon route with:
 
 ```text
 source = librenms
@@ -21,9 +21,9 @@ source = librenms
 
 ## Behavior
 
-IncidentRelay normalizes every LibreNMS transport payload into one alert event:
+Beacon normalizes every LibreNMS transport payload into one alert event:
 
-| LibreNMS field | IncidentRelay field |
+| LibreNMS field | Beacon field |
 |---|---|
 | `uid`, `alert_uid`, `id`, `alert_id` | `external_id` |
 | `fingerprint` | explicit `dedup_key` |
@@ -33,13 +33,13 @@ IncidentRelay normalizes every LibreNMS transport payload into one alert event:
 | `severity` | alert severity |
 | `hostname`, `display`, `sysName` | `hostname` label |
 | `device_id` | `device_id` label |
-| `team` | IncidentRelay team slug override |
+| `team` | Beacon team slug override |
 | `event_link`, `event_url`, `alert_url`, `source_url`, `device_url` | external alert link |
 | `librenms_url` + `hostname` or `device_id` | generated LibreNMS device link |
 
 ## Status mapping
 
-IncidentRelay treats these LibreNMS states/statuses as resolved:
+Beacon treats these LibreNMS states/statuses as resolved:
 
 ```text
 0, ok, clear, cleared, recover, recovery, recovered, resolve, resolved, closed
@@ -49,7 +49,7 @@ Any other state/status is treated as firing.
 
 Examples:
 
-| LibreNMS state | IncidentRelay status |
+| LibreNMS state | Beacon status |
 |---|---|
 | `1` | `firing` |
 | `2` | `firing` |
@@ -60,7 +60,7 @@ Examples:
 
 ## Severity mapping
 
-| LibreNMS severity | IncidentRelay severity |
+| LibreNMS severity | Beacon severity |
 |---|---|
 | `critical`, `crit`, `error`, `err`, `high` | `critical` |
 | `warning`, `warn`, `medium` | `warning` |
@@ -70,7 +70,7 @@ Examples:
 
 ## Deduplication
 
-IncidentRelay uses the first available value from this list as `external_id`:
+Beacon uses the first available value from this list as `external_id`:
 
 ```text
 uid, alert_uid, id, alert_id
@@ -78,7 +78,7 @@ uid, alert_uid, id, alert_id
 
 If `fingerprint` is provided, it is used as the explicit dedup key.
 
-If there is no explicit fingerprint, IncidentRelay builds a stable dedup key from:
+If there is no explicit fingerprint, Beacon builds a stable dedup key from:
 
 ```text
 source=librenms
@@ -90,7 +90,7 @@ device_id
 
 For reliable firing/recovery correlation, configure LibreNMS to send the same `uid` or `id` for both alert and recovery events.
 
-## Create IncidentRelay route
+## Create Beacon route
 
 Create or update an alert route with source `librenms`.
 
@@ -118,8 +118,8 @@ Recommended settings:
 | Setting | Value |
 |---|---|
 | API Method | `POST` |
-| API URL | `https://incidentrelay.example.com/api/integrations/librenms` |
-| API Headers | `Authorization=Bearer INCIDENTRELAY_ROUTE_TOKEN` |
+| API URL | `https://beacon.example.com/api/integrations/librenms` |
+| API Headers | `Authorization=Bearer BEACON_ROUTE_TOKEN` |
 | API Headers | `Content-Type=application/json` |
 | API Body | JSON body from the example below |
 
@@ -152,9 +152,9 @@ Use a JSON body like this in the LibreNMS API Transport configuration:
 }
 ```
 
-`team` is optional. Use it only when you want the payload to override routing to a specific IncidentRelay team slug.
+`team` is optional. Use it only when you want the payload to override routing to a specific Beacon team slug.
 
-`librenms_url` is optional. When it is set, IncidentRelay can generate a LibreNMS device link from `librenms_url` and `hostname` or `device_id`.
+`librenms_url` is optional. When it is set, Beacon can generate a LibreNMS device link from `librenms_url` and `hostname` or `device_id`.
 
 ## Custom labels
 
@@ -176,7 +176,7 @@ You can attach additional labels with the `labels` object:
 }
 ```
 
-IncidentRelay copies `labels` into the normalized alert labels and also adds normalized LibreNMS labels such as:
+Beacon copies `labels` into the normalized alert labels and also adds normalized LibreNMS labels such as:
 
 ```text
 hostname
@@ -266,8 +266,8 @@ Normalized status:
 ## Test with curl
 
 ```bash
-curl -X POST "https://incidentrelay.example.com/api/integrations/librenms" \
-  -H "Authorization: Bearer INCIDENTRELAY_ROUTE_TOKEN" \
+curl -X POST "https://beacon.example.com/api/integrations/librenms" \
+  -H "Authorization: Bearer BEACON_ROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "id": "12345",
@@ -284,7 +284,7 @@ curl -X POST "https://incidentrelay.example.com/api/integrations/librenms" \
   }'
 ```
 
-Expected response is the same shape as other IncidentRelay incoming alert integrations: the request should be accepted and routed through the matching `librenms` route.
+Expected response is the same shape as other Beacon incoming alert integrations: the request should be accepted and routed through the matching `librenms` route.
 
 ## Troubleshooting
 
@@ -293,7 +293,7 @@ Expected response is the same shape as other IncidentRelay incoming alert integr
 Check that the `Authorization` header contains the route intake token:
 
 ```text
-Authorization=Bearer INCIDENTRELAY_ROUTE_TOKEN
+Authorization=Bearer BEACON_ROUTE_TOKEN
 ```
 
 Also check that the token belongs to a route with:
@@ -328,4 +328,4 @@ Send one of these fields:
 event_link, event_url, alert_url, source_url, device_url
 ```
 
-Or send `librenms_url` together with `hostname` or `device_id` so IncidentRelay can generate a device link.
+Or send `librenms_url` together with `hostname` or `device_id` so Beacon can generate a device link.

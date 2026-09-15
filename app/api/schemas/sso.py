@@ -187,7 +187,7 @@ class SsoGroupMappingCreateSchema(ApiModel):
             raise ValueError("group_role must be viewer, editor, user_admin or global_admin")
 
         if not self.group_id:
-            raise ValueError("incidentrelay_group_id is required")
+            raise ValueError("beacon_group_id is required")
 
         if self.team_id and (self.team_role or TEAM_VIEWER_ROLE) not in TEAM_ROLE_VALUES:
             raise ValueError("team_role must be viewer, responder or manager")

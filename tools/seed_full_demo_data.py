@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Populate IncidentRelay release/2.0 with a rich, interconnected demo dataset.
+Populate Beacon release/2.0 with a rich, interconnected demo dataset.
 
 The script is intentionally idempotent: objects are identified by deterministic
 demo names/slugs/keys and are updated instead of duplicated on repeated runs.
@@ -27,7 +27,7 @@ Useful options:
     --enable-channels   # NOT recommended outside an isolated demo environment
     --dry-run
 
-The script targets the IncidentRelay release/2.0 data model.
+The script targets the Beacon release/2.0 data model.
 """
 
 from __future__ import annotations
@@ -122,7 +122,7 @@ SERVICE_NAMES = (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Seed IncidentRelay release/2.0 with a full demo dataset."
+        description="Seed Beacon release/2.0 with a full demo dataset."
     )
     parser.add_argument("--users", type=int, default=20)
     parser.add_argument("--routes", type=int, default=10)
@@ -926,7 +926,7 @@ def seed_services(
                     "name": f"{prefix}: Availability",
                     "description": "Demo availability SLI based on alert groups",
                     "sli_type": "incident_availability",
-                    "source": "incidentrelay_alert_groups",
+                    "source": "beacon_alert_groups",
                     "configuration": {
                         "demo_seed": prefix,
                         "priority_scope": ["p1", "p2"],
@@ -1563,7 +1563,7 @@ def seed_heartbeats(
                     message=f"{prefix}: seeded heartbeat ping",
                     payload={"demo_seed": prefix},
                     remote_addr="127.0.0.1",
-                    user_agent="IncidentRelay demo seeder",
+                    user_agent="Beacon demo seeder",
                 )
 
     return heartbeats, heartbeat_tokens
@@ -1613,7 +1613,7 @@ def seed_sso(prefix: str, groups: list, teams: list):
             "sync_group_memberships": True,
             "oidc_metadata_url": "https://example.invalid/.well-known/openid-configuration",
             "oidc_issuer": "https://example.invalid/",
-            "client_id": "incidentrelay-demo",
+            "client_id": "beacon-demo",
             "extra_config": {"demo_seed": prefix},
         },
     )
@@ -1630,7 +1630,7 @@ def seed_sso(prefix: str, groups: list, teams: list):
             "auto_link_by_email": True,
             "saml_idp_entity_id": "https://example.invalid/saml/idp",
             "saml_idp_sso_url": "https://example.invalid/saml/sso",
-            "saml_sp_entity_id": "incidentrelay-demo",
+            "saml_sp_entity_id": "beacon-demo",
             "extra_config": {"demo_seed": prefix},
         },
     )
@@ -1645,8 +1645,8 @@ def seed_sso(prefix: str, groups: list, teams: list):
                 {
                     "provider": provider,
                     "external_group": f"{prefix}-operators-{provider_index + 1}",
-                    "incidentrelay_group": group,
-                    "incidentrelay_team": team,
+                    "beacon_group": group,
+                    "beacon_team": team,
                 },
                 {
                     "group_role": "editor",
@@ -3084,12 +3084,12 @@ def main() -> int:
 
     if not args.yes:
         raise SystemExit(
-            "This command writes demo data to the configured IncidentRelay "
+            "This command writes demo data to the configured Beacon "
             "database. Re-run with --yes, or use --dry-run first."
         )
 
     print(
-        f"IncidentRelay demo seeder: {SEED_SCRIPT_VERSION} "
+        f"Beacon demo seeder: {SEED_SCRIPT_VERSION} "
         f"(prefix={args.prefix!r}, routes={args.routes}, alerts={args.alerts})"
     )
 

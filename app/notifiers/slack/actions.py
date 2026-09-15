@@ -81,7 +81,7 @@ def _process_slack_action(
     )
 
     action = context["action"]
-    expected_action_id = f"incidentrelay_{action}"
+    expected_action_id = f"beacon_{action}"
     if action_item.get("action_id") != expected_action_id:
         raise SlackActionError(
             "invalid_action",

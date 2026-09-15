@@ -1,11 +1,11 @@
 ---
 title: Установка в Kubernetes
-description: Развёртывание IncidentRelay в Kubernetes с помощью включённого Helm-чарта
+description: Развёртывание Beacon в Kubernetes с помощью включённого Helm-чарта
 ---
 
 # Установка в Kubernetes
 
-Helm-чарт IncidentRelay публикуется как OCI-артефакт в GHCR и также хранится в репозитории в каталоге `helm/incidentrelay`. Он развёртывает веб-приложение и фоновые воркеры, формирует конфигурацию приложения в Secret и подключает пробы `/healthz` и `/readyz` к Kubernetes.
+Helm-чарт Beacon публикуется как OCI-артефакт в GHCR и также хранится в репозитории в каталоге `helm/beacon`. Он развёртывает веб-приложение и фоновые воркеры, формирует конфигурацию приложения в Secret и подключает пробы `/healthz` и `/readyz` к Kubernetes.
 
 ## Требования
 
@@ -23,29 +23,29 @@ Deployment  <release>-scheduler  напоминания, эскалации, п�
 Deployment  <release>-telegram   воркер обратных вызовов Telegram (необязательно)
 Deployment  <release>-slack      воркер Slack Socket Mode (необязательно)
 Service     <release>            ClusterIP на порту 8080
-Secret      <release>-config     сформированный incidentrelay.conf
-PersistentVolumeClaim <release>-data   /var/lib/incidentrelay
+Secret      <release>-config     сформированный beacon.conf
+PersistentVolumeClaim <release>-data   /var/lib/beacon
 ServiceAccount и Ingress, если он включён
 ```
 
-Все компоненты используют один образ и выбираются переменной `INCIDENTRELAY_SERVICE` — точно так же, как при установке через Docker Compose.
+Все компоненты используют один образ и выбираются переменной `BEACON_SERVICE` — точно так же, как при установке через Docker Compose.
 
 ## Быстрый старт
 
 ```bash
-helm install incidentrelay \
-  oci://ghcr.io/roxy-wi/incidentrelay-charts/incidentrelay \
+helm install beacon \
+  oci://ghcr.io/glm-labs/beacon-charts/beacon \
   --version 2.1.0 \
   --set-string config.main.secret_key="$(openssl rand -hex 32)"
 ```
 
-Поддержка OCI включена по умолчанию в Helm 3.8 и новее, поэтому `helm repo add` не требуется. Чарт загружает `ghcr.io/roxy-wi/incidentrelay`, а tag image по умолчанию берётся из `appVersion` чарта. Чтобы явно зафиксировать image:
+Поддержка OCI включена по умолчанию в Helm 3.8 и новее, поэтому `helm repo add` не требуется. Чарт загружает `ghcr.io/glm-labs/beacon`, а tag image по умолчанию берётся из `appVersion` чарта. Чтобы явно зафиксировать image:
 
 ```bash
-helm upgrade --install incidentrelay \
-  oci://ghcr.io/roxy-wi/incidentrelay-charts/incidentrelay \
+helm upgrade --install beacon \
+  oci://ghcr.io/glm-labs/beacon-charts/beacon \
   --version 2.1.0 \
-  --set image.repository=ghcr.io/roxy-wi/incidentrelay \
+  --set image.repository=ghcr.io/glm-labs/beacon \
   --set image.tag=2.1 \
   --set-string config.main.secret_key="$(openssl rand -hex 32)"
 ```
@@ -55,19 +55,19 @@ helm upgrade --install incidentrelay \
 Для разработки чарта или проверки ещё не выпущенных изменений установите встроенный чарт напрямую:
 
 ```bash
-helm upgrade --install incidentrelay ./helm/incidentrelay \
+helm upgrade --install beacon ./helm/beacon \
   --set-string config.main.secret_key="$(openssl rand -hex 32)"
 ```
 
 Следите за развёртыванием:
 
 ```bash
-kubectl get pods -l app.kubernetes.io/instance=incidentrelay -w
+kubectl get pods -l app.kubernetes.io/instance=beacon -w
 ```
 
 ## Конфигурация
 
-IncidentRelay читает все настройки из одного INI-файла, смонтированного по пути `/etc/incidentrelay/incidentrelay.conf`. Чарт формирует этот файл из объекта `config` в `values.yaml`: ключи верхнего уровня становятся разделами INI, а вложенные ключи — параметрами.
+Beacon читает все настройки из одного INI-файла, смонтированного по пути `/etc/beacon/beacon.conf`. Чарт формирует этот файл из объекта `config` в `values.yaml`: ключи верхнего уровня становятся разделами INI, а вложенные ключи — параметрами.
 
 ```yaml
 config:
@@ -80,7 +80,7 @@ config:
   server:
     host: 0.0.0.0
     port: 8080
-    public_base_url: https://incidentrelay.example.com
+    public_base_url: https://beacon.example.com
 ```
 
 превращается в:
@@ -97,26 +97,26 @@ jwt_secret = <общий secret, если значение оставлено п
 [server]
 host = 0.0.0.0
 port = 8080
-public_base_url = https://incidentrelay.example.com
+public_base_url = https://beacon.example.com
 ```
 
-Таким способом можно задать всё, что допустимо в `incidentrelay.conf`. Список доступных параметров см. в разделе [Конфигурация](configuration.md).
+Таким способом можно задать всё, что допустимо в `beacon.conf`. Список доступных параметров см. в разделе [Конфигурация](configuration.md).
 
 Укажите в `public_base_url` адрес, по которому пользователи действительно открывают приложение. Он используется в создаваемых ссылках и обратных вызовах.
 
-При конфигурации, создаваемой самим чартом, `config.main.secret_key` обязателен. В IncidentRelay 2.0 он используется как общий fallback для `main.secret_encryption_key`, `auth.jwt_secret`, `mattermost.action_secret` и `voice.callback_secret`, если соответствующие значения оставлены пустыми. Это нужно, чтобы все pod'ы использовали стабильные общие ключи, особенно при PostgreSQL, когда `/var/lib/incidentrelay` не является общим томом. При необходимости каждый из этих секретов можно задать отдельным случайным значением.
+При конфигурации, создаваемой самим чартом, `config.main.secret_key` обязателен. В Beacon 2.0 он используется как общий fallback для `main.secret_encryption_key`, `auth.jwt_secret`, `mattermost.action_secret` и `voice.callback_secret`, если соответствующие значения оставлены пустыми. Это нужно, чтобы все pod'ы использовали стабильные общие ключи, особенно при PostgreSQL, когда `/var/lib/beacon` не является общим томом. При необходимости каждый из этих секретов можно задать отдельным случайным значением.
 
 ### Собственный Secret
 
-Сформированный файл содержит учётные данные, поэтому чарт хранит его в Secret. Если вы хотите управлять Secret самостоятельно, создайте его, поместив полную конфигурацию в ключ `incidentrelay.conf`, и укажите его в чарте:
+Сформированный файл содержит учётные данные, поэтому чарт хранит его в Secret. Если вы хотите управлять Secret самостоятельно, создайте его, поместив полную конфигурацию в ключ `beacon.conf`, и укажите его в чарте:
 
 ```bash
-kubectl create secret generic incidentrelay-config \
-  --from-file=incidentrelay.conf=./incidentrelay.conf
+kubectl create secret generic beacon-config \
+  --from-file=beacon.conf=./beacon.conf
 ```
 
 ```yaml
-existingConfigSecret: incidentrelay-config
+existingConfigSecret: beacon-config
 ```
 
 Когда задан `existingConfigSecret`, объект `config` игнорируется, а чарт не создаёт собственный Secret.
@@ -128,7 +128,7 @@ existingConfigSecret: incidentrelay-config
 
 ### SQLite (по умолчанию)
 
-SQLite работает без дополнительной настройки. Все компоненты монтируют один PersistentVolumeClaim в `/var/lib/incidentrelay`.
+SQLite работает без дополнительной настройки. Все компоненты монтируют один PersistentVolumeClaim в `/var/lib/beacon`.
 
 ```yaml
 persistence:
@@ -146,7 +146,7 @@ PVC создаётся чартом и поэтому удаляется ком�
 
 ```yaml
 persistence:
-  existingClaim: incidentrelay-data
+  existingClaim: beacon-data
 ```
 
 ### PostgreSQL
@@ -159,8 +159,8 @@ config:
     type: postgresql
     host: postgres.example.svc
     port: 5432
-    name: incidentrelay
-    user: incidentrelay
+    name: beacon
+    user: beacon
     password: <database-password>
 
 persistence:
@@ -180,7 +180,7 @@ web:
 Пока этот параметр включён, оставьте `replicaCount` равным `1`: несколько одновременно запускающихся pod'ов будут конкурировать при выполнении миграций. Чтобы запустить более одной реплики веб-компонента, отключите этот параметр и выполняйте миграции отдельно:
 
 ```bash
-kubectl exec deploy/incidentrelay-web -- python manage.py migrate
+kubectl exec deploy/beacon-web -- python manage.py migrate
 ```
 
 ```yaml
@@ -209,7 +209,7 @@ Startup-проба даёт первому запуску до пяти мину
 По умолчанию Service имеет тип `ClusterIP`. Для быстрой проверки:
 
 ```bash
-kubectl port-forward svc/incidentrelay 8080:8080
+kubectl port-forward svc/beacon 8080:8080
 ```
 
 ```text
@@ -225,14 +225,14 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
   hosts:
-    - host: incidentrelay.example.com
+    - host: beacon.example.com
       paths:
         - path: /
           pathType: Prefix
   tls:
     - hosts:
-        - incidentrelay.example.com
-      secretName: incidentrelay-tls
+        - beacon.example.com
+      secretName: beacon-tls
 ```
 
 Значение `config.server.public_base_url` должно соответствовать хосту Ingress.
@@ -240,7 +240,7 @@ ingress:
 ## Создание первого администратора
 
 ```bash
-kubectl exec -it deploy/incidentrelay-web -- \
+kubectl exec -it deploy/beacon-web -- \
   python manage.py create-admin \
     --username admin \
     --password 'change-me-123' \
@@ -290,11 +290,11 @@ scheduler:
 
 ## Логи
 
-Приложение записывает JSON-логи в файлы в каталоге `/var/log/incidentrelay`, а не в стандартный вывод, поэтому `kubectl logs` показывает только сообщение entrypoint. Читайте файлы напрямую:
+Приложение записывает JSON-логи в файлы в каталоге `/var/log/beacon`, а не в стандартный вывод, поэтому `kubectl logs` показывает только сообщение entrypoint. Читайте файлы напрямую:
 
 ```bash
-kubectl exec deploy/incidentrelay-web -- tail -f /var/log/incidentrelay/incidentrelay.log
-kubectl exec deploy/incidentrelay-scheduler -- tail -f /var/log/incidentrelay/incidentrelay-scheduler.log
+kubectl exec deploy/beacon-web -- tail -f /var/log/beacon/beacon.log
+kubectl exec deploy/beacon-scheduler -- tail -f /var/log/beacon/beacon-scheduler.log
 ```
 
 Для логов используется том `emptyDir`, поэтому после перезапуска pod'а файлы не сохраняются. Структура файлов описана в разделе [Логирование](../administration/logging.md).
@@ -307,11 +307,11 @@ kubectl exec deploy/incidentrelay-scheduler -- tail -f /var/log/incidentrelay/in
 extraVolumes:
   - name: voice-providers
     configMap:
-      name: incidentrelay-voice-providers
+      name: beacon-voice-providers
 
 extraVolumeMounts:
   - name: voice-providers
-    mountPath: /usr/local/lib/incidentrelay/voice_providers
+    mountPath: /usr/local/lib/beacon/voice_providers
     readOnly: true
 ```
 
@@ -320,7 +320,7 @@ extraVolumeMounts:
 ### Обновление с 1.2 на 2.1 или новее
 
 !!! warning "Предупреждение"
-    IncidentRelay 2.1 блокирует private/loopback/link-local/reserved адреса
+    Beacon 2.1 блокирует private/loopback/link-local/reserved адреса
     исходящих HTTP-запросов, если они не разрешены явно. Внутренние OIDC
     metadata/JWKS endpoints и исходящие webhook/API-интеграции, работавшие в
     1.2, после обновления Helm-чарта могут перестать работать.
@@ -335,7 +335,7 @@ config:
 ```
 
 Если используется `existingConfigSecret`, измените содержащийся в нём
-`incidentrelay.conf`:
+`beacon.conf`:
 
 ```ini
 [security]
@@ -343,27 +343,27 @@ outbound_private_network_allowlist = 10.20.0.0/16,192.168.50.10/32
 ```
 
 Разрешите внутренние DNS-имена из кластера и добавьте только те адреса, которые
-действительно нужны IncidentRelay. Поведение fail-closed для DNS и
+действительно нужны Beacon. Поведение fail-closed для DNS и
 дополнительные примеры описаны в разделе
 [Политика исходящих HTTP-подключений](configuration.md#политика-исходящих-http-подключений).
 
 ### Обновление с 1.x до 2.0
 
-Чарт 2.0 умеет повторно использовать values от 1.x. При рендеринге он добавляет новые безопасные настройки авторизации и общие JWT/encryption/callback secrets до формирования `incidentrelay.conf`, поэтому старые values не приводят к генерации разных runtime-ключей в разных pod'ах. `config.main.secret_key` при этом должен быть задан уникальным случайным значением.
+Чарт 2.0 умеет повторно использовать values от 1.x. При рендеринге он добавляет новые безопасные настройки авторизации и общие JWT/encryption/callback secrets до формирования `beacon.conf`, поэтому старые values не приводят к генерации разных runtime-ключей в разных pod'ах. `config.main.secret_key` при этом должен быть задан уникальным случайным значением.
 
 При использовании `existingConfigSecret` Helm не может нормализовать внешний файл. До обновления на 2.0 убедитесь, что в нём задан корректный `main.secret_key`, включены нужные настройки `[auth]` и используется стабильный `auth.jwt_secret` (либо параметр отсутствует/пустой и приложение использует `main.secret_key`).
 
 Для SQLite оставьте `persistence.enabled=true` и `web.replicaCount=1`. Для PostgreSQL и многоузловой установки можно установить `persistence.enabled=false`, когда все security secrets уже стабильно заданы в сгенерированной или внешней конфигурации.
 
 ```bash
-helm upgrade incidentrelay \
-  oci://ghcr.io/roxy-wi/incidentrelay-charts/incidentrelay \
+helm upgrade beacon \
+  oci://ghcr.io/glm-labs/beacon-charts/beacon \
   --version 2.1.0 \
   --reuse-values
 ```
 
 ```bash
-helm uninstall incidentrelay
+helm uninstall beacon
 ```
 
 Команда `helm uninstall` также удаляет созданный чартом PersistentVolumeClaim, а вместе с ним и базу данных SQLite. Используйте `persistence.existingClaim`, если данные должны сохраняться после удаления релиза.

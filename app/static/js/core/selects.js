@@ -1,4 +1,4 @@
-const GLOBAL_TEAM_FILTER_STORAGE_KEY = "incidentrelay.global_team_filter";
+const GLOBAL_TEAM_FILTER_STORAGE_KEY = "beacon.global_team_filter";
 
 function readStoredGlobalTeamId() {
     try {

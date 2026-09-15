@@ -29,7 +29,7 @@ jobs:
           - "3.14"
 
     env:
-      INCIDENTRELAY_CONFIG_FILE: ${{ github.workspace }}/tests/incidentrelay.test.conf
+      BEACON_CONFIG_FILE: ${{ github.workspace }}/tests/beacon.test.conf
       PYTHONPATH: ${{ github.workspace }}
 
     steps:
@@ -88,20 +88,20 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: incidentrelay_test
-          POSTGRES_USER: incidentrelay
-          POSTGRES_PASSWORD: incidentrelay_test_password
+          POSTGRES_DB: beacon_test
+          POSTGRES_USER: beacon
+          POSTGRES_PASSWORD: beacon_test_password
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U incidentrelay -d incidentrelay_test"
+          --health-cmd="pg_isready -U beacon -d beacon_test"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
 
     env:
       PYTHONPATH: ${{ github.workspace }}
-      INCIDENTRELAY_CONFIG_FILE: ${{ github.workspace }}/tests/incidentrelay.postgres.conf
+      BEACON_CONFIG_FILE: ${{ github.workspace }}/tests/beacon.postgres.conf
 
     steps:
       - name: Checkout
@@ -126,14 +126,14 @@ jobs:
 
       - name: Create PostgreSQL test config
         run: |
-            cp tests/incidentrelay.test.conf \
-               tests/incidentrelay.postgres.conf
+            cp tests/beacon.test.conf \
+               tests/beacon.postgres.conf
             
             python - <<'PY'
             from configparser import RawConfigParser
             from pathlib import Path
             
-            path = Path("tests/incidentrelay.postgres.conf")
+            path = Path("tests/beacon.postgres.conf")
             
             config = RawConfigParser()
             config.read(path)
@@ -144,9 +144,9 @@ jobs:
             config["database"]["type"] = "postgresql"
             config["database"]["host"] = "127.0.0.1"
             config["database"]["port"] = "5432"
-            config["database"]["name"] = "incidentrelay_test"
-            config["database"]["user"] = "incidentrelay"
-            config["database"]["password"] = "incidentrelay_test_password"
+            config["database"]["name"] = "beacon_test"
+            config["database"]["user"] = "beacon"
+            config["database"]["password"] = "beacon_test_password"
             
             config["database"].pop("path", None)
             
@@ -160,7 +160,7 @@ jobs:
           from configparser import ConfigParser
 
           config = ConfigParser()
-          config.read("tests/incidentrelay.postgres.conf")
+          config.read("tests/beacon.postgres.conf")
 
           database = dict(config["database"])
           database["password"] = "***"

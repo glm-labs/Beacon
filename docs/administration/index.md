@@ -1,6 +1,6 @@
 ---
 title: Administration
-description: Administration topics for operating IncidentRelay.
+description: Administration topics for operating Beacon.
 ---
 
 # Administration

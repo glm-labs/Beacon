@@ -20,14 +20,14 @@ function setSidebarMenuGroupExpanded(group, expanded, persist) {
 
     if (groupName) {
         localStorage.setItem(
-            "incidentrelay_menu_group_" + groupName + "_expanded",
+            "beacon_menu_group_" + groupName + "_expanded",
             expanded ? "1" : "0"
         );
     }
 }
 
 function initSidebar() {
-    const storageKey = "incidentrelay_sidebar_collapsed";
+    const storageKey = "beacon_sidebar_collapsed";
     const sidebar = document.getElementById("app-sidebar");
     const toggle = document.getElementById("sidebar-toggle");
 
@@ -87,7 +87,7 @@ function initSidebar() {
 
         const storedValue = groupName
             ? localStorage.getItem(
-                "incidentrelay_menu_group_"
+                "beacon_menu_group_"
                 + groupName
                 + "_expanded"
             )

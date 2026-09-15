@@ -50,7 +50,7 @@ def get_basic_route_token():
     if str(authorization.type or "").lower() != "basic":
         return None
 
-    if str(authorization.username or "") != "incidentrelay":
+    if str(authorization.username or "") != "beacon":
         return None
 
     raw_token = str(authorization.password or "").strip()
@@ -194,7 +194,7 @@ def require_alert_token(allow_json_routing_key=False, allow_basic_route_token=Fa
     - personal/API token with alerts:write scope;
     - route intake token created on the Routes page;
     - PagerDuty-compatible JSON routing_key when explicitly enabled;
-    - HTTP Basic auth with username ``incidentrelay`` and the route token as
+    - HTTP Basic auth with username ``beacon`` and the route token as
       password when explicitly enabled for providers that only support URI auth.
 
     routing_key is checked before Authorization so it remains the routing

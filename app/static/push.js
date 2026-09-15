@@ -15,7 +15,7 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 
-async function registerIncidentRelayServiceWorker() {
+async function registerBeaconServiceWorker() {
   if (!("serviceWorker" in navigator)) {
     throw new Error("Service workers are not supported by this browser");
   }
@@ -52,7 +52,7 @@ async function enableBrowserPushNotifications(deviceName) {
     throw new Error("Notification permission was not granted");
   }
 
-  const registration = await registerIncidentRelayServiceWorker();
+  const registration = await registerBeaconServiceWorker();
 
   const existingSubscription = await registration.pushManager.getSubscription();
 

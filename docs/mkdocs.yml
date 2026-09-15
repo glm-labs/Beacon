@@ -1,6 +1,6 @@
-site_name: IncidentRelay Docs
-site_description: IncidentRelay self-hosted on-call and alert routing service
-repo_url: https://github.com/roxy-wi/IncidentRelay
+site_name: Beacon Docs
+site_description: Beacon self-hosted on-call and alert routing service
+repo_url: https://github.com/glm-labs/Beacon
 
 theme:
   name: material

@@ -1,6 +1,6 @@
 ---
 title: Escalation Policies API
-description: Справочник API по политикам эскалации IncidentRelay и правилам политик
+description: Справочник API по политикам эскалации Beacon и правилам политик
 ---
 
 # Escalation Policies API

@@ -1,4 +1,4 @@
-"""Example IncidentRelay HTTP voice provider.
+"""Example Beacon HTTP voice provider.
 
 This provider demonstrates:
 - text-to-speech call creation;

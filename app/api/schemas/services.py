@@ -306,7 +306,7 @@ SERVICE_SLI_TYPE_PATTERN = (
     r"^(alert_ack_latency|alert_resolve_latency|incident_availability|incident_count)$"
 )
 
-SERVICE_SLI_SOURCE_PATTERN = r"^(incidentrelay_alert_groups|incidentrelay_service_status)$"
+SERVICE_SLI_SOURCE_PATTERN = r"^(beacon_alert_groups|beacon_service_status)$"
 
 SERVICE_SLI_SEVERITY_PATTERN = r"^(critical|high|warning|info)$"
 
@@ -330,7 +330,7 @@ class ServiceSliBaseSchema(ApiModel):
     name: str = Field(min_length=NAME_MIN_LENGTH, max_length=NAME_MAX_LENGTH)
     description: str | None = Field(default=None, max_length=DESCRIPTION_MAX_LENGTH)
     sli_type: str = Field(pattern=SERVICE_SLI_TYPE_PATTERN)
-    source: str = Field(default="incidentrelay_alert_groups", pattern=SERVICE_SLI_SOURCE_PATTERN)
+    source: str = Field(default="beacon_alert_groups", pattern=SERVICE_SLI_SOURCE_PATTERN)
     configuration: Dict[str, Any] = Field(default_factory=dict)
     severity: str | None = Field(default=None, pattern=SERVICE_SLI_SEVERITY_PATTERN)
     priority: str | None = Field(default=None, pattern=SERVICE_SLI_PRIORITY_PATTERN)

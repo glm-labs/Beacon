@@ -39,7 +39,7 @@ def test_safe_exception_response_returns_only_generic_client_message(app, caplog
     def safe_exception_route():
         try:
             raise RuntimeError(
-                "postgresql://incidentrelay:release-secret@db.internal/app"
+                "postgresql://beacon:release-secret@db.internal/app"
             )
         except RuntimeError as exc:
             return safe_exception_response(

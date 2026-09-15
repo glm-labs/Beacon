@@ -7,7 +7,7 @@ description: Mattermost webhook and Bot API notification setup.
 
 Mattermost is an outgoing notification channel.
 
-IncidentRelay supports two Mattermost delivery styles:
+Beacon supports two Mattermost delivery styles:
 
 1. Incoming webhook mode.
 2. Bot API mode with interactive buttons and message updates.

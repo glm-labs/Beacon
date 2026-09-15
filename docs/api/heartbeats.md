@@ -1,6 +1,6 @@
 # Heartbeats API
 
-Heartbeats are managed under `/api/heartbeats`. Ping endpoints are public by token; management endpoints require normal IncidentRelay authentication.
+Heartbeats are managed under `/api/heartbeats`. Ping endpoints are public by token; management endpoints require normal Beacon authentication.
 
 ## Create heartbeat
 

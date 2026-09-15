@@ -1,6 +1,6 @@
 # Grafana Alerting integration
 
-IncidentRelay can receive Grafana Alerting notifications through a dedicated webhook endpoint. Each Grafana alert instance is normalized, routed, grouped, deduplicated, and processed through the standard IncidentRelay alert lifecycle.
+Beacon can receive Grafana Alerting notifications through a dedicated webhook endpoint. Each Grafana alert instance is normalized, routed, grouped, deduplicated, and processed through the standard Beacon alert lifecycle.
 
 ## Endpoint
 
@@ -8,16 +8,16 @@ IncidentRelay can receive Grafana Alerting notifications through a dedicated web
 POST /api/integrations/grafana
 ```
 
-The endpoint requires the intake token of an active IncidentRelay route whose source is `grafana`.
+The endpoint requires the intake token of an active Beacon route whose source is `grafana`.
 
 ```http
 Authorization: Bearer <route-intake-token>
 Content-Type: application/json
 ```
 
-## Create an IncidentRelay route
+## Create an Beacon route
 
-1. Open **Routes** in IncidentRelay.
+1. Open **Routes** in Beacon.
 2. Create a route or edit an existing one.
 3. Select **Grafana** as the source.
 4. Select the team that owns the alerts.
@@ -56,17 +56,17 @@ In Grafana:
 2. Open the **Contact points** tab.
 3. Add a contact point.
 4. Select **Webhook** as the integration.
-5. Set the URL to the IncidentRelay Grafana endpoint:
+5. Set the URL to the Beacon Grafana endpoint:
 
    ```text
-   https://incidentrelay.example.com/api/integrations/grafana
+   https://beacon.example.com/api/integrations/grafana
    ```
 
 6. Set the HTTP method to `POST`.
 7. In the authorization settings, set:
    - **Authentication Header Scheme:** `Bearer`
-   - **Authentication Header Credentials:** the IncidentRelay route token
-8. Keep **Disable resolved message** disabled so IncidentRelay receives recovery notifications.
+   - **Authentication Header Credentials:** the Beacon route token
+8. Keep **Disable resolved message** disabled so Beacon receives recovery notifications.
 9. Save the contact point.
 10. Use Grafana's test action to verify delivery.
 
@@ -82,31 +82,31 @@ apiVersion: 1
 
 contactPoints:
   - orgId: 1
-    name: IncidentRelay
+    name: Beacon
     receivers:
-      - uid: incidentrelay-webhook
+      - uid: beacon-webhook
         type: webhook
         disableResolveMessage: false
         settings:
-          url: https://incidentrelay.example.com/api/integrations/grafana
+          url: https://beacon.example.com/api/integrations/grafana
           httpMethod: POST
           authorization_scheme: Bearer
-          authorization_credentials: $INCIDENTRELAY_ROUTE_TOKEN
+          authorization_credentials: $BEACON_ROUTE_TOKEN
 ```
 
-Set `INCIDENTRELAY_ROUTE_TOKEN` in the Grafana process/container environment instead of storing the token in the provisioning file. Keep `disableResolveMessage: false` so recovery events reach IncidentRelay.
+Set `BEACON_ROUTE_TOKEN` in the Grafana process/container environment instead of storing the token in the provisioning file. Keep `disableResolveMessage: false` so recovery events reach Beacon.
 
 Place the file, for example, at:
 
 ```text
-/etc/grafana/provisioning/alerting/incidentrelay.yaml
+/etc/grafana/provisioning/alerting/beacon.yaml
 ```
 
 Then restart Grafana or reload the provisioned alerting resources using Grafana's provisioning API. The contact point must still be selected by an alert rule or notification policy.
 
 ## Recommended Grafana labels
 
-Add stable labels to Grafana alert rules so IncidentRelay can route and group them predictably.
+Add stable labels to Grafana alert rules so Beacon can route and group them predictably.
 
 ```yaml
 labels:
@@ -131,7 +131,7 @@ The normalizer also recognizes `oncall_team` as a fallback team label and `prior
 
 ## Alert normalization
 
-IncidentRelay processes every object in Grafana's `alerts` array independently.
+Beacon processes every object in Grafana's `alerts` array independently.
 
 ### Status
 
@@ -153,7 +153,7 @@ This allows one Grafana notification group to contain alert instances with diffe
 
 ### Title
 
-IncidentRelay selects the first available value from:
+Beacon selects the first available value from:
 
 1. `annotations.summary`
 2. `labels.alertname`
@@ -162,7 +162,7 @@ IncidentRelay selects the first available value from:
 
 ### Message
 
-IncidentRelay selects the first available value from:
+Beacon selects the first available value from:
 
 1. `annotations.description`
 2. `annotations.message`
@@ -171,7 +171,7 @@ IncidentRelay selects the first available value from:
 
 ### Severity
 
-IncidentRelay selects the first available label from:
+Beacon selects the first available label from:
 
 1. `severity`
 2. `priority`
@@ -179,7 +179,7 @@ IncidentRelay selects the first available label from:
 
 ### Team
 
-IncidentRelay selects the first available value from:
+Beacon selects the first available value from:
 
 1. `labels.team`
 2. `labels.oncall_team`
@@ -187,11 +187,11 @@ IncidentRelay selects the first available value from:
 
 Route matching remains authoritative. The label does not bypass normal route access or matcher checks.
 
-## Labels added by IncidentRelay
+## Labels added by Beacon
 
 When present in the Grafana payload, the integration exposes the following values as labels:
 
-| IncidentRelay label | Grafana field |
+| Beacon label | Grafana field |
 |---|---|
 | `dashboard_url` | `dashboardURL` |
 | `panel_url` | `panelURL` |
@@ -213,9 +213,9 @@ The first available Grafana link is also stored as `event_link`. The selection o
 
 ## Deduplication
 
-When Grafana provides `fingerprint`, IncidentRelay uses it as the deduplication key.
+When Grafana provides `fingerprint`, Beacon uses it as the deduplication key.
 
-When `fingerprint` is missing, IncidentRelay generates a stable key from:
+When `fingerprint` is missing, Beacon generates a stable key from:
 
 - Grafana source;
 - alert rule UID when available;
@@ -227,7 +227,7 @@ A firing notification followed by a resolved notification with the same deduplic
 
 ## Stored payload
 
-IncidentRelay stores the original Grafana group context, but each normalized IncidentRelay alert keeps only its own Grafana alert instance in the stored `alerts` array.
+Beacon stores the original Grafana group context, but each normalized Beacon alert keeps only its own Grafana alert instance in the stored `alerts` array.
 
 This preserves fields such as:
 
@@ -243,7 +243,7 @@ This preserves fields such as:
 
 ```json
 {
-  "receiver": "incidentrelay",
+  "receiver": "beacon",
   "status": "firing",
   "orgId": 1,
   "groupKey": "{}:{alertname=\"DiskFull\"}",
@@ -292,7 +292,7 @@ This preserves fields such as:
 
 ```bash
 curl -X POST \
-  "https://incidentrelay.example.com/api/integrations/grafana" \
+  "https://beacon.example.com/api/integrations/grafana" \
   -H "Authorization: Bearer ROUTE_INTAKE_TOKEN" \
   -H "Content-Type: application/json" \
   --data-binary @grafana-payload.json
@@ -359,7 +359,7 @@ Use the returned `trace_id` to inspect route evaluation.
 
 Make sure **Disable resolved message** is not enabled in the Grafana webhook contact point.
 
-IncidentRelay uses the status of each item in the `alerts` array, not only the top-level status.
+Beacon uses the status of each item in the `alerts` array, not only the top-level status.
 
 ### Alerts are duplicated
 

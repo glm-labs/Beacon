@@ -91,7 +91,7 @@ def test_release_artifact_versions_match_application_version():
         APP_ROOT / "version.py", "SERVICE_VERSION"
     )
     chart_app_version = _yaml_scalar(
-        Path("helm") / "incidentrelay" / "Chart.yaml",
+        Path("helm") / "beacon" / "Chart.yaml",
         "appVersion",
     )
     assert chart_app_version == service_version

@@ -36,7 +36,7 @@ def _get_providers_dir() -> str:
     return getattr(
         Config,
         "VOICE_PROVIDERS_DIR",
-        "/usr/local/lib/incidentrelay/voice_providers",
+        "/usr/local/lib/beacon/voice_providers",
     )
 
 
@@ -65,7 +65,7 @@ def _load_external_provider(provider_name: str) -> ModuleType | None:
     if not provider_path.is_file():
         return None
 
-    module_name = f"incidentrelay_voice_provider_{provider_name}"
+    module_name = f"beacon_voice_provider_{provider_name}"
     spec = importlib.util.spec_from_file_location(module_name, provider_path)
 
     if not spec or not spec.loader:

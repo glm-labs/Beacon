@@ -1,6 +1,6 @@
 ---
 title: Demo Data
-description: Create and verify IncidentRelay demo data for local testing.
+description: Create and verify Beacon demo data for local testing.
 ---
 
 # Demo Data

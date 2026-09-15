@@ -353,7 +353,7 @@ SERVICE_TIMELINE_EVENT_SCHEMA = {
         "event_type": {"type": "string", "example": "service_runbook.created"},
         "title": {"type": "string"},
         "summary": {"type": "string", "nullable": True},
-        "source": {"type": "string", "example": "incidentrelay"},
+        "source": {"type": "string", "example": "beacon"},
         "source_ref": {"type": "string", "nullable": True},
         "dedup_key": {"type": "string", "nullable": True},
         "external_url": {"type": "string", "nullable": True},
@@ -422,8 +422,8 @@ SERVICE_SLI_TYPES = [
 ]
 
 SERVICE_SLI_SOURCES = [
-    "incidentrelay_alert_groups",
-    "incidentrelay_service_status",
+    "beacon_alert_groups",
+    "beacon_service_status",
 ]
 
 SERVICE_SLO_COMPARISONS = [
@@ -471,7 +471,7 @@ SERVICE_SLI_INPUT_SCHEMA = {
         "source": {
             "type": "string",
             "enum": SERVICE_SLI_SOURCES,
-            "default": "incidentrelay_alert_groups",
+            "default": "beacon_alert_groups",
             "description": "Data source used by the SLI evaluator.",
         },
         "configuration": {
@@ -484,7 +484,7 @@ SERVICE_SLI_INPUT_SCHEMA = {
             "type": "string",
             "nullable": True,
             "enum": ["critical", "high", "warning", "info"],
-            "description": "Optional alert severity filter for IncidentRelay alert-group based SLIs.",
+            "description": "Optional alert severity filter for Beacon alert-group based SLIs.",
             "example": "critical",
         },
         "priority": {

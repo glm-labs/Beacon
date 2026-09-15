@@ -65,7 +65,7 @@
   "teams.details.status": "状态",
   "teams.form.create": "创建团队",
   "teams.form.edit": "编辑团队 #{id}",
-  "teams.form.subtitle": "创建或编辑 IncidentRelay 团队。",
+  "teams.form.subtitle": "创建或编辑 Beacon 团队。",
   "teams.form.group": "用户组",
   "teams.form.name": "名称",
   "teams.form.name_placeholder": "基础设施",

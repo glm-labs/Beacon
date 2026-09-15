@@ -89,7 +89,7 @@
   "alert_details.form.service": "Service",
   "alert_details.manual.service_help": "Wenn ein Service ausgewählt ist, verwendet der Vorfall Service Ownership und Eskalationsstandards.",
   "alert_details.manual.notify_team": "Benachrichtigungsteam",
-  "alert_details.manual.notify_help": "Wenn aktiviert, wird IncidentRelay die Benachrichtigung über den normalen Alarmbenachrichtigungsfluss planen.",
+  "alert_details.manual.notify_help": "Wenn aktiviert, wird Beacon die Benachrichtigung über den normalen Alarmbenachrichtigungsfluss planen.",
   "alert_details.loading": "Wird geladen...",
   "alert_details.loading.comments": "Kommentare laden...",
   "alert_details.loading.priority": "Ladepriorität...",

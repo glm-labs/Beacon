@@ -1,0 +1,23 @@
+[Unit]
+Description=Beacon Slack Socket Mode worker
+After=network.target beacon.service
+
+[Service]
+Type=simple
+User=beacon
+Group=beacon
+WorkingDirectory=/var/www/beacon
+
+Environment=BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
+Environment=PYTHONUNBUFFERED=1
+
+ExecStart=/usr/bin/python3 -m app.slack_worker
+
+Restart=always
+RestartSec=5
+
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

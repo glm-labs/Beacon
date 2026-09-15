@@ -246,12 +246,12 @@ def cancel_pending_orchestration_work(
 
 
 def deactivate_sso_mappings(*, group_id=None, team_id=None):
-    """Disable mappings that target a deleted IncidentRelay scope."""
+    """Disable mappings that target a deleted Beacon scope."""
     query = SsoGroupMapping.active == True  # noqa: E712
     if group_id is not None:
-        query &= SsoGroupMapping.incidentrelay_group == group_id
+        query &= SsoGroupMapping.beacon_group == group_id
     if team_id is not None:
-        query &= SsoGroupMapping.incidentrelay_team == team_id
+        query &= SsoGroupMapping.beacon_team == team_id
     if group_id is None and team_id is None:
         return 0
     return SsoGroupMapping.update(active=False).where(query).execute()

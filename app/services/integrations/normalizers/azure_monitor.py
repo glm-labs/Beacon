@@ -65,7 +65,7 @@ def _subscription_id_from_resource_id(resource_id):
 
 
 def normalize_azure_monitor_status(value):
-    """Map Azure monitorCondition to IncidentRelay firing/resolved."""
+    """Map Azure monitorCondition to Beacon firing/resolved."""
 
     condition = clean_string(value)
     if not condition:
@@ -78,7 +78,7 @@ def normalize_azure_monitor_status(value):
 
 
 def normalize_azure_monitor_severity(value):
-    """Map Azure Sev0-Sev4 to IncidentRelay severity."""
+    """Map Azure Sev0-Sev4 to Beacon severity."""
 
     severity = clean_string(value)
     if not severity:

@@ -218,7 +218,7 @@ Responder actions are written to the incident timeline.
 
 ## Browser push notification
 
-When browser push is configured for the target responder, IncidentRelay sends a push notification for the responder request.
+When browser push is configured for the target responder, Beacon sends a push notification for the responder request.
 
 The notification should include enough context to act without opening the incident first:
 

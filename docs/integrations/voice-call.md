@@ -26,7 +26,7 @@ Required data:
 ```ini
 [voice]
 provider = stub
-providers_dir = /usr/local/lib/incidentrelay/voice_providers
+providers_dir = /usr/local/lib/beacon/voice_providers
 callback_secret =
 ```
 

@@ -5,7 +5,7 @@ description: Incoming alert sources and outgoing notification channels
 
 # Integrations
 
-IncidentRelay has two different integration layers. Keep them separate when configuring or troubleshooting the system.
+Beacon has two different integration layers. Keep them separate when configuring or troubleshooting the system.
 
 ```text
 Monitoring system -> Incoming integration -> Route -> Notification channels -> User action
@@ -15,7 +15,7 @@ Profile-level browser push is separate from notification channels. Users enable 
 
 ## Incoming alert integrations
 
-Incoming integrations create or update alerts in IncidentRelay. They are selected by the route `source` field and require a route intake token.
+Incoming integrations create or update alerts in Beacon. They are selected by the route `source` field and require a route intake token.
 
 | Source              | Endpoint                                   | Documentation                                             |
 |---------------------|--------------------------------------------|-----------------------------------------------------------|

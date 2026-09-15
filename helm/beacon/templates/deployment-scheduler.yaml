@@ -2,9 +2,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "incidentrelay.fullname" . }}-scheduler
+  name: {{ include "beacon.fullname" . }}-scheduler
   labels:
-    {{- include "incidentrelay.labels" . | nindent 4 }}
+    {{- include "beacon.labels" . | nindent 4 }}
     app.kubernetes.io/component: scheduler
 spec:
   replicas: 1
@@ -14,18 +14,18 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "incidentrelay.selectorLabels" . | nindent 6 }}
+      {{- include "beacon.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: scheduler
   template:
     metadata:
       annotations:
-        {{- include "incidentrelay.configChecksum" . | nindent 8 }}
-        {{- include "incidentrelay.customCAChecksum" . | nindent 8 }}
+        {{- include "beacon.configChecksum" . | nindent 8 }}
+        {{- include "beacon.customCAChecksum" . | nindent 8 }}
         {{- with .Values.scheduler.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
-        {{- include "incidentrelay.selectorLabels" . | nindent 8 }}
+        {{- include "beacon.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: scheduler
         {{- with .Values.scheduler.podLabels }}
         {{- toYaml . | nindent 8 }}
@@ -35,31 +35,31 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "incidentrelay.serviceAccountName" . }}
+      serviceAccountName: {{ include "beacon.serviceAccountName" . }}
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if include "incidentrelay.customCAEnabled" . }}
+      {{- if include "beacon.customCAEnabled" . }}
       initContainers:
-        {{- include "incidentrelay.customCAInitContainer" . | nindent 8 }}
+        {{- include "beacon.customCAInitContainer" . | nindent 8 }}
       {{- end }}
       containers:
         - name: scheduler
-          image: {{ include "incidentrelay.image" . }}
+          image: {{ include "beacon.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
-            - name: INCIDENTRELAY_CONFIG_FILE
-              value: /etc/incidentrelay/incidentrelay.conf
-            - name: INCIDENTRELAY_SERVICE
+            - name: BEACON_CONFIG_FILE
+              value: /etc/beacon/beacon.conf
+            - name: BEACON_SERVICE
               value: scheduler
-            - name: INCIDENTRELAY_RUN_MIGRATIONS
+            - name: BEACON_RUN_MIGRATIONS
               value: "0"
-            {{- include "incidentrelay.customCAEnv" . | nindent 12 }}
+            {{- include "beacon.customCAEnv" . | nindent 12 }}
             {{- with .Values.scheduler.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -68,9 +68,9 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
-            {{- include "incidentrelay.volumeMounts" . | nindent 12 }}
+            {{- include "beacon.volumeMounts" . | nindent 12 }}
       volumes:
-        {{- include "incidentrelay.volumes" . | nindent 8 }}
+        {{- include "beacon.volumes" . | nindent 8 }}
       {{- with .Values.scheduler.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -81,7 +81,7 @@ spec:
       {{- else }}
       {{- if $.Values.persistence.enabled }}
       affinity:
-        {{- include "incidentrelay.dataWorkerAffinity" $ | nindent 8 }}
+        {{- include "beacon.dataWorkerAffinity" $ | nindent 8 }}
       {{- end }}
       {{- end }}
       {{- with .Values.scheduler.tolerations }}

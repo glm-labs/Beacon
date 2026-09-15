@@ -65,7 +65,7 @@
   "teams.details.status": "Estado",
   "teams.form.create": "Crear equipo",
   "teams.form.edit": "Editar equipo #{id}",
-  "teams.form.subtitle": "Crea o edita un equipo de IncidentRelay.",
+  "teams.form.subtitle": "Crea o edita un equipo de Beacon.",
   "teams.form.group": "Grupo",
   "teams.form.name": "Nombre",
   "teams.form.name_placeholder": "Infraestructura",

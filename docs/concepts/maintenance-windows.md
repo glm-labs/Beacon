@@ -5,13 +5,13 @@ description: Planned maintenance schedules, scopes and alert behavior control.
 
 # Maintenance Windows
 
-Maintenance Windows define planned periods when IncidentRelay should change how matching alerts are handled. A window can target a group, team, service, or route and can either suppress notifications, suppress incident creation, create a maintenance incident, or pause escalations.
+Maintenance Windows define planned periods when Beacon should change how matching alerts are handled. A window can target a group, team, service, or route and can either suppress notifications, suppress incident creation, create a maintenance incident, or pause escalations.
 
 ## Concepts
 
-A maintenance window is matched against incoming alerts after routing and service resolution. This means the route, team, and service are already known before IncidentRelay decides whether a maintenance window applies.
+A maintenance window is matched against incoming alerts after routing and service resolution. This means the route, team, and service are already known before Beacon decides whether a maintenance window applies.
 
-Maintenance windows are stored separately from incidents, but matching information is attached to the created alert group and child alerts through maintenance fields. In the IncidentRelay data model, an `AlertGroup` is the incident storage model.
+Maintenance windows are stored separately from incidents, but matching information is attached to the created alert group and child alerts through maintenance fields. In the Beacon data model, an `AlertGroup` is the incident storage model.
 
 ## Scope
 
@@ -53,7 +53,7 @@ Already delivered notifications remain in history and are not retracted. Missed 
 
 When the maintenance occurrence ends, a still-firing alert group schedules one normal notification or update. The reminder counter is reset, and policy escalation timing resumes from the end of maintenance using the current escalation rule.
 
-Use this when alerts should still be visible in IncidentRelay, but responders should not be paged during planned work.
+Use this when alerts should still be visible in Beacon, but responders should not be paged during planned work.
 
 ### `suppress_incident`
 
@@ -91,7 +91,7 @@ Example payload for a Moscow maintenance window:
 }
 ```
 
-IncidentRelay interprets this as 07:52 to 11:37 in `Europe/Moscow`, not UTC.
+Beacon interprets this as 07:52 to 11:37 in `Europe/Moscow`, not UTC.
 
 The effective status is calculated dynamically from:
 

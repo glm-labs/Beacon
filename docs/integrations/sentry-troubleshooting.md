@@ -5,17 +5,17 @@ description: Troubleshoot Sentry signatures, routing, deduplication and resolves
 
 # Sentry integration troubleshooting
 
-This guide covers common problems with the IncidentRelay Sentry integration.
+This guide covers common problems with the Beacon Sentry integration.
 
 ## The webhook returns `409 sentry_secret_not_configured`
 
-Cause: the IncidentRelay route exists, but the Sentry Client Secret has not been saved in the route settings.
+Cause: the Beacon route exists, but the Sentry Client Secret has not been saved in the route settings.
 
 Fix:
 
 1. Open the Internal Integration in Sentry.
 2. Copy the **Client Secret**.
-3. Open the IncidentRelay route.
+3. Open the Beacon route.
 4. Click **Edit**.
 5. Paste the secret into **Sentry webhook secret**.
 6. Save the route.
@@ -40,23 +40,23 @@ Fix:
 
 ## The webhook returns `403 sentry_signature_invalid`
 
-Cause: IncidentRelay received a signature, but it does not match the request body and the route's saved Client Secret.
+Cause: Beacon received a signature, but it does not match the request body and the route's saved Client Secret.
 
 Common reasons:
 
-- wrong Client Secret pasted into IncidentRelay;
-- request body changed by a proxy before reaching IncidentRelay;
+- wrong Client Secret pasted into Beacon;
+- request body changed by a proxy before reaching Beacon;
 - test request generated with a different secret;
 - Sentry Internal Integration points to one route, but the Client Secret was saved on another route.
 
 Fix:
 
 1. Re-copy the Client Secret from the same Sentry Internal Integration that sends to this route URL.
-2. Paste it into the IncidentRelay route again.
+2. Paste it into the Beacon route again.
 3. Save the route.
 4. Retry from Sentry.
 
-If a proxy is in front of IncidentRelay, make sure it forwards the raw request body unchanged.
+If a proxy is in front of Beacon, make sure it forwards the raw request body unchanged.
 
 ## The webhook returns `400 route_source_mismatch`
 
@@ -74,7 +74,7 @@ Cause: the route is disabled or deleted.
 
 Fix:
 
-- enable the route in IncidentRelay;
+- enable the route in Beacon;
 - verify that the owning team and group are active.
 
 ## Sentry alerts are created but not resolved
@@ -86,7 +86,7 @@ Check that the Internal Integration enables:
 - `issue` resource for `issue.resolved`, `issue.ignored` and `issue.unresolved` events;
 - `metric_alert` resource for `metric_alert.resolved` events.
 
-Issue alert rule actions usually create `event_alert.triggered` events. A separate `issue.resolved` lifecycle event is needed to resolve the IncidentRelay alert automatically.
+Issue alert rule actions usually create `event_alert.triggered` events. A separate `issue.resolved` lifecycle event is needed to resolve the Beacon alert automatically.
 
 ## Alerts are routed to the wrong team
 
@@ -114,7 +114,7 @@ Recommended matchers:
 }
 ```
 
-If multiple routes can match the same Sentry alert, review route priority/order in IncidentRelay.
+If multiple routes can match the same Sentry alert, review route priority/order in Beacon.
 
 ## Alerts duplicate instead of updating
 
@@ -132,7 +132,7 @@ Recommended group by for metric alerts:
 ["project_slug", "sentry_alert_id"]
 ```
 
-IncidentRelay deduplication uses the normalized `dedup_key`, but alert grouping and UI grouping can still look noisy if `group_by` uses unstable labels such as `event_id`.
+Beacon deduplication uses the normalized `dedup_key`, but alert grouping and UI grouping can still look noisy if `group_by` uses unstable labels such as `event_id`.
 
 Avoid grouping by:
 
@@ -151,7 +151,7 @@ Manual curl examples are useful for checking reachability, but they will not pas
 Reachability test without valid signature should return `403 sentry_signature_invalid` or `403 sentry_signature_missing`:
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/sentry/42' \
+curl -X POST 'https://beacon.example.com/api/integrations/sentry/42' \
   -H 'Content-Type: application/json' \
   -H 'Sentry-Hook-Resource: event_alert' \
   -d '{"action":"triggered","data":{}}'

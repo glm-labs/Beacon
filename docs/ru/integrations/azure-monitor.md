@@ -1,11 +1,11 @@
 ---
 title: Azure Monitor
-description: Отправка уведомлений Azure Monitor Common Alert Schema в IncidentRelay через Webhook в Action Group.
+description: Отправка уведомлений Azure Monitor Common Alert Schema в Beacon через Webhook в Action Group.
 ---
 
 # Интеграция Azure Monitor
 
-IncidentRelay принимает уведомления **Azure Monitor Common Alert Schema** через отдельный входящий маршрут.
+Beacon принимает уведомления **Azure Monitor Common Alert Schema** через отдельный входящий маршрут.
 
 Endpoint:
 
@@ -15,7 +15,7 @@ POST /api/integrations/azure-monitor
 
 Поддерживается только Common Alert Schema. Legacy-схемы Azure Monitor намеренно отклоняются, чтобы lifecycle, severity и routing оставались однозначными.
 
-## Создание маршрута IncidentRelay
+## Создание маршрута Beacon
 
 Создайте маршрут:
 
@@ -32,16 +32,16 @@ Source: Azure Monitor
 Сохраните маршрут и сразу скопируйте сгенерированный webhook URI. В URI встроены HTTP Basic credentials:
 
 ```text
-https://incidentrelay:<ROUTE_TOKEN>@incidentrelay.example.com/api/integrations/azure-monitor
+https://beacon:<ROUTE_TOKEN>@beacon.example.com/api/integrations/azure-monitor
 ```
 
-IncidentRelay использует фиксированный username `incidentrelay`, а intake token маршрута — как пароль Basic auth. Для Logic Apps, curl и других клиентов, умеющих задавать custom headers, тот же token можно передавать как `Authorization: Bearer`.
+Beacon использует фиксированный username `beacon`, а intake token маршрута — как пароль Basic auth. Для Logic Apps, curl и других клиентов, умеющих задавать custom headers, тот же token можно передавать как `Authorization: Bearer`.
 
 ## Настройка Azure Monitor Action Group
 
 В Azure Monitor создайте или отредактируйте **Action Group** и добавьте действие **Webhook**.
 
-Укажите webhook URI, который показал IncidentRelay, и включите **Common Alert Schema** для этого действия.
+Укажите webhook URI, который показал Beacon, и включите **Common Alert Schema** для этого действия.
 
 Не выбирайте **Secure webhook** для этой схемы: Secure webhook использует Microsoft Entra ID, а эта интеграция аутентифицирует обычный Webhook через HTTP Basic credentials в URI.
 
@@ -49,20 +49,20 @@ Common Alert Schema включается отдельно на уровне ка
 
 ## Lifecycle
 
-IncidentRelay преобразует `data.essentials.monitorCondition` так:
+Beacon преобразует `data.essentials.monitorCondition` так:
 
-| Azure Monitor | IncidentRelay |
+| Azure Monitor | Beacon |
 |---|---|
 | `Fired` | `firing` |
 | `Resolved` | `resolved` |
 
-Основной deduplication key — `alertId`. Благодаря этому `Resolved` обновляет уже существующий алерт IncidentRelay.
+Основной deduplication key — `alertId`. Благодаря этому `Resolved` обновляет уже существующий алерт Beacon.
 
 Если `alertId` отсутствует, используются `originAlertId`, а затем стабильный вычисляемый ключ.
 
 ## Severity
 
-| Azure Monitor | IncidentRelay |
+| Azure Monitor | Beacon |
 |---|---|
 | `Sev0` | `critical` |
 | `Sev1` | `high` |
@@ -72,7 +72,7 @@ IncidentRelay преобразует `data.essentials.monitorCondition` так:
 
 ## Labels и routing
 
-IncidentRelay добавляет метаданные Azure в labels:
+Beacon добавляет метаданные Azure в labels:
 
 ```text
 azure_alert_id
@@ -106,9 +106,9 @@ Custom property `team` или `oncall_team` может участвовать в
 ## Тестовый запрос
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/azure-monitor' \
+curl -X POST 'https://beacon.example.com/api/integrations/azure-monitor' \
   -H 'Content-Type: application/json' \
-  -u 'incidentrelay:ROUTE_TOKEN' \
+  -u 'beacon:ROUTE_TOKEN' \
   -d '{
     "schemaId": "azureMonitorCommonAlertSchema",
     "data": {
@@ -139,7 +139,7 @@ curl -X POST 'https://incidentrelay.example.com/api/integrations/azure-monitor' 
 
 ## Диагностика
 
-- `401 Route intake token is required`: проверьте URI в Action Group и username `incidentrelay`.
+- `401 Route intake token is required`: проверьте URI в Action Group и username `beacon`.
 - `400 Route source must be azure_monitor`: credential относится к маршруту другого source.
 - `400 Azure Monitor Common Alert Schema is required`: включите Common Alert Schema у Webhook action.
 - `Fired` и `Resolved` создают разные алерты: проверьте, что Azure передаёт одинаковый `alertId`.

@@ -226,7 +226,7 @@ def build_alert_push_payload(group, user, event_type="notification"):
         "priority_label": alert_priority_label(group),
         "url": build_alert_web_url(group) or f"/alerts/{group.id}",
         "source_event_url": build_source_event_url(group) or None,
-        "tag": f"incidentrelay-alert-group-{group.id}",
+        "tag": f"beacon-alert-group-{group.id}",
         "require_interaction": True,
         "renotify": True,
         "silent": False,
@@ -362,14 +362,14 @@ def build_stakeholder_alert_push_payload(
         title = format_alert_title_with_priority(group)
         body = group.message or f"Priority: {alert_priority_label(group)}"
 
-    tag = f"incidentrelay-stakeholder-alert-group-{group.id}"
+    tag = f"beacon-stakeholder-alert-group-{group.id}"
 
     if normalized_event_type in {
         "responder_requested",
         "incident_responder_requested",
     }:
         responder_id = (context or {}).get("responder_id")
-        tag = f"incidentrelay-responder-{group.id}-{responder_id or 'request'}"
+        tag = f"beacon-responder-{group.id}-{responder_id or 'request'}"
 
     return {
         "title": title,
@@ -456,10 +456,10 @@ def send_stakeholder_push_to_user(
 
 def send_test_push(user):
     payload = {
-        "title": "IncidentRelay test push",
+        "title": "Beacon test push",
         "body": "Browser push notifications are enabled for this device.",
         "url": "/profile",
-        "tag": "incidentrelay-test-push",
+        "tag": "beacon-test-push",
         "require_interaction": True,
         "renotify": True,
         "silent": False,
@@ -621,4 +621,4 @@ def _build_alert_push_body(alert, event_type):
     if normalized_event_type in {"acknowledged", "ack"}:
         return alert.message or alert.source or "Alert has been acknowledged."
 
-    return alert.message or alert.source or "IncidentRelay alert"
+    return alert.message or alert.source or "Beacon alert"

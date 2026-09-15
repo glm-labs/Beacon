@@ -6,7 +6,7 @@ Base path:
 /api/business-services
 ```
 
-All endpoints require authentication. Group read/write permissions are enforced according to the current IncidentRelay RBAC rules.
+All endpoints require authentication. Group read/write permissions are enforced according to the current Beacon RBAC rules.
 
 ## List Business Services
 

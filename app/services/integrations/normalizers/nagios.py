@@ -80,7 +80,7 @@ def normalize_nagios_labels(value):
 
 
 def normalize_nagios_status(notification_type=None, service_state=None, host_state=None):
-    """Map Nagios notification/state values to IncidentRelay alert status."""
+    """Map Nagios notification/state values to Beacon alert status."""
     notification_type = _normalize_notification_type(notification_type)
     if notification_type in RESOLVED_NOTIFICATION_TYPES:
         return "resolved"
@@ -95,7 +95,7 @@ def normalize_nagios_status(notification_type=None, service_state=None, host_sta
 
 
 def normalize_nagios_severity(service_state=None, host_state=None):
-    """Map Nagios host/service states to IncidentRelay severity."""
+    """Map Nagios host/service states to Beacon severity."""
     service_state = str(service_state or "").strip().lower()
     if service_state:
         return SERVICE_SEVERITIES.get(service_state, "warning")

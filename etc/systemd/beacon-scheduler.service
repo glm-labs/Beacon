@@ -1,18 +1,18 @@
 [Unit]
-Description=IncidentRelay Scheduler service
+Description=Beacon Scheduler service
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
 
-User=incidentrelay
-Group=incidentrelay
+User=beacon
+Group=beacon
 
-WorkingDirectory=/var/www/incidentrelay
+WorkingDirectory=/var/www/beacon
 
-Environment=INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
-Environment=INCIDENTRELAY_SERVICE=scheduler
+Environment=BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
+Environment=BEACON_SERVICE=scheduler
 Environment=PYTHONUNBUFFERED=1
 
 ExecStart=/usr/bin/python3 -m app.scheduler_worker

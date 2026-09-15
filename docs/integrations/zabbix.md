@@ -32,14 +32,14 @@ Attach at least one notification channel and copy the route intake token into th
 
 ## Ready-to-copy Zabbix Webhook Media Type
 
-For Zabbix 6.x/7.x, create **Alerts → Media types → Create media type** and select **Webhook**. A custom Webhook media type can call IncidentRelay directly without an external script.
+For Zabbix 6.x/7.x, create **Alerts → Media types → Create media type** and select **Webhook**. A custom Webhook media type can call Beacon directly without an external script.
 
 Recommended parameters:
 
 | Parameter | Value |
 |---|---|
-| `url` | `https://incidentrelay.example.com/api/integrations/zabbix` |
-| `token` | `{$INCIDENTRELAY.TOKEN}` |
+| `url` | `https://beacon.example.com/api/integrations/zabbix` |
+| `token` | `{$BEACON.TOKEN}` |
 | `event_id` | `{EVENT.ID}` |
 | `trigger_id` | `{TRIGGER.ID}` |
 | `event_name` | `{EVENT.NAME}` |
@@ -52,7 +52,7 @@ Recommended parameters:
 | `event_link` | `{$ZABBIX.URL}/tr_events.php?triggerid={TRIGGER.ID}&eventid={EVENT.ID}` |
 | `HTTPProxy` | optional proxy URL or an empty value |
 
-Define `{$INCIDENTRELAY.TOKEN}` as a Zabbix secret user macro and `{$ZABBIX.URL}` as the externally reachable Zabbix frontend URL.
+Define `{$BEACON.TOKEN}` as a Zabbix secret user macro and `{$ZABBIX.URL}` as the externally reachable Zabbix frontend URL.
 
 Use this Webhook script:
 
@@ -93,18 +93,18 @@ try {
 
     return response;
 } catch (error) {
-    Zabbix.log(3, '[ IncidentRelay webhook ] ' + error);
-    throw 'IncidentRelay webhook failed: ' + error;
+    Zabbix.log(3, '[ Beacon webhook ] ' + error);
+    throw 'Beacon webhook failed: ' + error;
 }
 ```
 
-Create a Zabbix user/media entry using this media type and add that user or user group to the required trigger action. Configure both **Operations** and **Recovery operations**, otherwise a Zabbix recovery will never reach IncidentRelay.
+Create a Zabbix user/media entry using this media type and add that user or user group to the required trigger action. Configure both **Operations** and **Recovery operations**, otherwise a Zabbix recovery will never reach Beacon.
 
 The same media type can be tested from the Zabbix UI before it is attached to production actions.
 
 ## Service assignment
 
-After a route matches the incoming alert, IncidentRelay can attach the alert to a service.
+After a route matches the incoming alert, Beacon can attach the alert to a service.
 
 There are two ways:
 
@@ -180,7 +180,7 @@ Zabbix media type parameters can use macros:
 
 `event_link` is stored in `labels.event_link` and is also exposed as `alert.event_link` in the alert API response. It is used by the alert details modal to open the original Zabbix event.
 
-`event_tag` is stored in `labels.event_tag`. When it contains tag-like data such as `team: infra, service: cpu`, IncidentRelay also extracts individual labels such as `team` and `service`.
+`event_tag` is stored in `labels.event_tag`. When it contains tag-like data such as `team: infra, service: cpu`, Beacon also extracts individual labels such as `team` and `service`.
 
 ## Required payload content
 
@@ -208,7 +208,7 @@ fingerprint
 
 ## Normalized fields
 
-| IncidentRelay field | Source |
+| Beacon field | Source |
 |---|---|
 | `source` | `zabbix` |
 | `team_slug` | `team`, `labels.team`, `labels.oncall_team`, or parsed Zabbix tags |
@@ -220,9 +220,9 @@ fingerprint
 | `event_link` | `event_link`, `event_url`, `problem_url`, `trigger_url`, `labels.event_link`, or built from `zabbix_url` and `event_id` |
 | `status` | `status` or `event_status`, default `firing` |
 
-Zabbix severity values are normalized for IncidentRelay routing and filtering:
+Zabbix severity values are normalized for Beacon routing and filtering:
 
-| Zabbix severity | IncidentRelay severity |
+| Zabbix severity | Beacon severity |
 |---|---|
 | `Disaster` | `critical` |
 | `High` | `critical` |

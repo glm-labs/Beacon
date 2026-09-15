@@ -193,7 +193,7 @@ CALENDAR_FEED_CREATE_RESPONSE_SCHEMA = {
                         "can read the exported team calendar."
                     ),
                     "example": (
-                        "https://incidentrelay.example.com/api/calendar/feeds/"
+                        "https://beacon.example.com/api/calendar/feeds/"
                         "R7JnYxUeQJf5m6vL0uYwX9z.ics"
                     ),
                 },
@@ -224,10 +224,10 @@ ICS_CALENDAR_CONTENT = {
             "example": (
                 "BEGIN:VCALENDAR\\r\\n"
                 "VERSION:2.0\\r\\n"
-                "PRODID:-//IncidentRelay//On-call Calendar//EN\\r\\n"
+                "PRODID:-//Beacon//On-call Calendar//EN\\r\\n"
                 "X-WR-CALNAME:Cloud OPS on-call\\r\\n"
                 "BEGIN:VEVENT\\r\\n"
-                "UID:incidentrelay-team-1-rotation-3-20260613T090000\\r\\n"
+                "UID:beacon-team-1-rotation-3-20260613T090000\\r\\n"
                 "SUMMARY:On-call: Alice\\r\\n"
                 "DTSTART:20260613T090000Z\\r\\n"
                 "DTEND:20260614T090000Z\\r\\n"

@@ -1,11 +1,11 @@
 ---
 title: Event Orchestration User Guide
-description: A practical guide to routing, enriching, suppressing, delaying and automating incoming events with IncidentRelay Event Orchestration.
+description: A practical guide to routing, enriching, suppressing, delaying and automating incoming events with Beacon Event Orchestration.
 ---
 
 # Event Orchestration user guide
 
-Event Orchestration lets IncidentRelay make a sequence of decisions about an incoming monitoring event **before the normal alert lifecycle finishes processing it**.
+Event Orchestration lets Beacon make a sequence of decisions about an incoming monitoring event **before the normal alert lifecycle finishes processing it**.
 
 A monitoring system usually sends facts such as:
 
@@ -40,7 +40,7 @@ Typical uses include:
 | Situation | What orchestration can do |
 | --- | --- |
 | One integration sends alerts for several teams | Select a team, route or service from labels in each event. |
-| Different monitoring systems use different severity names | Convert values such as `fatal`, `high` or `disaster` to your IncidentRelay severity convention. |
+| Different monitoring systems use different severity names | Convert values such as `fatal`, `high` or `disaster` to your Beacon severity convention. |
 | Important alerts need a different policy | Select a priority, escalation or notification policy for matching events. |
 | Alerts have unclear titles | Build a consistent title from labels and extracted values. |
 | A noisy event should remain visible but not notify anyone | Use `suppress`. |
@@ -51,7 +51,7 @@ Typical uses include:
 | A diagnostic or ticketing system must be called | Queue a reusable webhook action. |
 | A new rule must be tested safely | Use validation, simulation, replay and shadow mode. |
 
-Event Orchestration does not replace IncidentRelay alert storage, incidents, escalation execution, notifications, correlation or impact calculation. It prepares the event and selects how the existing lifecycle should handle it.
+Event Orchestration does not replace Beacon alert storage, incidents, escalation execution, notifications, correlation or impact calculation. It prepares the event and selects how the existing lifecycle should handle it.
 
 ## When not to use it
 
@@ -69,7 +69,7 @@ A small and understandable rule set is safer than moving every existing setting 
 
 ## Where to find it
 
-1. Sign in to IncidentRelay.
+1. Sign in to Beacon.
 2. Select the required group using the global group selector.
 3. Open **Event Orchestration** from the navigation menu.
 4. The list shows orchestrations belonging to the selected group.
@@ -85,7 +85,7 @@ Use the search field and the mode and scope filters when the group has many defi
 
 ## Permissions
 
-Access is calculated inside the selected IncidentRelay group.
+Access is calculated inside the selected Beacon group.
 
 | Role | Event Orchestration access |
 | --- | --- |
@@ -135,12 +135,12 @@ Group global orchestration
         ↓
 Selected service orchestration, when a service is known
         ↓
-Existing IncidentRelay lifecycle
+Existing Beacon lifecycle
         ↓
 Alert group, child alert, escalation and notifications
 ```
 
-A global orchestration can select a service. IncidentRelay then evaluates the orchestration attached to that service. A service orchestration can also select another service; service handoffs are protected against loops and excessive chaining.
+A global orchestration can select a service. Beacon then evaluates the orchestration attached to that service. A service orchestration can also select another service; service handoffs are protected against loops and excessive chaining.
 
 Rules inside one orchestration run in their displayed order. Earlier actions can change values that later rules inspect.
 
@@ -452,7 +452,7 @@ labels.environment equals production
 
 ### Field references
 
-Fields use safe dotted paths. IncidentRelay reads JSON objects and array indexes only; it cannot execute methods or arbitrary expressions.
+Fields use safe dotted paths. Beacon reads JSON objects and array indexes only; it cannot execute methods or arbitrary expressions.
 
 | Root | Example | What it contains |
 | --- | --- | --- |
@@ -579,7 +579,7 @@ Avoid broad patterns such as:
 .*
 ```
 
-A broad regex often hides a catch-all rule and is harder to review. IncidentRelay validates regex safety and limits evaluated input size, but a precise expression is still easier to operate.
+A broad regex often hides a catch-all rule and is harder to review. Beacon validates regex safety and limits evaluated input size, but a precise expression is still easier to operate.
 
 ## Actions
 
@@ -671,7 +671,7 @@ Read [Alerts and alert groups](alerts.md) before changing grouping in production
 
 These three actions have very different consequences.
 
-| Action | Alert created? | Visible in IncidentRelay? | Notifications/escalation? | Typical use |
+| Action | Alert created? | Visible in Beacon? | Notifications/escalation? | Typical use |
 | --- | --- | --- | --- | --- |
 | `suppress` | Yes | Yes | Suppressed | Keep a known event visible for investigation without paging. |
 | `pause` | Not immediately | Pending until activation | Not until activation | Wait for a transient issue to persist. |
@@ -716,14 +716,14 @@ Use `preserve` when the alert should appear after five minutes from the first fa
 
 Processing stops and no alert or alert group is created.
 
-Use it only for events that must never be retained as IncidentRelay alerts, such as an integration test heartbeat that has no incident value.
+Use it only for events that must never be retained as Beacon alerts, such as an integration test heartbeat that has no incident value.
 
 !!! danger "Dropped events are intentionally absent"
     A dropped event cannot be found in the Alerts page because no alert is created. Review execution traces and replay results before enabling drop rules.
 
 ### Queue a webhook
 
-`enqueue_webhook` selects one reusable webhook action. It does not perform the HTTP request inside the alert request. IncidentRelay queues an asynchronous execution after the orchestration result is successfully applied.
+`enqueue_webhook` selects one reusable webhook action. It does not perform the HTTP request inside the alert request. Beacon queues an asynchronous execution after the orchestration result is successfully applied.
 
 Simulation and shadow evaluation do not send webhooks.
 
@@ -847,7 +847,7 @@ Why use regex here: the `rabbitmq` label can contain names such as `rabbitmq-clo
 
 ### Example 2: normalize severity names
 
-Goal: one source sends `disaster`, while IncidentRelay rules expect `critical`.
+Goal: one source sends `disaster`, while Beacon rules expect `critical`.
 
 Rule:
 
@@ -935,7 +935,7 @@ Conditions:
 
 ```text
 ALL
-├── labels.alertname equals IncidentRelayIntegrationTest
+├── labels.alertname equals BeaconIntegrationTest
 ├── labels.environment equals test
 └── labels.intent equals connectivity-check
 ```
@@ -994,7 +994,7 @@ Goal: when a critical database event arrives, asynchronously request diagnostics
 1. A global administrator creates a webhook action named `Collect database diagnostics`.
 2. The orchestration rule matches the database service and critical severity.
 3. The rule selects `enqueue_webhook → Collect database diagnostics`.
-4. IncidentRelay applies the orchestration and creates the alert.
+4. Beacon applies the orchestration and creates the alert.
 5. The scheduler delivers the webhook asynchronously with retries.
 
 A body template can include:
@@ -1148,7 +1148,7 @@ Published versions are not edited in place. This provides:
 
 ### Rollback
 
-Rollback does not rewrite history. IncidentRelay copies the selected historical definition into a new version and publishes that copy.
+Rollback does not rewrite history. Beacon copies the selected historical definition into a new version and publishes that copy.
 
 After rollback:
 
@@ -1222,7 +1222,7 @@ Configure:
 | URL | Destination URL. HTTPS is required unless HTTP is explicitly enabled by the administrator. |
 | Method | GET, POST, PUT, PATCH or DELETE. |
 | Secret headers JSON | Authentication and other headers. Values are encrypted and never returned by the API. |
-| Body template | Optional safe template. When empty, IncidentRelay sends event and result JSON. |
+| Body template | Optional safe template. When empty, Beacon sends event and result JSON. |
 | Timeout | Maximum request duration. |
 | Retries | Number of delivery retries. |
 | Private network policy | Whether private-address targets are denied or must be in the configured allowlist. |
@@ -1233,7 +1233,7 @@ Example secret headers:
 ```json
 {
   "Authorization": "Bearer secret-token",
-  "X-Source": "IncidentRelay"
+  "X-Source": "Beacon"
 }
 ```
 
@@ -1256,7 +1256,7 @@ Webhook delivery includes protections against server-side request forgery and se
 
 ### Scheduler requirement
 
-Outbound webhook requests are asynchronous. The IncidentRelay scheduler process must be running for pending automation executions and retries to be delivered.
+Outbound webhook requests are asynchronous. The Beacon scheduler process must be running for pending automation executions and retries to be delivered.
 
 ## Advanced JSON view
 
@@ -1612,7 +1612,7 @@ Both can prevent notifications. Orchestration suppression is a rule-engine decis
 
 ### What is the difference between `pause` and an Alertmanager `for` duration?
 
-An upstream `for` duration prevents Alertmanager from sending the alert until the expression remains true. Orchestration pause acts after IncidentRelay receives the event, stores a pending event and can cancel it when a matching resolve arrives before activation.
+An upstream `for` duration prevents Alertmanager from sending the alert until the expression remains true. Orchestration pause acts after Beacon receives the event, stores a pending event and can cancel it when a matching resolve arrives before activation.
 
 ### Can orchestration call scripts?
 
@@ -1624,7 +1624,7 @@ Yes, through `raw.<path>`, but normalized `event` and `labels` fields are usuall
 
 ### Can I undo a publication?
 
-Yes. Use Versions and rollback. IncidentRelay publishes a new copy of the selected historical definition instead of changing old history.
+Yes. Use Versions and rollback. Beacon publishes a new copy of the selected historical definition instead of changing old history.
 
 ### Where can I see why an event was handled a certain way?
 

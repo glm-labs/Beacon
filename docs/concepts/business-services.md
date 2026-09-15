@@ -196,7 +196,7 @@ Clearing manual override recalculates the Business Service status from effective
 
 ## Business impact records
 
-When an alert group affects a Business Service, IncidentRelay persists a `BusinessServiceIncidentImpact` record.
+When an alert group affects a Business Service, Beacon persists a `BusinessServiceIncidentImpact` record.
 
 This record stores:
 

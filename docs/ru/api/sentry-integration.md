@@ -5,7 +5,7 @@ description: Подписанный эндпоинт вебхука Sentry, но
 
 # Sentry integration API
 
-Этот документ описывает поведение бэкенд-API IncidentRelay для входящей интеграции с Sentry.
+Этот документ описывает поведение бэкенд-API Beacon для входящей интеграции с Sentry.
 
 ## Эндпоинт
 
@@ -15,7 +15,7 @@ POST /api/integrations/sentry/{route_id}
 
 Этот эндпоинт принимает вебхуки Sentry Internal Integration.
 
-В отличие от интеграций Alertmanager, Zabbix и Generic Webhook, эндпоинт Sentry не использует токен приёма IncidentRelay. Аутентификация основана на идентификаторе маршрута и проверке `Sentry-Hook-Signature`.
+В отличие от интеграций Alertmanager, Zabbix и Generic Webhook, эндпоинт Sentry не использует токен приёма Beacon. Аутентификация основана на идентификаторе маршрута и проверке `Sentry-Hook-Signature`.
 
 ## Обязательные заголовки
 
@@ -58,7 +58,7 @@ POST /api/integrations/sentry/{route_id}
 
 ## Проверка подписи
 
-IncidentRelay валидирует запрос, вычисляя дайджест HMAC-SHA256 по сырому телу запроса с использованием секрета вебхука Sentry для данного маршрута.
+Beacon валидирует запрос, вычисляя дайджест HMAC-SHA256 по сырому телу запроса с использованием секрета вебхука Sentry для данного маршрута.
 
 Псевдокод:
 
@@ -90,7 +90,7 @@ valid = hmac.compare_digest(expected, request.headers["Sentry-Hook-Signature"])
 
 ## Нормализованный вывод алерта
 
-Нормализатор возвращает список с одним объектом алерта IncidentRelay.
+Нормализатор возвращает список с одним объектом алерта Beacon.
 
 Пример нормализованного вывода для `event_alert.triggered`:
 
@@ -126,7 +126,7 @@ valid = hmac.compare_digest(expected, request.headers["Sentry-Hook-Signature"])
 
 ## Сопоставление серьёзности
 
-| Уровень/статус Sentry | Серьёзность IncidentRelay |
+| Уровень/статус Sentry | Серьёзность Beacon |
 | --- | --- |
 | `fatal` | `critical` |
 | `critical` | `critical` |
@@ -141,7 +141,7 @@ valid = hmac.compare_digest(expected, request.headers["Sentry-Hook-Signature"])
 
 ## Сопоставление статусов
 
-| Ресурс/действие Sentry | Статус IncidentRelay |
+| Ресурс/действие Sentry | Статус Beacon |
 | --- | --- |
 | `event_alert.triggered` | `firing` |
 | `metric_alert.critical` | `firing` |

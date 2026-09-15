@@ -1,21 +1,21 @@
 ---
 title: Uptime Kuma
-description: Send Uptime Kuma monitor state changes to IncidentRelay and automatically resolve alerts when monitors recover.
+description: Send Uptime Kuma monitor state changes to Beacon and automatically resolve alerts when monitors recover.
 ---
 
 # Uptime Kuma integration
 
-Uptime Kuma checks whether websites, APIs, hosts, ports and other targets are available. IncidentRelay turns those monitor state changes into actionable alerts, routes them to the responsible team, starts the configured notification and escalation flow, and resolves the same alert when the monitor becomes healthy again.
+Uptime Kuma checks whether websites, APIs, hosts, ports and other targets are available. Beacon turns those monitor state changes into actionable alerts, routes them to the responsible team, starts the configured notification and escalation flow, and resolves the same alert when the monitor becomes healthy again.
 
 Use this integration when you want this workflow:
 
 ```text
 Uptime Kuma detects DOWN
-    -> IncidentRelay creates or updates an alert
+    -> Beacon creates or updates an alert
     -> route, service and orchestration rules select ownership
     -> on-call users are notified
     -> Uptime Kuma detects UP
-    -> IncidentRelay resolves the existing alert
+    -> Beacon resolves the existing alert
 ```
 
 The native integration understands the standard Uptime Kuma Webhook JSON body. You do not need to build a custom payload template.
@@ -39,21 +39,21 @@ Typical examples include:
 - several monitors need to be routed to different teams using Uptime Kuma tags;
 - transient failures should be delayed, suppressed or enriched by Event Orchestration.
 
-Uptime Kuma performs the check. IncidentRelay owns the operational response: assignment, notification, escalation, acknowledgement, incident grouping, service impact, comments, timeline and audit history.
+Uptime Kuma performs the check. Beacon owns the operational response: assignment, notification, escalation, acknowledgement, incident grouping, service impact, comments, timeline and audit history.
 
 ## Before you start
 
 You need:
 
-1. an IncidentRelay group and team;
+1. an Beacon group and team;
 2. at least one notification channel or another delivery method;
 3. a route whose source is **Uptime Kuma**;
 4. access to Uptime Kuma notification settings;
 5. an HTTPS URL that Uptime Kuma can reach.
 
-A route intake token belongs to one IncidentRelay route. Keep it secret. Anyone who has the token can submit events to that route.
+A route intake token belongs to one Beacon route. Keep it secret. Anyone who has the token can submit events to that route.
 
-## Step 1: create a route in IncidentRelay
+## Step 1: create a route in Beacon
 
 1. Open **Routes**.
 2. Click **Create route**.
@@ -67,10 +67,10 @@ A route intake token belongs to one IncidentRelay route. Keep it secret. Anyone 
    - the bearer token;
    - the example request.
 
-For a native Uptime Kuma route, IncidentRelay uses this endpoint:
+For a native Uptime Kuma route, Beacon uses this endpoint:
 
 ```text
-https://incidentrelay.example.com/api/integrations/uptime-kuma
+https://beacon.example.com/api/integrations/uptime-kuma
 ```
 
 New Uptime Kuma routes default to grouping by `uptime_kuma_monitor_id`. This keeps repeated DOWN events and the later UP event attached to the same monitor incident.
@@ -83,32 +83,32 @@ In Uptime Kuma:
 2. Open **Notifications**.
 3. Click **Setup Notification**.
 4. Choose **Webhook**.
-5. Enter a descriptive name, for example `IncidentRelay`.
-6. Set the webhook URL to the IncidentRelay intake URL.
+5. Enter a descriptive name, for example `Beacon`.
+6. Set the webhook URL to the Beacon intake URL.
 7. Use the `POST` method.
 8. Use JSON / `application/json` content type.
 9. Add the authorization header shown below.
 10. Keep the standard/default Uptime Kuma request body.
 11. Save the notification.
-12. Attach it to each monitor that should create IncidentRelay alerts.
+12. Attach it to each monitor that should create Beacon alerts.
 
 Additional headers:
 
 ```json
 {
-  "Authorization": "Bearer INCIDENTRELAY_ROUTE_TOKEN"
+  "Authorization": "Bearer BEACON_ROUTE_TOKEN"
 }
 ```
 
 Do not put the token in the query string. Do not switch to a custom body unless you intentionally reproduce the standard `heartbeat`, `monitor` and `msg` fields described below.
 
-Use Uptime Kuma's **Test** button after saving. A test notification may not contain a real monitor or heartbeat. IncidentRelay accepts it as an informational test event so you can verify connectivity and authentication.
+Use Uptime Kuma's **Test** button after saving. A test notification may not contain a real monitor or heartbeat. Beacon accepts it as an informational test event so you can verify connectivity and authentication.
 
 ## Lifecycle mapping
 
-Uptime Kuma sends a numeric status in `heartbeat.status`. IncidentRelay maps it as follows:
+Uptime Kuma sends a numeric status in `heartbeat.status`. Beacon maps it as follows:
 
-| Uptime Kuma status | Meaning | IncidentRelay lifecycle |
+| Uptime Kuma status | Meaning | Beacon lifecycle |
 | --- | --- | --- |
 | `0` | DOWN | `firing` |
 | `1` | UP | `resolved` |
@@ -117,7 +117,7 @@ Uptime Kuma sends a numeric status in `heartbeat.status`. IncidentRelay maps it 
 
 A DOWN or PENDING notification creates a new alert or updates the existing alert for that monitor. An UP notification resolves it. MAINTENANCE is also treated as resolved so a monitor intentionally placed into maintenance does not keep paging the on-call user.
 
-IncidentRelay uses this stable deduplication key when a monitor id is present:
+Beacon uses this stable deduplication key when a monitor id is present:
 
 ```text
 uptime-kuma:<monitor id>
@@ -161,7 +161,7 @@ A standard notification resembles this simplified payload:
 }
 ```
 
-IncidentRelay normalizes it approximately to:
+Beacon normalizes it approximately to:
 
 ```json
 {
@@ -198,9 +198,9 @@ When the monitor becomes healthy, Uptime Kuma sends the same monitor id with sta
 }
 ```
 
-Because the deduplication key is still `uptime-kuma:42`, IncidentRelay resolves the existing alert rather than creating an unrelated recovery alert.
+Because the deduplication key is still `uptime-kuma:42`, Beacon resolves the existing alert rather than creating an unrelated recovery alert.
 
-## Labels created by IncidentRelay
+## Labels created by Beacon
 
 The normalizer adds matcher-friendly labels:
 
@@ -345,7 +345,7 @@ Read the [Event Orchestration user guide](../usage/event-orchestration.md) befor
 Replace the URL and token:
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/uptime-kuma' \
+curl -X POST 'https://beacon.example.com/api/integrations/uptime-kuma' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer ROUTE_TOKEN' \
   -d '{
@@ -374,7 +374,7 @@ curl -X POST 'https://incidentrelay.example.com/api/integrations/uptime-kuma' \
 Then send an UP event with the same monitor id:
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/uptime-kuma' \
+curl -X POST 'https://beacon.example.com/api/integrations/uptime-kuma' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer ROUTE_TOKEN' \
   -d '{
@@ -416,19 +416,19 @@ Do not reuse an Alertmanager, Grafana or Generic Webhook token for this endpoint
 
 ### Uptime Kuma test succeeds, but real monitors do not notify
 
-- Open the monitor and verify that the IncidentRelay notification is enabled for it.
+- Open the monitor and verify that the Beacon notification is enabled for it.
 - Confirm that notifications are enabled for DOWN and recovery events.
 - Check Uptime Kuma notification logs.
 - Verify that the URL is reachable from the Uptime Kuma container or host, not only from your browser.
 
-### IncidentRelay returns 401
+### Beacon returns 401
 
 - Ensure the header is exactly `Authorization: Bearer TOKEN`.
 - Remove accidental quotes around the complete header value.
 - Check whether the route token was rotated.
 - Confirm that a reverse proxy forwards the `Authorization` header.
 
-### IncidentRelay returns route source mismatch
+### Beacon returns route source mismatch
 
 The token belongs to a route created for another source. Open **Routes**, create or edit a route with source **Uptime Kuma**, and copy its intake token.
 
@@ -453,11 +453,11 @@ Inspect the raw monitor object. Tags must be included in `monitor.tags`. Older o
 
 ### The alert title is too generic
 
-A real monitor notification should contain `monitor.name`. If it is missing, IncidentRelay falls back to a generic `Uptime Kuma notification` title. Keep monitor names descriptive and unique enough for operators.
+A real monitor notification should contain `monitor.name`. If it is missing, Beacon falls back to a generic `Uptime Kuma notification` title. Keep monitor names descriptive and unique enough for operators.
 
 ## Security recommendations
 
-- Use HTTPS between Uptime Kuma and IncidentRelay.
+- Use HTTPS between Uptime Kuma and Beacon.
 - Use a dedicated route and token for Uptime Kuma.
 - Do not paste the token into monitor names, messages, tags or URLs.
 - Rotate the route token if it is exposed.
@@ -473,10 +473,10 @@ Before enabling the integration broadly:
 - [ ] Uptime Kuma route uses source `uptime_kuma`.
 - [ ] Bearer token is stored in Additional Headers.
 - [ ] Default JSON body is enabled.
-- [ ] Test notification reaches IncidentRelay.
+- [ ] Test notification reaches Beacon.
 - [ ] A real DOWN event creates one alert.
 - [ ] A real UP event resolves that same alert.
-- [ ] Team and service tags match existing IncidentRelay objects or orchestration rules.
+- [ ] Team and service tags match existing Beacon objects or orchestration rules.
 - [ ] Notification channels reach the intended on-call user.
 - [ ] Event Orchestration has been simulated before publication.
 - [ ] Token rotation and ownership are documented.

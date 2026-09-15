@@ -1,10 +1,10 @@
-# IncidentRelay Custom Voice Providers
+# Beacon Custom Voice Providers
 
-This directory is used for custom IncidentRelay voice call providers.
+This directory is used for custom Beacon voice call providers.
 
 A voice provider is a Python module that knows how to place a phone call through a specific provider API: Mango, Voximplant, Zadarma, Asterisk gateway, internal PBX, or any other service.
 
-IncidentRelay itself does not need to know provider-specific API details. It loads your provider module and communicates with it through a stable provider API.
+Beacon itself does not need to know provider-specific API details. It loads your provider module and communicates with it through a stable provider API.
 
 The current provider API supports:
 
@@ -24,13 +24,13 @@ The current provider API supports:
 Default custom providers directory:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers
+/usr/local/lib/beacon/voice_providers
 ```
 
 Example:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers/
+/usr/local/lib/beacon/voice_providers/
 ├── README.md
 ├── mango.py
 ├── zadarma.py
@@ -42,23 +42,23 @@ Only server administrators should be able to write to this directory, because pr
 Recommended permissions:
 
 ```bash
-sudo mkdir -p /usr/local/lib/incidentrelay/voice_providers
-sudo chown root:root /usr/local/lib/incidentrelay/voice_providers
-sudo chmod 755 /usr/local/lib/incidentrelay/voice_providers
+sudo mkdir -p /usr/local/lib/beacon/voice_providers
+sudo chown root:root /usr/local/lib/beacon/voice_providers
+sudo chmod 755 /usr/local/lib/beacon/voice_providers
 ```
 
 ---
 
-## Main IncidentRelay configuration
+## Main Beacon configuration
 
-IncidentRelay reads voice provider settings from the main config file.
+Beacon reads voice provider settings from the main config file.
 
 Example:
 
 ```ini
 [voice]
 provider = stub
-providers_dir = /usr/local/lib/incidentrelay/voice_providers
+providers_dir = /usr/local/lib/beacon/voice_providers
 
 # Global fallback secret for voice provider callbacks.
 # A channel-level callback_secret has higher priority.
@@ -91,7 +91,7 @@ Provider callback URLs use this format:
 /api/integrations/voice/rule-callback/{delivery_id}
 ```
 
-If the channel config contains `callback_secret`, IncidentRelay uses the channel secret instead of the global one.
+If the channel config contains `callback_secret`, Beacon uses the channel secret instead of the global one.
 
 ---
 
@@ -121,7 +121,7 @@ The provider name used in channel config is the file name without `.py`.
 Example file:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers/mango.py
+/usr/local/lib/beacon/voice_providers/mango.py
 ```
 
 Provider name:
@@ -286,7 +286,7 @@ Text that should be spoken during the call.
 request.alert_id
 ```
 
-IncidentRelay alert ID.
+Beacon alert ID.
 
 ```python
 request.event_type
@@ -312,7 +312,7 @@ Callback URL that the provider should call when call status changes or DTMF digi
 Example:
 
 ```text
-https://incidentrelay.example.com/api/integrations/voice/rule-callback/1234
+https://beacon.example.com/api/integrations/voice/rule-callback/1234
 ```
 
 May be `None` if callbacks are not configured.
@@ -385,7 +385,7 @@ The provider may use this data to configure IVR / DTMF handling.
 request.metadata
 ```
 
-Additional IncidentRelay metadata.
+Additional Beacon metadata.
 
 Example:
 
@@ -417,7 +417,7 @@ return VoiceCallResult(
 
 External call ID returned by the provider.
 
-IncidentRelay stores it as `external_message_id`.
+Beacon stores it as `external_message_id`.
 
 This ID is later used to match provider callbacks with the original alert notification.
 
@@ -523,7 +523,7 @@ Example:
 action
 ```
 
-Optional normalized IncidentRelay action.
+Optional normalized Beacon action.
 
 Supported actions:
 
@@ -532,7 +532,7 @@ acknowledge
 resolve
 ```
 
-If `action` is not set, IncidentRelay maps `digit` through channel config `dtmf_actions`.
+If `action` is not set, Beacon maps `digit` through channel config `dtmf_actions`.
 
 ```python
 alert_id
@@ -540,7 +540,7 @@ alert_id
 
 Optional alert ID.
 
-Usually not required because IncidentRelay resolves the alert through `call_id`.
+Usually not required because Beacon resolves the alert through `call_id`.
 
 ```python
 message
@@ -568,7 +568,7 @@ Example voice channel config:
   "call_on_severities": ["critical", "high"],
   "test_phone": "+77001234567",
   "callback_secret": "change-me-channel-secret",
-  "text_template": "IncidentRelay alert {alert_id}. {title}. Severity {severity}. {message}. Press 1 to acknowledge. Press 2 to resolve.",
+  "text_template": "Beacon alert {alert_id}. {title}. Severity {severity}. {message}. Press 1 to acknowledge. Press 2 to resolve.",
   "dtmf_actions": {
     "1": "acknowledge",
     "2": "resolve"
@@ -599,7 +599,7 @@ Example:
 This loads:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers/mango.py
+/usr/local/lib/beacon/voice_providers/mango.py
 ```
 
 ### call_on_severities
@@ -612,13 +612,13 @@ Example:
 "call_on_severities": ["critical", "high"]
 ```
 
-If this list is empty, IncidentRelay will not call anyone for real alerts.
+If this list is empty, Beacon will not call anyone for real alerts.
 
 ### phone
 
 Optional fallback phone number.
 
-For real alerts, IncidentRelay usually uses the assigned user's phone number.
+For real alerts, Beacon usually uses the assigned user's phone number.
 
 Example:
 
@@ -640,7 +640,7 @@ Example:
 
 Optional per-channel callback secret.
 
-If omitted, IncidentRelay uses global config:
+If omitted, Beacon uses global config:
 
 ```ini
 [voice]
@@ -673,7 +673,7 @@ Example:
 
 ### dtmf_actions
 
-Maps phone keypad digits to IncidentRelay actions.
+Maps phone keypad digits to Beacon actions.
 
 Example:
 
@@ -695,7 +695,7 @@ resolve
 
 Provider-specific settings.
 
-IncidentRelay passes this object to the provider constructor.
+Beacon passes this object to the provider constructor.
 
 Example:
 
@@ -768,7 +768,7 @@ This example supports:
 File:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers/example_http.py
+/usr/local/lib/beacon/voice_providers/example_http.py
 ```
 
 Code:
@@ -915,12 +915,12 @@ class Provider(BaseVoiceProvider):
 
 ## Callback flow
 
-When IncidentRelay creates a call, it passes `callback_url` to the provider.
+When Beacon creates a call, it passes `callback_url` to the provider.
 
 Example callback URL:
 
 ```text
-https://incidentrelay.example.com/api/integrations/voice/rule-callback/1234
+https://beacon.example.com/api/integrations/voice/rule-callback/1234
 ```
 
 The provider should send call events to this URL.
@@ -946,7 +946,7 @@ Example DTMF callback:
 }
 ```
 
-IncidentRelay will:
+Beacon will:
 
 ```text
 1. Validate callback secret.
@@ -976,7 +976,7 @@ Default mapping:
 Example spoken message:
 
 ```text
-IncidentRelay alert 123.
+Beacon alert 123.
 Disk is full.
 Severity critical.
 Press 1 to acknowledge.
@@ -993,13 +993,13 @@ If the user presses `1`, provider sends:
 }
 ```
 
-IncidentRelay maps it to:
+Beacon maps it to:
 
 ```text
 acknowledge
 ```
 
-If the user presses `2`, IncidentRelay maps it to:
+If the user presses `2`, Beacon maps it to:
 
 ```text
 resolve
@@ -1015,7 +1015,7 @@ A provider may also send the normalized action directly:
 }
 ```
 
-In this case IncidentRelay does not need to map the digit.
+In this case Beacon does not need to map the digit.
 
 ---
 
@@ -1050,7 +1050,7 @@ return [
 ]
 ```
 
-IncidentRelay stores the latest status in the notification record and also stores callback history.
+Beacon stores the latest status in the notification record and also stores callback history.
 
 ---
 
@@ -1158,7 +1158,7 @@ def parse_callback(self, payload, headers=None, raw_body=None, query_args=None):
     ...
 ```
 
-IncidentRelay validates its own callback secret before calling `parse_callback()`.
+Beacon validates its own callback secret before calling `parse_callback()`.
 
 Provider-specific signature validation is optional but recommended when the provider supports it.
 
@@ -1191,7 +1191,7 @@ except Exception:
 
 Do not silently ignore provider errors.
 
-IncidentRelay will log the error and mark the notification attempt as failed according to its notification flow.
+Beacon will log the error and mark the notification attempt as failed according to its notification flow.
 
 ---
 
@@ -1233,7 +1233,7 @@ Good:
 }
 ```
 
-Then configure the environment variable for the IncidentRelay service:
+Then configure the environment variable for the Beacon service:
 
 ```bash
 export VOICE_API_TOKEN="secret-token"
@@ -1296,7 +1296,7 @@ logger.info(f"calling {request.phone} with token {self.config['api_token']}")
 
 ## Dependencies
 
-If your provider needs additional Python packages, install them into the same Python environment where IncidentRelay runs.
+If your provider needs additional Python packages, install them into the same Python environment where Beacon runs.
 
 Example:
 
@@ -1304,7 +1304,7 @@ Example:
 pip install requests
 ```
 
-If IncidentRelay is installed in a virtual environment:
+If Beacon is installed in a virtual environment:
 
 ```bash
 /path/to/venv/bin/pip install requests
@@ -1316,12 +1316,12 @@ For Docker installations, custom dependencies should be added to the image or mo
 
 ## Reloading providers
 
-After adding or changing a provider file, restart IncidentRelay.
+After adding or changing a provider file, restart Beacon.
 
 Example for systemd:
 
 ```bash
-sudo systemctl restart incidentrelay
+sudo systemctl restart beacon
 ```
 
 Provider classes may be cached by the loader, so restarting the service is the safest way to apply provider code changes.
@@ -1338,7 +1338,7 @@ Recommended rules:
 
 ```text
 - The providers directory must not be writable by the web server user.
-- The providers directory must not be writable from the IncidentRelay UI.
+- The providers directory must not be writable from the Beacon UI.
 - Provider files should be reviewed before installation.
 - Secrets should be passed through environment variables.
 - Provider logs must not contain API tokens, passwords or full phone numbers.
@@ -1359,13 +1359,13 @@ Before enabling a provider in production:
 2. Set test_phone.
 3. Configure only one test severity, for example critical.
 4. Trigger a test notification.
-5. Check IncidentRelay logs.
+5. Check Beacon logs.
 6. Check provider-side logs or dashboard.
 7. Confirm that call_id is returned.
 8. Confirm that call status callbacks are received.
 9. Confirm that DTMF callback with digit 1 acknowledges the alert.
 10. Confirm that DTMF callback with digit 2 resolves the alert.
-11. Confirm that provider errors are visible in IncidentRelay logs.
+11. Confirm that provider errors are visible in Beacon logs.
 12. Confirm that secrets and full phone numbers are not logged.
 13. Enable the provider for real alert routes.
 ```
@@ -1385,10 +1385,10 @@ voice provider not found: mango
 Check:
 
 ```text
-- File exists: /usr/local/lib/incidentrelay/voice_providers/mango.py
+- File exists: /usr/local/lib/beacon/voice_providers/mango.py
 - Channel config has: "provider": "mango"
 - File name contains only letters, numbers and underscore
-- IncidentRelay was restarted after adding the file
+- Beacon was restarted after adding the file
 ```
 
 ### Provider class is missing
@@ -1430,12 +1430,12 @@ If you use:
 "api_token": "${VOICE_API_TOKEN}"
 ```
 
-Check that the environment variable exists for the IncidentRelay process.
+Check that the environment variable exists for the Beacon process.
 
 For systemd:
 
 ```bash
-sudo systemctl show incidentrelay --property=Environment
+sudo systemctl show beacon --property=Environment
 ```
 
 Or check your service unit / environment file.
@@ -1483,7 +1483,7 @@ Check:
 ```text
 - Provider returned call_id from place_call().
 - Provider sends the same call_id in callbacks.
-- IncidentRelay stored external_message_id for the notification.
+- Beacon stored external_message_id for the notification.
 - Callback is sent to the same channel_id that created the call.
 ```
 
@@ -1509,7 +1509,7 @@ logger = logging.getLogger("oncall.voice")
 
 
 class Provider(BaseVoiceProvider):
-    """Custom IncidentRelay voice provider."""
+    """Custom Beacon voice provider."""
 
     name = "my_provider"
 

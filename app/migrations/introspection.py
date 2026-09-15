@@ -1,7 +1,7 @@
 """Schema-aware database introspection helpers for migrations.
 
 Peewee's PostgreSQL introspection methods default to the ``public`` schema
-when no schema is provided. IncidentRelay supports custom ``search_path``
+when no schema is provided. Beacon supports custom ``search_path``
 configurations, so migrations must resolve the schema of the unqualified
 relation exactly as PostgreSQL would before checking columns or indexes.
 """

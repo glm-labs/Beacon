@@ -7,7 +7,7 @@ description: Generic incoming webhook route setup, payload format and PagerDuty 
 
 The Webhook route accepts two request formats at the same endpoint:
 
-1. IncidentRelay generic webhook payload.
+1. Beacon generic webhook payload.
 2. PagerDuty Events API v2-compatible alert events.
 
 Endpoint:
@@ -30,15 +30,15 @@ The same token is used differently by each format:
 
 | Format | Authentication |
 |---|---|
-| IncidentRelay generic webhook | `Authorization: Bearer ROUTE_TOKEN` |
+| Beacon generic webhook | `Authorization: Bearer ROUTE_TOKEN` |
 | PagerDuty Events API v2-compatible | JSON field `routing_key: ROUTE_TOKEN` |
 
-`routing_key` is treated as a secret. IncidentRelay uses it to select the route and stores `[REDACTED]` instead of the token in the alert payload.
+`routing_key` is treated as a secret. Beacon uses it to select the route and stores `[REDACTED]` instead of the token in the alert payload.
 
-## IncidentRelay generic format
+## Beacon generic format
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
+curl -X POST 'https://beacon.example.com/api/integrations/webhook' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer ROUTE_TOKEN' \
   -d '{
@@ -64,7 +64,7 @@ curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
 
 ### Generic normalized fields
 
-| IncidentRelay field | Source |
+| Beacon field | Source |
 |---|---|
 | `source` | `webhook` |
 | `team_slug` | `team`, `labels.team`, or `labels.oncall_team` |
@@ -79,14 +79,14 @@ curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
 
 ## PagerDuty Events API v2-compatible format
 
-Systems that already have a PagerDuty Events API v2 exporter can point it at the IncidentRelay webhook endpoint.
+Systems that already have a PagerDuty Events API v2 exporter can point it at the Beacon webhook endpoint.
 
-Use the IncidentRelay route intake token as `routing_key`.
+Use the Beacon route intake token as `routing_key`.
 
 ### Trigger
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
+curl -X POST 'https://beacon.example.com/api/integrations/webhook' \
   -H 'Content-Type: application/json' \
   -d '{
     "routing_key": "ROUTE_TOKEN",
@@ -127,7 +127,7 @@ Successful PagerDuty-compatible requests return HTTP `202`:
 ### Acknowledge
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
+curl -X POST 'https://beacon.example.com/api/integrations/webhook' \
   -H 'Content-Type: application/json' \
   -d '{
     "routing_key": "ROUTE_TOKEN",
@@ -136,12 +136,12 @@ curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
   }'
 ```
 
-The matching IncidentRelay alert group is acknowledged. The lookup is scoped to the webhook route identified by `routing_key`.
+The matching Beacon alert group is acknowledged. The lookup is scoped to the webhook route identified by `routing_key`.
 
 ### Resolve
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
+curl -X POST 'https://beacon.example.com/api/integrations/webhook' \
   -H 'Content-Type: application/json' \
   -d '{
     "routing_key": "ROUTE_TOKEN",
@@ -150,13 +150,13 @@ curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
   }'
 ```
 
-The matching IncidentRelay alert group and its child alerts are resolved.
+The matching Beacon alert group and its child alerts are resolved.
 
 Unknown or already-resolved `dedup_key` values are accepted as successful no-ops. This preserves the asynchronous follow-up-event behavior expected by PagerDuty-compatible senders.
 
 ### PagerDuty field mapping
 
-| PagerDuty field | IncidentRelay field |
+| PagerDuty field | Beacon field |
 |---|---|
 | `routing_key` | Webhook route intake token; not stored in clear text |
 | `event_action=trigger` | `status=firing` |
@@ -173,13 +173,13 @@ Unknown or already-resolved `dedup_key` values are accepted as successful no-ops
 | First `links[].href` | `labels.event_link` |
 | `client` | Label `pagerduty_client` |
 
-PagerDuty severity is normalized using IncidentRelay aliases. For example, `error` becomes `critical`.
+PagerDuty severity is normalized using Beacon aliases. For example, `error` becomes `critical`.
 
 `payload.summary`, `payload.source`, and `payload.severity` are required for `trigger`. `dedup_key` is required for `acknowledge` and `resolve`.
 
 ## Service assignment
 
-After the route accepts an event, IncidentRelay can attach it to a service in two ways:
+After the route accepts an event, Beacon can attach it to a service in two ways:
 
 1. Select a default service on the route.
 2. Configure service match rules.

@@ -1,4 +1,4 @@
-/var/log/incidentrelay/*.log {
+/var/log/beacon/*.log {
     daily
     rotate 14
     missingok

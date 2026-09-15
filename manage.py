@@ -432,7 +432,7 @@ def cmd_sync_slack_admins(args):
 
     For every member of the given Slack usergroup the command will:
       - look up their Slack profile (email, real name, username);
-      - find an existing IncidentRelay user by slack_user_id or derived username;
+      - find an existing Beacon user by slack_user_id or derived username;
       - create the user if missing (with a random password unless --password is given);
       - set is_admin=True and sync slack_user_id, email and display_name.
 
@@ -568,7 +568,7 @@ def main():
         "sync-slack-admins",
         help="Create/update admin users from a Slack usergroup.",
         description=(
-            "Fetch members of a Slack usergroup and create or update them as admins in IncidentRelay. "
+            "Fetch members of a Slack usergroup and create or update them as admins in Beacon. "
             "Required Slack scopes: usergroups:read, users:read, users:read.email"
         ),
     )

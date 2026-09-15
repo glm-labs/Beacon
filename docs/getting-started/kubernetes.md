@@ -1,11 +1,11 @@
 ---
 title: Kubernetes Installation
-description: Deploy IncidentRelay to Kubernetes with the bundled Helm chart
+description: Deploy Beacon to Kubernetes with the bundled Helm chart
 ---
 
 # Kubernetes Installation
 
-The IncidentRelay Helm chart is published as an OCI artifact in GHCR and is also kept in this repository at `helm/incidentrelay`. It deploys the web application and the background workers, renders the application config into a Secret, and wires the `/healthz` and `/readyz` probes to Kubernetes.
+The Beacon Helm chart is published as an OCI artifact in GHCR and is also kept in this repository at `helm/beacon`. It deploys the web application and the background workers, renders the application config into a Secret, and wires the `/healthz` and `/readyz` probes to Kubernetes.
 
 ## Requirements
 
@@ -23,29 +23,29 @@ Deployment  <release>-scheduler  reminders, escalations, periodic jobs
 Deployment  <release>-telegram   Telegram callback worker (optional)
 Deployment  <release>-slack      Slack Socket Mode worker (optional)
 Service     <release>            ClusterIP on port 8080
-Secret      <release>-config     rendered incidentrelay.conf
-PersistentVolumeClaim <release>-data   /var/lib/incidentrelay
+Secret      <release>-config     rendered beacon.conf
+PersistentVolumeClaim <release>-data   /var/lib/beacon
 ServiceAccount, and an Ingress when enabled
 ```
 
-Each component runs the same image and is selected by `INCIDENTRELAY_SERVICE`, exactly as in the Docker Compose setup.
+Each component runs the same image and is selected by `BEACON_SERVICE`, exactly as in the Docker Compose setup.
 
 ## Quick start
 
 ```bash
-helm install incidentrelay \
-  oci://ghcr.io/roxy-wi/incidentrelay-charts/incidentrelay \
+helm install beacon \
+  oci://ghcr.io/glm-labs/beacon-charts/beacon \
   --version 2.1.0 \
   --set-string config.main.secret_key="$(openssl rand -hex 32)"
 ```
 
-OCI support is enabled by default in Helm 3.8 and later. No `helm repo add` step is required. The chart pulls `ghcr.io/roxy-wi/incidentrelay` and defaults the image tag to the chart `appVersion`. To pin an explicit image:
+OCI support is enabled by default in Helm 3.8 and later. No `helm repo add` step is required. The chart pulls `ghcr.io/glm-labs/beacon` and defaults the image tag to the chart `appVersion`. To pin an explicit image:
 
 ```bash
-helm upgrade --install incidentrelay \
-  oci://ghcr.io/roxy-wi/incidentrelay-charts/incidentrelay \
+helm upgrade --install beacon \
+  oci://ghcr.io/glm-labs/beacon-charts/beacon \
   --version 2.1.0 \
-  --set image.repository=ghcr.io/roxy-wi/incidentrelay \
+  --set image.repository=ghcr.io/glm-labs/beacon \
   --set image.tag=2.1 \
   --set-string config.main.secret_key="$(openssl rand -hex 32)"
 ```
@@ -55,19 +55,19 @@ helm upgrade --install incidentrelay \
 For chart development or testing unreleased changes, install the bundled chart directly:
 
 ```bash
-helm upgrade --install incidentrelay ./helm/incidentrelay \
+helm upgrade --install beacon ./helm/beacon \
   --set-string config.main.secret_key="$(openssl rand -hex 32)"
 ```
 
 Watch the rollout:
 
 ```bash
-kubectl get pods -l app.kubernetes.io/instance=incidentrelay -w
+kubectl get pods -l app.kubernetes.io/instance=beacon -w
 ```
 
 ## Configuration
 
-IncidentRelay reads every setting from a single INI file mounted at `/etc/incidentrelay/incidentrelay.conf`. The chart renders that file from the `config` map in `values.yaml`: top-level keys become INI sections, nested keys become options.
+Beacon reads every setting from a single INI file mounted at `/etc/beacon/beacon.conf`. The chart renders that file from the `config` map in `values.yaml`: top-level keys become INI sections, nested keys become options.
 
 ```yaml
 config:
@@ -80,7 +80,7 @@ config:
   server:
     host: 0.0.0.0
     port: 8080
-    public_base_url: https://incidentrelay.example.com
+    public_base_url: https://beacon.example.com
 ```
 
 becomes:
@@ -97,26 +97,26 @@ jwt_secret = <same shared secret when left empty in values.yaml>
 [server]
 host = 0.0.0.0
 port = 8080
-public_base_url = https://incidentrelay.example.com
+public_base_url = https://beacon.example.com
 ```
 
-Anything valid in `incidentrelay.conf` can be set this way. See [Configuration](configuration.md) for the available options.
+Anything valid in `beacon.conf` can be set this way. See [Configuration](configuration.md) for the available options.
 
 Set `public_base_url` to the address users actually reach. It is used for generated links and callbacks.
 
-For chart-rendered configuration, `config.main.secret_key` is required. IncidentRelay 2.0 uses it as the shared fallback for `main.secret_encryption_key`, `auth.jwt_secret`, `mattermost.action_secret`, and `voice.callback_secret` when those values are empty. This is intentional: every pod must use stable shared signing/encryption keys, especially when PostgreSQL is used and `/var/lib/incidentrelay` is not shared. You can override any of those values with a separate random secret.
+For chart-rendered configuration, `config.main.secret_key` is required. Beacon 2.0 uses it as the shared fallback for `main.secret_encryption_key`, `auth.jwt_secret`, `mattermost.action_secret`, and `voice.callback_secret` when those values are empty. This is intentional: every pod must use stable shared signing/encryption keys, especially when PostgreSQL is used and `/var/lib/beacon` is not shared. You can override any of those values with a separate random secret.
 
 ### Bring your own Secret
 
-The rendered file carries credentials, so the chart stores it in a Secret. To manage that Secret yourself instead, create one with the whole config under the key `incidentrelay.conf` and point the chart at it:
+The rendered file carries credentials, so the chart stores it in a Secret. To manage that Secret yourself instead, create one with the whole config under the key `beacon.conf` and point the chart at it:
 
 ```bash
-kubectl create secret generic incidentrelay-config \
-  --from-file=incidentrelay.conf=./incidentrelay.conf
+kubectl create secret generic beacon-config \
+  --from-file=beacon.conf=./beacon.conf
 ```
 
 ```yaml
-existingConfigSecret: incidentrelay-config
+existingConfigSecret: beacon-config
 ```
 
 When `existingConfigSecret` is set, the `config` map is ignored and the chart renders no Secret of its own.
@@ -128,7 +128,7 @@ When `existingConfigSecret` is set, the `config` map is ignored and the chart re
 
 ### SQLite (default)
 
-SQLite works out of the box. All components mount one PersistentVolumeClaim for `/var/lib/incidentrelay`.
+SQLite works out of the box. All components mount one PersistentVolumeClaim for `/var/lib/beacon`.
 
 ```yaml
 persistence:
@@ -146,7 +146,7 @@ The PVC is created by the chart and therefore removed by `helm uninstall`. To ke
 
 ```yaml
 persistence:
-  existingClaim: incidentrelay-data
+  existingClaim: beacon-data
 ```
 
 ### PostgreSQL
@@ -159,8 +159,8 @@ config:
     type: postgresql
     host: postgres.example.svc
     port: 5432
-    name: incidentrelay
-    user: incidentrelay
+    name: beacon
+    user: beacon
     password: <database-password>
 
 persistence:
@@ -180,7 +180,7 @@ web:
 Keep `replicaCount` at `1` while this is on — several pods starting at once would race on the migrations. To run more than one web replica, disable it and migrate out of band:
 
 ```bash
-kubectl exec deploy/incidentrelay-web -- python manage.py migrate
+kubectl exec deploy/beacon-web -- python manage.py migrate
 ```
 
 ```yaml
@@ -209,7 +209,7 @@ A startup probe allows up to five minutes for the first boot, which covers migra
 By default the Service is `ClusterIP`. For a quick look:
 
 ```bash
-kubectl port-forward svc/incidentrelay 8080:8080
+kubectl port-forward svc/beacon 8080:8080
 ```
 
 ```text
@@ -225,14 +225,14 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
   hosts:
-    - host: incidentrelay.example.com
+    - host: beacon.example.com
       paths:
         - path: /
           pathType: Prefix
   tls:
     - hosts:
-        - incidentrelay.example.com
-      secretName: incidentrelay-tls
+        - beacon.example.com
+      secretName: beacon-tls
 ```
 
 Keep `config.server.public_base_url` in sync with the Ingress host.
@@ -240,7 +240,7 @@ Keep `config.server.public_base_url` in sync with the Ingress host.
 ## Create the first admin user
 
 ```bash
-kubectl exec -it deploy/incidentrelay-web -- \
+kubectl exec -it deploy/beacon-web -- \
   python manage.py create-admin \
     --username admin \
     --password 'change-me-123' \
@@ -290,11 +290,11 @@ scheduler:
 
 ## Logs
 
-The application writes JSON logs to files under `/var/log/incidentrelay`, not to standard output, so `kubectl logs` shows only the entrypoint banner. Read the files directly:
+The application writes JSON logs to files under `/var/log/beacon`, not to standard output, so `kubectl logs` shows only the entrypoint banner. Read the files directly:
 
 ```bash
-kubectl exec deploy/incidentrelay-web -- tail -f /var/log/incidentrelay/incidentrelay.log
-kubectl exec deploy/incidentrelay-scheduler -- tail -f /var/log/incidentrelay/incidentrelay-scheduler.log
+kubectl exec deploy/beacon-web -- tail -f /var/log/beacon/beacon.log
+kubectl exec deploy/beacon-scheduler -- tail -f /var/log/beacon/beacon-scheduler.log
 ```
 
 The log volume is an `emptyDir`, so these files do not survive a pod restart. See [Logging](../administration/logging.md) for the file layout.
@@ -307,11 +307,11 @@ Mount provider plugins into every component with the shared extra volumes:
 extraVolumes:
   - name: voice-providers
     configMap:
-      name: incidentrelay-voice-providers
+      name: beacon-voice-providers
 
 extraVolumeMounts:
   - name: voice-providers
-    mountPath: /usr/local/lib/incidentrelay/voice_providers
+    mountPath: /usr/local/lib/beacon/voice_providers
     readOnly: true
 ```
 
@@ -320,7 +320,7 @@ extraVolumeMounts:
 ### Upgrading from 1.2 to 2.1 or later
 
 !!! warning
-    IncidentRelay 2.1 blocks private/loopback/link-local/reserved outbound HTTP
+    Beacon 2.1 blocks private/loopback/link-local/reserved outbound HTTP
     destinations unless they are explicitly allowed. Internal OIDC
     metadata/JWKS endpoints and outgoing webhook/API integrations that worked in
     1.2 can therefore stop working after the chart upgrade.
@@ -334,7 +334,7 @@ config:
     outbound_private_network_allowlist: "10.20.0.0/16,192.168.50.10/32"
 ```
 
-If you use `existingConfigSecret`, update its `incidentrelay.conf` instead:
+If you use `existingConfigSecret`, update its `beacon.conf` instead:
 
 ```ini
 [security]
@@ -342,27 +342,27 @@ outbound_private_network_allowlist = 10.20.0.0/16,192.168.50.10/32
 ```
 
 Resolve internal hostnames from the cluster and allow only the addresses that
-IncidentRelay actually needs. See
+Beacon actually needs. See
 [Outbound HTTP network policy](configuration.md#outbound-http-network-policy)
 for DNS fail-closed behavior and additional examples.
 
 ### Upgrading from 1.x to 2.0
 
-The 2.0 chart can reuse 1.x values. During rendering it materializes the new secure auth defaults and shared JWT/encryption/callback secrets before creating `incidentrelay.conf`, so old values do not cause different pods to generate different runtime keys. `config.main.secret_key` must still be present and must be a unique random value.
+The 2.0 chart can reuse 1.x values. During rendering it materializes the new secure auth defaults and shared JWT/encryption/callback secrets before creating `beacon.conf`, so old values do not cause different pods to generate different runtime keys. `config.main.secret_key` must still be present and must be a unique random value.
 
 If you use `existingConfigSecret`, Helm cannot normalize that external file. Before the 2.0 upgrade, make sure it contains a valid `main.secret_key`, enables the desired `[auth]` settings, and uses a stable `auth.jwt_secret` (or omits/leaves it empty so the application falls back to `main.secret_key`).
 
 For SQLite, keep `persistence.enabled=true` and `web.replicaCount=1`. For PostgreSQL/multi-node deployments, set `persistence.enabled=false` once every security secret is stable in the rendered or external config.
 
 ```bash
-helm upgrade incidentrelay \
-  oci://ghcr.io/roxy-wi/incidentrelay-charts/incidentrelay \
+helm upgrade beacon \
+  oci://ghcr.io/glm-labs/beacon-charts/beacon \
   --version 2.1.0 \
   --reuse-values
 ```
 
 ```bash
-helm uninstall incidentrelay
+helm uninstall beacon
 ```
 
 `helm uninstall` also deletes the PersistentVolumeClaim created by the chart, and with it the SQLite database. Use `persistence.existingClaim` if you need the data to outlive the release.

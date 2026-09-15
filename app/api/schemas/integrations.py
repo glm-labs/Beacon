@@ -187,7 +187,7 @@ class ZabbixWebhookSchema(ApiModel):
 class DatadogWebhookSchema(ApiModel):
     """Validate a Datadog Webhooks integration payload."""
 
-    # Datadog payloads are user-configurable. Keep the common IncidentRelay
+    # Datadog payloads are user-configurable. Keep the common Beacon
     # template fields typed while preserving any additional Datadog variables.
     model_config = ConfigDict(extra="allow")
 
@@ -373,7 +373,7 @@ class UptimeKumaWebhookSchema(ApiModel):
     monitor: Dict[str, Any] | None = None
     msg: str | None = None
 
-    # Optional IncidentRelay extensions for custom Uptime Kuma webhook bodies.
+    # Optional Beacon extensions for custom Uptime Kuma webhook bodies.
     title: str | None = None
     message: str | None = None
     severity: str | None = None
@@ -410,7 +410,7 @@ class GenericWebhookSchema(ApiModel):
     # of them in the raw alert payload instead of silently dropping them.
     model_config = ConfigDict(extra="allow")
 
-    # IncidentRelay generic webhook fields.
+    # Beacon generic webhook fields.
     title: str | None = Field(default=None, min_length=1, max_length=255)
     message: str | None = None
     severity: str | None = None

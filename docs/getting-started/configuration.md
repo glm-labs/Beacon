@@ -1,33 +1,33 @@
 ---
 title: Configuration
-description: IncidentRelay configuration file reference
+description: Beacon configuration file reference
 ---
 
 # Configuration
 
-IncidentRelay reads the config file path from:
+Beacon reads the config file path from:
 
 ```text
-INCIDENTRELAY_CONFIG_FILE
+BEACON_CONFIG_FILE
 ```
 
 Example:
 
 ```bash
-export INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
+export BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
 ```
 
 For systemd:
 
 ```ini
-Environment=INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
+Environment=BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
 ```
 
 For Docker Compose:
 
 ```yaml
 environment:
-  INCIDENTRELAY_CONFIG_FILE: /etc/incidentrelay/incidentrelay.conf
+  BEACON_CONFIG_FILE: /etc/beacon/beacon.conf
 ```
 
 The old `ONCALL_CONFIG_FILE` name should not be used.
@@ -61,7 +61,7 @@ jwt_cookie_secure = true
 [server]
 host = 0.0.0.0
 port = 8080
-public_base_url = https://incidentrelay.example.com
+public_base_url = https://beacon.example.com
 ```
 
 | Option | Description |
@@ -77,7 +77,7 @@ In production, `public_base_url` must be the real external HTTPS URL.
 ```ini
 [database]
 type = sqlite
-name = /var/lib/incidentrelay/incidentrelay.db
+name = /var/lib/beacon/beacon.db
 
 [sqlite]
 wal = true
@@ -93,8 +93,8 @@ SQLite is suitable for small self-hosted installations. Keep one web worker when
 type = postgresql
 host = 127.0.0.1
 port = 5432
-name = incidentrelay
-user = incidentrelay
+name = beacon
+user = beacon
 password = change-me
 ```
 
@@ -102,7 +102,7 @@ Use PostgreSQL for larger installations, higher alert volume, multiple web worke
 
 ## Outbound HTTP network policy
 
-IncidentRelay protects administrator-configured outbound HTTP requests against
+Beacon protects administrator-configured outbound HTTP requests against
 server-side request forgery (SSRF). Private, loopback, link-local, multicast,
 reserved and unspecified destination addresses are blocked by default.
 
@@ -116,7 +116,7 @@ outbound_http_max_response_bytes = 1048576
 ```
 
 `outbound_private_network_allowlist` is a comma- or semicolon-separated list of
-IPv4/IPv6 addresses and CIDR networks that IncidentRelay is explicitly allowed
+IPv4/IPv6 addresses and CIDR networks that Beacon is explicitly allowed
 to contact when they are otherwise considered private or unsafe.
 
 Examples:
@@ -138,20 +138,20 @@ possible entries instead of allowlisting whole private address ranges.
 This policy is used by the shared outbound HTTP client, including OIDC metadata
 and JWKS retrieval and outgoing integrations such as generic/Teams/Discord
 webhooks, Slack webhooks and Mattermost API requests. The list is not a hostname
-allowlist: IncidentRelay resolves the hostname first and checks the resolved IP
+allowlist: Beacon resolves the hostname first and checks the resolved IP
 addresses.
 
 For DNS names, **every address returned by DNS must be public or explicitly
 allowlisted**. If even one returned address is blocked, the request fails
-closed. Redirect targets are resolved and checked again before IncidentRelay
+closed. Redirect targets are resolved and checked again before Beacon
 follows them.
 
 !!! warning "Upgrade impact in 2.1"
-    IncidentRelay 2.1 enforces this policy for outbound requests. An installation
+    Beacon 2.1 enforces this policy for outbound requests. An installation
     upgraded from 1.2 can therefore lose access to an existing internal OIDC
     metadata/JWKS endpoint or outgoing integration even though its URL did not
     change. Before upgrading, resolve every internal endpoint from the
-    IncidentRelay host/pod and add only the required IPs or CIDRs.
+    Beacon host/pod and add only the required IPs or CIDRs.
 
 For example, if an internal identity provider resolves to `10.42.7.15`:
 
@@ -160,7 +160,7 @@ For example, if an internal identity provider resolves to `10.42.7.15`:
 outbound_private_network_allowlist = 10.42.7.15/32
 ```
 
-After changing this setting, restart every IncidentRelay process that can make
+After changing this setting, restart every Beacon process that can make
 outbound requests.
 
 The allowlist changes only the destination network policy. It does **not**
@@ -195,7 +195,7 @@ Global and service Event Orchestration can override the configured default for m
 
 ## Data retention
 
-IncidentRelay 2.1 keeps retention settings in one section:
+Beacon 2.1 keeps retention settings in one section:
 
 ```ini
 [retention]
@@ -216,7 +216,7 @@ Email notification channels use global SMTP settings. SMTP transport is not conf
 [smtp]
 host = 127.0.0.1
 port = 25
-from = incidentrelay@example.com
+from = beacon@example.com
 use_tls = false
 user =
 password =
@@ -230,9 +230,9 @@ For an authenticated SMTP server:
 [smtp]
 host = smtp.example.com
 port = 587
-from = incidentrelay@example.com
+from = beacon@example.com
 use_tls = true
-user = incidentrelay@example.com
+user = beacon@example.com
 password = change-me
 ```
 
@@ -249,7 +249,7 @@ Example option names depend on the current service config implementation. Use th
 ```ini
 [voice]
 provider = stub
-providers_dir = /usr/local/lib/incidentrelay/voice_providers
+providers_dir = /usr/local/lib/beacon/voice_providers
 callback_secret =
 ```
 
@@ -269,7 +269,7 @@ Browser push notifications are profile-level PWA/browser notifications. They are
 [browser_push]
 enabled = true
 vapid_public_key = CHANGE_ME_PUBLIC_KEY
-vapid_private_key = /etc/incidentrelay/vapid/private_key.pem
+vapid_private_key = /etc/beacon/vapid/private_key.pem
 vapid_subject = mailto:admin@example.com
 action_token_ttl_seconds = 900
 ```
@@ -307,7 +307,7 @@ If file logging is enabled, use a writable path:
 ```ini
 [main]
 log_level = INFO
-log_file = /var/log/incidentrelay/incidentrelay.log
+log_file = /var/log/beacon/beacon.log
 ```
 
 For systemd and containers, also check journal or container logs.

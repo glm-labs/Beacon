@@ -1,6 +1,6 @@
 # AWS SNS and CloudWatch integration
 
-IncidentRelay can receive signed Amazon SNS messages and CloudWatch alarm notifications through a dedicated inbound integration. Messages are accepted only after the SNS signature, signing certificate URL, route source, route state, and exact Topic ARN have been validated.
+Beacon can receive signed Amazon SNS messages and CloudWatch alarm notifications through a dedicated inbound integration. Messages are accepted only after the SNS signature, signing certificate URL, route source, route state, and exact Topic ARN have been validated.
 
 ## Endpoint
 
@@ -11,12 +11,12 @@ POST /api/integrations/aws-sns/{route_id}
 Example:
 
 ```text
-https://incidentrelay.example.com/api/integrations/aws-sns/17
+https://beacon.example.com/api/integrations/aws-sns/17
 ```
 
-This endpoint does not use a route intake bearer token. Amazon SNS authenticates requests with its message signature, while IncidentRelay also requires the `TopicArn` to exactly match the value stored in the route.
+This endpoint does not use a route intake bearer token. Amazon SNS authenticates requests with its message signature, while Beacon also requires the `TopicArn` to exactly match the value stored in the route.
 
-## Create an IncidentRelay route
+## Create an Beacon route
 
 1. Open **Routes**.
 2. Create a route.
@@ -31,7 +31,7 @@ This endpoint does not use a route intake bearer token. Amazon SNS authenticates
 Example Topic ARN:
 
 ```text
-arn:aws:sns:eu-west-1:123456789012:incidentrelay-alerts
+arn:aws:sns:eu-west-1:123456789012:beacon-alerts
 ```
 
 Recommended grouping:
@@ -42,7 +42,7 @@ Recommended grouping:
 ]
 ```
 
-This keeps all state changes for one CloudWatch alarm in the same IncidentRelay group.
+This keeps all state changes for one CloudWatch alarm in the same Beacon group.
 
 ## Create the SNS subscription
 
@@ -51,10 +51,10 @@ In Amazon SNS:
 1. Open the topic whose ARN is configured in the route.
 2. Create a subscription.
 3. Select **HTTPS** as the protocol.
-4. Set the endpoint to the IncidentRelay webhook URL.
+4. Set the endpoint to the Beacon webhook URL.
 5. Create the subscription.
 
-Amazon SNS sends a signed `SubscriptionConfirmation` message. IncidentRelay validates it and confirms the subscription automatically.
+Amazon SNS sends a signed `SubscriptionConfirmation` message. Beacon validates it and confirms the subscription automatically.
 
 ## Configure a CloudWatch alarm
 
@@ -65,25 +65,25 @@ ALARM
 OK
 ```
 
-`ALARM` creates or updates a firing IncidentRelay alert. `OK` resolves the existing alert because both notifications use the same CloudWatch alarm ARN.
+`ALARM` creates or updates a firing Beacon alert. `OK` resolves the existing alert because both notifications use the same CloudWatch alarm ARN.
 
 `INSUFFICIENT_DATA` is treated as firing with warning severity.
 
 
 ## AWS CLI configuration example
 
-The same setup can be created from the AWS CLI. First subscribe the IncidentRelay route endpoint to the SNS topic:
+The same setup can be created from the AWS CLI. First subscribe the Beacon route endpoint to the SNS topic:
 
 ```bash
-TOPIC_ARN='arn:aws:sns:eu-west-1:123456789012:incidentrelay-alerts'
+TOPIC_ARN='arn:aws:sns:eu-west-1:123456789012:beacon-alerts'
 
 aws sns subscribe \
   --topic-arn "$TOPIC_ARN" \
   --protocol https \
-  --notification-endpoint 'https://incidentrelay.example.com/api/integrations/aws-sns/17'
+  --notification-endpoint 'https://beacon.example.com/api/integrations/aws-sns/17'
 ```
 
-IncidentRelay validates the signed `SubscriptionConfirmation` request and confirms the subscription automatically.
+Beacon validates the signed `SubscriptionConfirmation` request and confirms the subscription automatically.
 
 Then create or update a CloudWatch alarm and send both alarm and recovery actions to the same SNS topic:
 
@@ -102,11 +102,11 @@ aws cloudwatch put-metric-alarm \
   --ok-actions "$TOPIC_ARN"
 ```
 
-Using the same topic in both `--alarm-actions` and `--ok-actions` is what gives IncidentRelay the complete firing → resolved lifecycle.
+Using the same topic in both `--alarm-actions` and `--ok-actions` is what gives Beacon the complete firing → resolved lifecycle.
 
 ## CloudWatch state mapping
 
-| CloudWatch state | IncidentRelay status | Default severity |
+| CloudWatch state | Beacon status | Default severity |
 |---|---|---|
 | `ALARM` | `firing` | `critical` |
 | `INSUFFICIENT_DATA` | `firing` | `warning` |
@@ -116,7 +116,7 @@ A `severity` SNS message attribute overrides the default severity.
 
 ## Deduplication
 
-IncidentRelay uses `AlarmArn` as both the external identifier and deduplication key.
+Beacon uses `AlarmArn` as both the external identifier and deduplication key.
 
 Example:
 
@@ -130,7 +130,7 @@ The same ARN must be present in `ALARM` and `OK` notifications so that the exist
 
 Common labels include:
 
-| IncidentRelay label | Source |
+| Beacon label | Source |
 |---|---|
 | `alertname` | `AlarmName` |
 | `severity` | SNS attribute or state mapping |
@@ -235,7 +235,7 @@ The `Message` field contains a JSON-encoded CloudWatch alarm payload.
 {
   "Type": "Notification",
   "MessageId": "sns-message-1",
-  "TopicArn": "arn:aws:sns:eu-west-1:123456789012:incidentrelay-alerts",
+  "TopicArn": "arn:aws:sns:eu-west-1:123456789012:beacon-alerts",
   "Subject": "ALARM: HighCPU",
   "Message": "{\"AlarmName\":\"HighCPU\",\"AWSAccountId\":\"123456789012\",\"NewStateValue\":\"ALARM\",\"NewStateReason\":\"Threshold crossed\",\"Region\":\"EU (Ireland)\",\"AlarmArn\":\"arn:aws:cloudwatch:eu-west-1:123456789012:alarm:HighCPU\",\"OldStateValue\":\"OK\"}",
   "Timestamp": "2026-06-21T10:00:01.000Z",
@@ -254,11 +254,11 @@ Composite alarm payloads can contain:
 - `AlarmRule`;
 - `TriggeringChildren`.
 
-IncidentRelay stores these values in annotations and preserves the full CloudWatch payload. Deduplication still uses the alarm ARN.
+Beacon stores these values in annotations and preserves the full CloudWatch payload. Deduplication still uses the alarm ARN.
 
 ## Generic SNS notifications
 
-When `Message` is not recognized as a CloudWatch alarm, IncidentRelay creates a generic SNS alert using:
+When `Message` is not recognized as a CloudWatch alarm, Beacon creates a generic SNS alert using:
 
 - `Subject` as the title;
 - `Message` as the message;
@@ -269,7 +269,7 @@ When `Message` is not recognized as a CloudWatch alarm, IncidentRelay creates a 
 
 ## Stored payload
 
-IncidentRelay stores:
+Beacon stores:
 
 ```text
 payload.sns
@@ -280,7 +280,7 @@ The SNS signature is removed before the payload is stored. The rest of the SNS e
 
 ## Signature validation
 
-Before accepting a request, IncidentRelay checks:
+Before accepting a request, Beacon checks:
 
 1. the route exists;
 2. the route source is `aws_sns`;
@@ -308,7 +308,7 @@ Successful confirmation:
 {
   "status": "confirmed",
   "message_id": "sns-confirmation-1",
-  "topic_arn": "arn:aws:sns:eu-west-1:123456789012:incidentrelay-alerts"
+  "topic_arn": "arn:aws:sns:eu-west-1:123456789012:beacon-alerts"
 }
 ```
 
@@ -318,7 +318,7 @@ Unsubscribe confirmation:
 {
   "status": "unsubscribed",
   "message_id": "sns-confirmation-2",
-  "topic_arn": "arn:aws:sns:eu-west-1:123456789012:incidentrelay-alerts"
+  "topic_arn": "arn:aws:sns:eu-west-1:123456789012:beacon-alerts"
 }
 ```
 
@@ -358,11 +358,11 @@ Unsubscribe confirmation:
 
 Check that:
 
-- the IncidentRelay endpoint is publicly reachable through HTTPS;
+- the Beacon endpoint is publicly reachable through HTTPS;
 - the route source is `aws_sns`;
 - the route is active;
 - the configured Topic ARN exactly matches the SNS topic;
-- IncidentRelay can reach Amazon SNS certificate and confirmation URLs;
+- Beacon can reach Amazon SNS certificate and confirmation URLs;
 - the reverse proxy forwards POST bodies unchanged.
 
 ### Topic ARN mismatch
@@ -375,7 +375,7 @@ Do not edit or manually replay a signed SNS body. Any change to a signed field i
 
 Also verify:
 
-- outbound HTTPS access from IncidentRelay;
+- outbound HTTPS access from Beacon;
 - system clock synchronization;
 - that the body is not rewritten by a proxy;
 - that the message came from the configured topic.
@@ -407,5 +407,5 @@ as the route grouping configuration.
 - Configure the exact Topic ARN on each route.
 - Do not disable certificate URL validation.
 - Do not accept redirects when loading certificates or confirming subscriptions.
-- Keep IncidentRelay system time synchronized.
+- Keep Beacon system time synchronized.
 - Review routing traces and logs after rejected requests.

@@ -19,7 +19,7 @@ RESOLVED_STATUSES = {
 
 
 def normalize_grafana_status(value):
-    """Convert a Grafana alert status to an IncidentRelay status."""
+    """Convert a Grafana alert status to an Beacon status."""
     status = str(value or "").strip().lower()
 
     if status in RESOLVED_STATUSES:
@@ -52,7 +52,7 @@ def _stable_labels(labels, org_id=None):
 def _stored_alert_payload(payload, alert):
     stored_payload = dict(payload)
 
-    # Each IncidentRelay alert stores only its own Grafana alert instance,
+    # Each Beacon alert stores only its own Grafana alert instance,
     # while retaining the group-level Grafana context.
     stored_payload["alerts"] = [dict(alert)]
 

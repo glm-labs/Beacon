@@ -49,7 +49,7 @@ def test_cookie_locale_has_priority_over_accept_language():
     with app.test_request_context(
         "/",
         headers={
-            "Cookie": "incidentrelay_locale=ru",
+            "Cookie": "beacon_locale=ru",
             "Accept-Language": "en",
         },
     ):
@@ -106,7 +106,7 @@ def test_authenticated_user_locale_has_priority_over_cookie():
     with app.test_request_context(
         "/",
         headers={
-            "Cookie": "incidentrelay_locale=en",
+            "Cookie": "beacon_locale=en",
             "Accept-Language": "en",
         },
     ):

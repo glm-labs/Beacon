@@ -89,7 +89,7 @@
   "alert_details.form.service": "Сервис",
   "alert_details.manual.service_help": "Если выбран сервис, инцидент будет использовать его владельцев и настройки эскалации по умолчанию.",
   "alert_details.manual.notify_team": "Уведомить команду",
-  "alert_details.manual.notify_help": "Если включено, IncidentRelay запланирует уведомление через стандартный поток уведомлений алертов.",
+  "alert_details.manual.notify_help": "Если включено, Beacon запланирует уведомление через стандартный поток уведомлений алертов.",
   "alert_details.loading": "Загрузка...",
   "alert_details.loading.comments": "Загрузка комментариев...",
   "alert_details.loading.priority": "Загрузка приоритета...",

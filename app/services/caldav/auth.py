@@ -13,7 +13,7 @@ CALDAV_REQUIRED_SCOPES = ["calendar:read"]
 
 def unauthorized():
     response = Response("Authentication required\n", status=401)
-    response.headers["WWW-Authenticate"] = 'Basic realm="IncidentRelay CalDAV"'
+    response.headers["WWW-Authenticate"] = 'Basic realm="Beacon CalDAV"'
     return response
 
 

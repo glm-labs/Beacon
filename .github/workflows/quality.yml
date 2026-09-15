@@ -38,7 +38,7 @@ jobs:
     timeout-minutes: 20
 
     env:
-      INCIDENTRELAY_CONFIG_FILE: ${{ github.workspace }}/tests/incidentrelay.test.conf
+      BEACON_CONFIG_FILE: ${{ github.workspace }}/tests/beacon.test.conf
       PYTHONPATH: ${{ github.workspace }}
 
     steps:

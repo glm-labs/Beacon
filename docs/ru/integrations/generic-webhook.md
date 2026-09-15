@@ -7,7 +7,7 @@ description: Настройка маршрута для универсально
 
 Маршрут Webhook принимает два формата запроса на одном и том же эндпоинте:
 
-1. Универсальный payload вебхука IncidentRelay.
+1. Универсальный payload вебхука Beacon.
 2. События алертов, совместимые с PagerDuty Events API v2.
 
 Эндпоинт:
@@ -30,15 +30,15 @@ Source: Webhook / PagerDuty Events API v2
 
 | Формат | Аутентификация |
 |---|---|
-| Универсальный вебхук IncidentRelay | `Authorization: Bearer ROUTE_TOKEN` |
+| Универсальный вебхук Beacon | `Authorization: Bearer ROUTE_TOKEN` |
 | Совместимый с PagerDuty Events API v2 | JSON-поле `routing_key: ROUTE_TOKEN` |
 
-`routing_key` трактуется как секрет. IncidentRelay использует его для выбора маршрута и сохраняет `[REDACTED]` вместо токена в payload алерта.
+`routing_key` трактуется как секрет. Beacon использует его для выбора маршрута и сохраняет `[REDACTED]` вместо токена в payload алерта.
 
-## Универсальный формат IncidentRelay
+## Универсальный формат Beacon
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
+curl -X POST 'https://beacon.example.com/api/integrations/webhook' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer ROUTE_TOKEN' \
   -d '{
@@ -64,7 +64,7 @@ curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
 
 ### Универсальные нормализованные поля
 
-| Поле IncidentRelay | Источник |
+| Поле Beacon | Источник |
 |---|---|
 | `source` | `webhook` |
 | `team_slug` | `team`, `labels.team` или `labels.oncall_team` |
@@ -79,14 +79,14 @@ curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
 
 ## Формат, совместимый с PagerDuty Events API v2
 
-Системы, у которых уже есть экспортёр PagerDuty Events API v2, могут направить его на эндпоинт вебхука IncidentRelay.
+Системы, у которых уже есть экспортёр PagerDuty Events API v2, могут направить его на эндпоинт вебхука Beacon.
 
-Используйте токен приёма маршрута IncidentRelay как `routing_key`.
+Используйте токен приёма маршрута Beacon как `routing_key`.
 
 ### Trigger
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
+curl -X POST 'https://beacon.example.com/api/integrations/webhook' \
   -H 'Content-Type: application/json' \
   -d '{
     "routing_key": "ROUTE_TOKEN",
@@ -127,7 +127,7 @@ curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
 ### Acknowledge
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
+curl -X POST 'https://beacon.example.com/api/integrations/webhook' \
   -H 'Content-Type: application/json' \
   -d '{
     "routing_key": "ROUTE_TOKEN",
@@ -136,12 +136,12 @@ curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
   }'
 ```
 
-Соответствующая группа алертов IncidentRelay подтверждается (acknowledged). Поиск ограничен маршрутом вебхука, идентифицированным по `routing_key`.
+Соответствующая группа алертов Beacon подтверждается (acknowledged). Поиск ограничен маршрутом вебхука, идентифицированным по `routing_key`.
 
 ### Resolve
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
+curl -X POST 'https://beacon.example.com/api/integrations/webhook' \
   -H 'Content-Type: application/json' \
   -d '{
     "routing_key": "ROUTE_TOKEN",
@@ -150,13 +150,13 @@ curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
   }'
 ```
 
-Соответствующая группа алертов IncidentRelay и её дочерние алерты разрешаются.
+Соответствующая группа алертов Beacon и её дочерние алерты разрешаются.
 
 Неизвестные или уже разрешённые значения `dedup_key` принимаются как успешные no-op-операции. Это сохраняет поведение асинхронных последующих событий, ожидаемое PagerDuty-совместимыми отправителями.
 
 ### Сопоставление полей PagerDuty
 
-| Поле PagerDuty | Поле IncidentRelay |
+| Поле PagerDuty | Поле Beacon |
 |---|---|
 | `routing_key` | Токен приёма маршрута вебхука; не хранится в открытом виде |
 | `event_action=trigger` | `status=firing` |
@@ -173,13 +173,13 @@ curl -X POST 'https://incidentrelay.example.com/api/integrations/webhook' \
 | Первый `links[].href` | `labels.event_link` |
 | `client` | Метка `pagerduty_client` |
 
-Severity PagerDuty нормализуется с использованием псевдонимов IncidentRelay. Например, `error` становится `critical`.
+Severity PagerDuty нормализуется с использованием псевдонимов Beacon. Например, `error` становится `critical`.
 
 `payload.summary`, `payload.source` и `payload.severity` обязательны для `trigger`. `dedup_key` обязателен для `acknowledge` и `resolve`.
 
 ## Назначение сервиса
 
-После того как маршрут принимает событие, IncidentRelay может привязать его к сервису двумя способами:
+После того как маршрут принимает событие, Beacon может привязать его к сервису двумя способами:
 
 1. Выбрать сервис по умолчанию на маршруте.
 2. Настроить правила сопоставления сервисов.

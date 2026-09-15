@@ -1,11 +1,11 @@
 ---
 title: ICS-ленты календарей
-description: Токенизированные подписные ICS-ленты для расписаний дежурств команд IncidentRelay.
+description: Токенизированные подписные ICS-ленты для расписаний дежурств команд Beacon.
 ---
 
 # ICS-ленты календарей
 
-IncidentRelay может генерировать токенизированные подписные ICS-ленты для расписаний дежурств (on-call) команд. Это удобно для календарных клиентов, которые плохо поддерживают CalDAV, особенно Outlook и Google Calendar.
+Beacon может генерировать токенизированные подписные ICS-ленты для расписаний дежурств (on-call) команд. Это удобно для календарных клиентов, которые плохо поддерживают CalDAV, особенно Outlook и Google Calendar.
 
 ICS-лента — это секретный URL, оканчивающийся на `.ics`. Любой, у кого есть этот URL, может читать экспортированный календарь дежурств этой команды, поэтому обращайтесь с URL как с паролем.
 
@@ -34,7 +34,7 @@ ICS-лента — это секретный URL, оканчивающийся �
 URL ленты выглядит так:
 
 ```text
-https://incidentrelay.example.com/api/calendar/feeds/<secret-token>.ics
+https://beacon.example.com/api/calendar/feeds/<secret-token>.ics
 ```
 
 Токен показывается при создании или перегенерации ленты. Ответы со списком существующих лент не должны снова раскрывать токен.
@@ -46,7 +46,7 @@ https://incidentrelay.example.com/api/calendar/feeds/<secret-token>.ics
 1. Откройте **Calendar**.
 2. Выберите **Add calendar**.
 3. Выберите **Subscribe from web**.
-4. Вставьте URL `.ics` от IncidentRelay.
+4. Вставьте URL `.ics` от Beacon.
 5. Выберите имя и цвет.
 6. Сохраните.
 
@@ -59,7 +59,7 @@ https://incidentrelay.example.com/api/calendar/feeds/<secret-token>.ics
 1. Откройте **Other calendars**.
 2. Нажмите **+**.
 3. Выберите **From URL**.
-4. Вставьте URL `.ics` от IncidentRelay.
+4. Вставьте URL `.ics` от Beacon.
 5. Нажмите **Add calendar**.
 
 Частота обновления в Google Calendar управляется Google и может занять некоторое время.
@@ -72,7 +72,7 @@ https://incidentrelay.example.com/api/calendar/feeds/<secret-token>.ics
 
 1. Откройте **Calendar**.
 2. Выберите **File → New Calendar Subscription**.
-3. Вставьте URL `.ics` от IncidentRelay.
+3. Вставьте URL `.ics` от Beacon.
 4. Настройте автообновление.
 
 Если вам нужно автоматическое обнаружение всех доступных команд, используйте вместо этого CalDAV.
@@ -101,7 +101,7 @@ https://incidentrelay.example.com/api/calendar/feeds/<secret-token>.ics
 
 ## Эндпоинты API
 
-Эндпоинты управления требуют обычной аутентификации и разрешений API IncidentRelay.
+Эндпоинты управления требуют обычной аутентификации и разрешений API Beacon.
 
 ```text
 GET    /api/calendar/feeds?team_id=<team_id>
@@ -125,16 +125,16 @@ GET /api/calendar/feeds/<secret-token>.ics
 ```bash
 curl -s \
   -X POST \
-  -H 'Authorization: Bearer INCIDENTRELAY_API_TOKEN' \
+  -H 'Authorization: Bearer BEACON_API_TOKEN' \
   -H 'Content-Type: application/json' \
   -d '{"team_id":1,"name":"Cloud OPS subscription","past_days":7,"future_days":90}' \
-  https://incidentrelay.example.com/api/calendar/feeds
+  https://beacon.example.com/api/calendar/feeds
 ```
 
 Загрузка ленты:
 
 ```bash
-curl -i https://incidentrelay.example.com/api/calendar/feeds/<secret-token>.ics
+curl -i https://beacon.example.com/api/calendar/feeds/<secret-token>.ics
 ```
 
 Успешный ответ должен иметь:
@@ -161,7 +161,7 @@ Cache-Control: no-store
 Проверьте, что URL оканчивается на `.ics` и доступен из сети клиента.
 
 ```text
-https://incidentrelay.example.com/api/calendar/feeds/<secret-token>.ics
+https://beacon.example.com/api/calendar/feeds/<secret-token>.ics
 ```
 
 ### Лента возвращает 404
@@ -178,7 +178,7 @@ https://incidentrelay.example.com/api/calendar/feeds/<secret-token>.ics
 
 ### События не обновляются немедленно
 
-Outlook и Google Calendar управляют собственными интервалами обновления. IncidentRelay возвращает актуальное содержимое ICS, но внешний сервис может кэшировать подписку.
+Outlook и Google Calendar управляют собственными интервалами обновления. Beacon возвращает актуальное содержимое ICS, но внешний сервис может кэшировать подписку.
 
 ### Лента пустая
 

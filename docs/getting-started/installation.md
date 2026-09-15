@@ -1,6 +1,6 @@
 ---
 title: Installation
-description: Installation guide dispatcher for IncidentRelay deployment methods.
+description: Installation guide dispatcher for Beacon deployment methods.
 ---
 
 # Installation

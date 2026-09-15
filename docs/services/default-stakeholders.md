@@ -7,7 +7,7 @@ description: Automatically attach service owners as incident stakeholders.
 
 Service default stakeholders let you define users who should automatically be attached to new incidents for a service.
 
-When a new incident is created for a service, IncidentRelay copies active service owners into the incident stakeholder list. This is a snapshot: changing service default stakeholders later does not rewrite existing incidents.
+When a new incident is created for a service, Beacon copies active service owners into the incident stakeholder list. This is a snapshot: changing service default stakeholders later does not rewrite existing incidents.
 
 ## When default stakeholders are used
 
@@ -25,7 +25,7 @@ They are useful for:
 
 A service can have one or more default stakeholders.
 
-Each default stakeholder is stored on the service as a service owner record. When IncidentRelay creates a new incident for this service, active service owners are copied to the incident stakeholder list.
+Each default stakeholder is stored on the service as a service owner record. When Beacon creates a new incident for this service, active service owners are copied to the incident stakeholder list.
 
 After the copy is done, the incident has its own stakeholder snapshot.
 
@@ -72,11 +72,11 @@ These flags are copied to the incident stakeholder snapshot together with the us
 Stakeholder notifications are sent through:
 
 - email, when the stakeholder has an email address
-- browser push, when the stakeholder is an active IncidentRelay user with browser push enabled
+- browser push, when the stakeholder is an active Beacon user with browser push enabled
 
 Browser push notifications for stakeholders are informational. They do not include acknowledge or resolve action buttons.
 
-External stakeholders without an IncidentRelay user account can receive email notifications only.
+External stakeholders without an Beacon user account can receive email notifications only.
 
 ## Incident lifecycle events
 
@@ -84,7 +84,7 @@ Default stakeholders can receive notifications for the following lifecycle event
 
 ### New incident created
 
-When a new alert group is created for a service, IncidentRelay copies active service owners to incident stakeholders.
+When a new alert group is created for a service, Beacon copies active service owners to incident stakeholders.
 
 If `notify_on_created` is enabled, the stakeholder receives an email and, when available, a browser push notification.
 

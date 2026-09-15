@@ -23,7 +23,7 @@ class VoiceProviderCapabilities:
 
 @dataclass(frozen=True)
 class VoiceCallRequest:
-    """Data passed from IncidentRelay to a voice call provider."""
+    """Data passed from Beacon to a voice call provider."""
 
     phone: str
     text: str
@@ -42,7 +42,7 @@ class VoiceCallRequest:
 
 @dataclass(frozen=True)
 class VoiceCallResult:
-    """Provider response normalized for IncidentRelay."""
+    """Provider response normalized for Beacon."""
 
     call_id: str | None = None
     status: str = "queued"

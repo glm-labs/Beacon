@@ -55,7 +55,7 @@
   "channels.details.config": "Konfektion",
   "channels.form.create": "Kanal erstellen",
   "channels.form.edit": "Kanal bearbeiten #{id}",
-  "channels.form.subtitle": "Konfigurieren Sie, wo IncidentRelay Benachrichtigungen sendet.",
+  "channels.form.subtitle": "Konfigurieren Sie, wo Beacon Benachrichtigungen sendet.",
   "channels.form.channel": "Kanal",
   "channels.form.channel_help": "Anwendungsbereich, Name, Typ und aktivierter Status.",
   "channels.form.group": "Gruppe",

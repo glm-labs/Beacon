@@ -1,4 +1,4 @@
-"""Mango-like IncidentRelay voice provider template.
+"""Mango-like Beacon voice provider template.
 
 This is only a template. Adjust URLs, payload, authentication and signature
 logic according to your provider documentation.

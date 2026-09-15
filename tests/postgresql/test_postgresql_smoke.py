@@ -19,5 +19,5 @@ def test_postgresql_connection_executes_query():
     )
     database_name, version = cursor.fetchone()
 
-    assert database_name == "incidentrelay_test"
+    assert database_name == "beacon_test"
     assert "PostgreSQL" in version

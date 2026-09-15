@@ -8,7 +8,7 @@ app = create_app()
 
 
 def _debug_enabled() -> bool:
-    return str(os.getenv("INCIDENTRELAY_FLASK_DEBUG", "")).lower() in {
+    return str(os.getenv("BEACON_FLASK_DEBUG", "")).lower() in {
         "1",
         "true",
         "yes",
@@ -19,7 +19,7 @@ def _debug_enabled() -> bool:
 if __name__ == "__main__":
     start_scheduler()
     app.run(
-        host=os.getenv("INCIDENTRELAY_HOST", "0.0.0.0"),
-        port=int(os.getenv("INCIDENTRELAY_PORT", "8080")),
+        host=os.getenv("BEACON_HOST", "0.0.0.0"),
+        port=int(os.getenv("BEACON_PORT", "8080")),
         debug=_debug_enabled(),
     )

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Migrate Grafana OnCall OSS configuration to IncidentRelay through HTTP APIs.
+"""Migrate Grafana OnCall OSS configuration to Beacon through HTTP APIs.
 
 The command is intentionally dry-run by default. It never reads either
 application database directly and never prints credentials or generated intake
 tokens to the terminal/report. Secrets are written only to a chmod-0600 JSON
-file when --apply creates IncidentRelay routes.
+file when --apply creates Beacon routes.
 """
 
 from __future__ import annotations
@@ -147,12 +147,12 @@ class Reporter:
             write_json(output_dir / "plan.json", payload)
 
         lines = [
-            "# Grafana OnCall → IncidentRelay migration report",
+            "# Grafana OnCall → Beacon migration report",
             "",
             f"- Mode: **{metadata.get('mode')}**",
             f"- Generated: `{metadata.get('generated_at')}`",
             f"- Grafana OnCall: `{metadata.get('oncall_url')}`",
-            f"- IncidentRelay: `{metadata.get('ir_url')}`",
+            f"- Beacon: `{metadata.get('ir_url')}`",
             "",
             "## Summary",
             "",
@@ -361,7 +361,7 @@ class GrafanaOnCallClient:
         return snapshot
 
 
-class IncidentRelayClient:
+class BeaconClient:
     def __init__(self, base_url: str, token: str, *, verify_tls: bool = True) -> None:
         self.base_url = base_url.rstrip("/")
         self.http = JsonHttpClient(
@@ -392,7 +392,7 @@ class StateStore:
             if stored_source and stored_source != oncall_url.rstrip("/"):
                 raise MigrationError("state file belongs to a different Grafana OnCall instance")
             if stored_target and stored_target != ir_url.rstrip("/"):
-                raise MigrationError("state file belongs to a different IncidentRelay instance")
+                raise MigrationError("state file belongs to a different Beacon instance")
             self.data = payload
         else:
             self.data = {
@@ -437,7 +437,7 @@ class Migrator:
     def __init__(
         self,
         source: dict[str, Any],
-        ir: IncidentRelayClient,
+        ir: BeaconClient,
         state: StateStore,
         reporter: Reporter,
         config: Config,
@@ -517,9 +517,9 @@ class Migrator:
         self.routes = require_list(self.ir.get("/api/routes"), "IR routes")
         self.reporter.add(
             "info",
-            "incidentrelay",
+            "beacon",
             "connected",
-            "Loaded current IncidentRelay resources",
+            "Loaded current Beacon resources",
             groups=len(self.groups),
             teams=len(self.teams),
             users=len(self.users),
@@ -630,7 +630,7 @@ class Migrator:
                     "warning",
                     "user",
                     "skipped",
-                    "No matching IncidentRelay user; user creation is disabled",
+                    "No matching Beacon user; user creation is disabled",
                     source_id,
                     username=source_username,
                     email=email,
@@ -760,7 +760,7 @@ class Migrator:
             )
             if not team:
                 raise MigrationError(
-                    f"fallback team not found in IncidentRelay: {self.config.fallback_team}"
+                    f"fallback team not found in Beacon: {self.config.fallback_team}"
                 )
             self.fallback_team_id = int(team["id"])
             return
@@ -966,7 +966,7 @@ class Migrator:
                 "warning",
                 "shift",
                 "manual",
-                "Monthly/unknown recurrence cannot be represented as an IncidentRelay layer",
+                "Monthly/unknown recurrence cannot be represented as an Beacon layer",
                 shift_id,
                 frequency=shift.get("frequency"),
             )
@@ -981,7 +981,7 @@ class Migrator:
                         "warning",
                         "shift",
                         "manual",
-                        "Shift contains simultaneous users; IncidentRelay layers rotate one user at a time",
+                        "Shift contains simultaneous users; Beacon layers rotate one user at a time",
                         shift_id,
                         users=group,
                     )
@@ -1301,7 +1301,7 @@ class Migrator:
                             "warning",
                             "escalation_step",
                             "manual",
-                            "Multi-user escalation notification has no exact IncidentRelay equivalent",
+                            "Multi-user escalation notification has no exact Beacon equivalent",
                             step_id,
                             users=user_ids,
                         )
@@ -1375,7 +1375,7 @@ class Migrator:
                 "warning",
                 "route",
                 "manual",
-                "Grafana whole-payload regex/Jinja routing cannot be converted to IncidentRelay label matchers; route is created disabled",
+                "Grafana whole-payload regex/Jinja routing cannot be converted to Beacon label matchers; route is created disabled",
                 source_route_id,
                 routing_type=routing_type,
                 routing_expression=routing_value[:300],
@@ -1592,13 +1592,13 @@ class Migrator:
         if self.config.apply:
             created = self.ir.post(path, payload)
             if not isinstance(created, dict) or "id" not in created:
-                raise MigrationError(f"IncidentRelay did not return an id for {entity}")
+                raise MigrationError(f"Beacon did not return an id for {entity}")
             self.remember(entity_plural(entity), source_key, int(created["id"]))
             self.reporter.add(
                 "info",
                 entity,
                 "created",
-                "Created in IncidentRelay",
+                "Created in Beacon",
                 source_key,
                 target_id=created.get("id"),
             )
@@ -1609,7 +1609,7 @@ class Migrator:
             "plan",
             entity,
             "create",
-            "Would create in IncidentRelay",
+            "Would create in Beacon",
             source_key,
             payload=redact_payload(payload),
         )
@@ -1630,7 +1630,7 @@ class Migrator:
                 "info",
                 entity,
                 "created",
-                "Created in IncidentRelay",
+                "Created in Beacon",
                 source_key,
                 target_id=created.get("id"),
             )
@@ -1640,7 +1640,7 @@ class Migrator:
             "plan",
             entity,
             "create",
-            "Would create in IncidentRelay",
+            "Would create in Beacon",
             source_key,
             payload=redact_payload(payload),
         )
@@ -1659,7 +1659,7 @@ class Migrator:
                 "info",
                 entity,
                 "updated",
-                "Updated in IncidentRelay",
+                "Updated in Beacon",
                 source_key,
             )
             return result if isinstance(result, dict) else {"result": result}
@@ -1667,7 +1667,7 @@ class Migrator:
             "plan",
             entity,
             "update",
-            "Would update in IncidentRelay",
+            "Would update in Beacon",
             source_key,
             payload=redact_payload(payload),
         )
@@ -2012,10 +2012,10 @@ def json_scalar(value: Any) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Migrate Grafana OnCall OSS configuration to IncidentRelay",
+        description="Migrate Grafana OnCall OSS configuration to Beacon",
     )
     parser.add_argument("--oncall-url", required=True, help="Grafana OnCall application API URL")
-    parser.add_argument("--ir-url", required=True, help="IncidentRelay base URL")
+    parser.add_argument("--ir-url", required=True, help="Beacon base URL")
     parser.add_argument(
         "--oncall-token",
         default=os.getenv("GRAFANA_ONCALL_TOKEN"),
@@ -2023,8 +2023,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--ir-token",
-        default=os.getenv("INCIDENTRELAY_TOKEN"),
-        help="IncidentRelay admin API token; defaults to INCIDENTRELAY_TOKEN",
+        default=os.getenv("BEACON_TOKEN"),
+        help="Beacon admin API token; defaults to BEACON_TOKEN",
     )
     parser.add_argument(
         "--grafana-url",
@@ -2034,12 +2034,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--target-group-id", type=int)
     parser.add_argument(
         "--target-group",
-        help="Existing IncidentRelay group slug/name, or new group name with --create-target-group",
+        help="Existing Beacon group slug/name, or new group name with --create-target-group",
     )
     parser.add_argument("--create-target-group", action="store_true")
     parser.add_argument(
         "--fallback-team",
-        help="IncidentRelay team slug/name for teamless Grafana resources",
+        help="Beacon team slug/name for teamless Grafana resources",
     )
     parser.add_argument(
         "--users-mode",
@@ -2076,7 +2076,7 @@ def main(argv: list[str] | None = None) -> int:
     if not args.oncall_token:
         parser.error("--oncall-token or GRAFANA_ONCALL_TOKEN is required")
     if not args.ir_token and not args.snapshot_only:
-        parser.error("--ir-token or INCIDENTRELAY_TOKEN is required")
+        parser.error("--ir-token or BEACON_TOKEN is required")
     if not args.snapshot_only and not (args.target_group_id or args.target_group):
         parser.error("--target-group-id or --target-group is required")
 
@@ -2112,7 +2112,7 @@ def main(argv: list[str] | None = None) -> int:
 
         state_path = (args.state_file or output_dir / "state.json").resolve()
         state = StateStore(state_path, args.oncall_url, args.ir_url)
-        ir = IncidentRelayClient(
+        ir = BeaconClient(
             args.ir_url,
             args.ir_token,
             verify_tls=not args.insecure,

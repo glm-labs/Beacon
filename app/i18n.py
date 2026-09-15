@@ -11,7 +11,7 @@ from flask import current_app, request
 
 
 DEFAULT_LOCALE = "en"
-LOCALE_COOKIE_NAME = "incidentrelay_locale"
+LOCALE_COOKIE_NAME = "beacon_locale"
 SUPPORTED_LOCALES = {
     "en": "English",
     "de": "Deutsch",

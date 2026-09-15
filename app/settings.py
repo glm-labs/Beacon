@@ -95,20 +95,20 @@ class Config:
     DEFAULT_TIMEZONE = settings.get("main", "timezone", "UTC")
 
     # Intentional default for container/reverse-proxy deployments. Operators
-    # can bind IncidentRelay to a narrower interface explicitly with
+    # can bind Beacon to a narrower interface explicitly with
     # server.host.
     SERVER_HOST = settings.get("server", "host", "0.0.0.0")  # nosec B104
     SERVER_PORT = settings.get_int("server", "port", 8080)
     PUBLIC_BASE_URL = settings.get("server", "public_base_url", "http://127.0.0.1:8080")
 
     DB_TYPE = settings.get("database", "type", "sqlite")
-    DB_NAME = settings.get("database", "name", "incidentrelay.db")
+    DB_NAME = settings.get("database", "name", "beacon.db")
     DB_USER = settings.get("database", "user", "")
     DB_PASSWORD = settings.get("database", "password", "")
     DB_HOST = settings.get("database", "host", "127.0.0.1")
     DB_PORT = settings.get_int("database", "port", 0)
 
-    LOG_FILE = settings.get("logging", "file", "./logs/incidentrelay.log")
+    LOG_FILE = settings.get("logging", "file", "./logs/beacon.log")
     LOG_APP_FILE = settings.get(
         "logging",
         "app_file",
@@ -117,17 +117,17 @@ class Config:
     LOG_SCHEDULER_FILE = settings.get(
         "logging",
         "scheduler_file",
-        "./logs/incidentrelay-scheduler.log",
+        "./logs/beacon-scheduler.log",
     )
     LOG_TELEGRAM_WORKER_FILE = settings.get(
         "logging",
         "telegram_worker_file",
-        "./logs/incidentrelay-telegram-worker.log",
+        "./logs/beacon-telegram-worker.log",
     )
     LOG_SLACK_WORKER_FILE = settings.get(
         "logging",
         "slack_worker_file",
-        "./logs/incidentrelay-slack-worker.log",
+        "./logs/beacon-slack-worker.log",
     )
     LOG_LEVEL = settings.get("logging", "level", "INFO")
     LOG_REQUESTS = False
@@ -136,7 +136,7 @@ class Config:
     RBAC_ENFORCED = settings.get_bool("auth", "rbac_enforced", False)
     JWT_SECRET_KEY = settings.get("auth", "jwt_secret", SECRET_KEY) or SECRET_KEY
     JWT_EXPIRE_MINUTES = settings.get_int("auth", "jwt_expire_minutes", 1440)
-    JWT_COOKIE_NAME = settings.get("auth", "jwt_cookie_name", "incidentrelay_jwt")
+    JWT_COOKIE_NAME = settings.get("auth", "jwt_cookie_name", "beacon_jwt")
     JWT_COOKIE_SECURE = settings.get_bool("auth", "jwt_cookie_secure", False)
     AUTH_LOGIN_IP_MAX_FAILURES = settings.get_int(
         "auth", "login_ip_max_failures", 60
@@ -265,7 +265,7 @@ class Config:
     SMTP_PORT = settings.get_int("smtp", "port", 587)
     SMTP_USER = settings.get("smtp", "user", "")
     SMTP_PASSWORD = settings.get("smtp", "password", "")
-    SMTP_FROM = settings.get("smtp", "from", "incidentrelay@example.com")
+    SMTP_FROM = settings.get("smtp", "from", "beacon@example.com")
     SMTP_USE_TLS = settings.get_bool("smtp", "use_tls", True)
 
     # Pushover application token, used when a "pushover" channel or a
@@ -396,7 +396,7 @@ class Config:
         0,
     )
 
-    # IncidentRelay 2.0 exposed Explain Trace retention under [alerts]. Keep
+    # Beacon 2.0 exposed Explain Trace retention under [alerts]. Keep
     # that value as an upgrade fallback, but all new configuration lives in
     # the dedicated [retention] section.
     RETENTION_EXPLAIN_TRACE_DAYS = settings.get_int(
@@ -492,7 +492,7 @@ def validate_security_configuration(config=Config):
         value = str(raw_value or "").strip()
         if not value or value in INSECURE_DEFAULT_SECRETS:
             raise RuntimeError(
-                f"insecure IncidentRelay secret configuration: {name} must be set "
+                f"insecure Beacon secret configuration: {name} must be set "
                 "to a unique cryptographically random value"
             )
 

@@ -1,22 +1,22 @@
 ---
 title: Voice Provider Configuration
-description: IncidentRelay voice provider configuration
+description: Beacon voice provider configuration
 ---
 
 # Voice Provider Configuration
 
-## Main IncidentRelay configuration
+## Main Beacon configuration
 
-IncidentRelay reads voice provider settings from the main config file.
+Beacon reads voice provider settings from the main config file.
 
 Example:
 
 ```ini
 [voice]
 provider = stub
-providers_dir = /usr/local/lib/incidentrelay/voice_providers
+providers_dir = /usr/local/lib/beacon/voice_providers
 callback_secret =
-text_template = IncidentRelay alert {alert_id}. {title}. Severity {severity}. {message}. Press 1 to acknowledge. Press 2 to resolve.
+text_template = Beacon alert {alert_id}. {title}. Severity {severity}. {message}. Press 1 to acknowledge. Press 2 to resolve.
 dtmf_actions = {"1": "acknowledge", "2": "resolve"}
 
 [voice_provider]
@@ -46,14 +46,14 @@ Directory where custom provider modules are stored.
 Recommended value:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers
+/usr/local/lib/beacon/voice_providers
 ```
 
 ### callback_secret
 
-Optional dedicated secret for voice callbacks. If empty, IncidentRelay falls back to the application secret. A dedicated random value is recommended.
+Optional dedicated secret for voice callbacks. If empty, Beacon falls back to the application secret. A dedicated random value is recommended.
 
-The secret is passed to providers as `request.callback_secret` and must be sent back in the `Authorization: Bearer ...` header (or `X-IncidentRelay-Callback-Secret`). It must never be embedded in the callback URL. Providers should use `request.callback_url` exactly as supplied by IncidentRelay.
+The secret is passed to providers as `request.callback_secret` and must be sent back in the `Authorization: Bearer ...` header (or `X-Beacon-Callback-Secret`). It must never be embedded in the callback URL. Providers should use `request.callback_url` exactly as supplied by Beacon.
 
 ## Provider file names
 
@@ -81,7 +81,7 @@ The provider name used in channel config is the file name without `.py`.
 Example file:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers/mango.py
+/usr/local/lib/beacon/voice_providers/mango.py
 ```
 
 Provider name:
@@ -100,7 +100,7 @@ Example voice channel config:
   "call_on_severities": ["critical", "high"],
   "test_phone": "+77001234567",
   "callback_secret": "change-me-channel-secret",
-  "text_template": "IncidentRelay alert {alert_id}. {title}. Severity {severity}. {message}. Press 1 to acknowledge. Press 2 to resolve.",
+  "text_template": "Beacon alert {alert_id}. {title}. Severity {severity}. {message}. Press 1 to acknowledge. Press 2 to resolve.",
   "dtmf_actions": {
     "1": "acknowledge",
     "2": "resolve"
@@ -132,13 +132,13 @@ List of severities that should trigger a phone call.
 "call_on_severities": ["critical", "high"]
 ```
 
-If this list is empty, IncidentRelay will not call anyone for real alerts.
+If this list is empty, Beacon will not call anyone for real alerts.
 
 ### phone
 
 Optional fallback phone number.
 
-For real alerts, IncidentRelay usually uses the assigned user's phone number.
+For real alerts, Beacon usually uses the assigned user's phone number.
 
 ```json
 "phone": "+77001234567"
@@ -156,7 +156,7 @@ Phone number used for test calls.
 
 Optional per-channel callback secret.
 
-If omitted, IncidentRelay uses global config:
+If omitted, Beacon uses global config:
 
 ```ini
 [voice]
@@ -189,7 +189,7 @@ Example:
 
 ### dtmf_actions
 
-Maps phone keypad digits to IncidentRelay actions.
+Maps phone keypad digits to Beacon actions.
 
 ```json
 "dtmf_actions": {
@@ -209,7 +209,7 @@ resolve
 
 Provider-specific settings.
 
-IncidentRelay passes this object to the provider constructor.
+Beacon passes this object to the provider constructor.
 
 ```json
 "provider_config": {

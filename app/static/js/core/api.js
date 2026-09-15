@@ -4,7 +4,7 @@ function getAuthHeaders() {
      */
     const token = typeof getStoredToken === "function"
         ? getStoredToken()
-        : localStorage.getItem("incidentrelay_jwt");
+        : localStorage.getItem("beacon_jwt");
 
     if (!token) {
         return {};
@@ -214,7 +214,7 @@ function showApiError(xhr, fallbackMessage) {
             if (typeof clearStoredToken === "function") {
                 clearStoredToken();
             } else {
-                localStorage.removeItem("incidentrelay_jwt");
+                localStorage.removeItem("beacon_jwt");
             }
 
             if (typeof redirectToLogin === "function") {

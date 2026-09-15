@@ -46,7 +46,7 @@ The calendar takes into account:
 
 ## Historical schedule behavior
 
-IncidentRelay keeps historical layer membership periods.
+Beacon keeps historical layer membership periods.
 
 When a user is removed from a layer, the current membership period is closed with `ends_at`.
 
@@ -54,7 +54,7 @@ Past shifts are still shown.
 
 Future shifts are calculated without that user.
 
-When the same user is added again, IncidentRelay creates a new membership period.
+When the same user is added again, Beacon creates a new membership period.
 
 Example:
 

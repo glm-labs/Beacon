@@ -1,11 +1,11 @@
 ---
 title: Main Concepts
-description: Core IncidentRelay concepts and recommended reading order.
+description: Core Beacon concepts and recommended reading order.
 ---
 
 # Main Concepts
 
-IncidentRelay resources are organized around groups, teams, services, rotations, routes and channels.
+Beacon resources are organized around groups, teams, services, rotations, routes and channels.
 
 | Concept           | Description                                                                    |
 |-------------------|--------------------------------------------------------------------------------|

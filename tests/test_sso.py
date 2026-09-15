@@ -50,7 +50,7 @@ def make_oidc_provider(**overrides):
         "label": "Test OIDC",
         "protocol": "oidc",
         "enabled": True,
-        "client_id": "incidentrelay",
+        "client_id": "beacon",
         "client_secret_encrypted": None,
         "oidc_metadata_url": "https://idp.example.com/.well-known/openid-configuration",
         "oidc_issuer": "https://idp.example.com",
@@ -107,7 +107,7 @@ def provider_payload(**overrides):
         "require_verified_email": True,
         "sync_group_memberships": True,
         "remove_missing_group_memberships": False,
-        "client_id": "incidentrelay",
+        "client_id": "beacon",
         "client_secret": "secret-1",
         "oidc_metadata_url": "https://idp.example.com/.well-known/openid-configuration",
         "oidc_scope": "openid email profile",
@@ -293,7 +293,7 @@ def test_admin_can_create_sso_group_mapping(app):
     assert data["external_group"] == "infra-sso"
     assert data["group_slug"] == "infra"
     assert data["group_role"] == "editor"
-    assert mapping.incidentrelay_group.id == group.id
+    assert mapping.beacon_group.id == group.id
 
 
 def test_admin_can_list_sso_group_mappings(app):
@@ -304,7 +304,7 @@ def test_admin_can_list_sso_group_mappings(app):
     SsoGroupMapping.create(
         provider=provider,
         external_group="noc-sso",
-        incidentrelay_group=group,
+        beacon_group=group,
         group_role="viewer",
         active=True,
         priority=100,
@@ -335,7 +335,7 @@ def test_admin_can_update_sso_group_mapping(app):
     mapping = SsoGroupMapping.create(
         provider=provider,
         external_group="sre-sso",
-        incidentrelay_group=group,
+        beacon_group=group,
         group_role="viewer",
         active=True,
         priority=100,
@@ -369,7 +369,7 @@ def test_admin_can_update_sso_group_mapping(app):
     assert data["active"] is False
     assert data["priority"] == 5
     assert mapping.external_group == "sre-sso-renamed"
-    assert mapping.incidentrelay_team.id == team.id
+    assert mapping.beacon_team.id == team.id
     assert mapping.active is False
 
 
@@ -382,9 +382,9 @@ def test_admin_can_detach_team_from_sso_group_mapping(app):
     mapping = SsoGroupMapping.create(
         provider=provider,
         external_group="net-sso",
-        incidentrelay_group=group,
+        beacon_group=group,
         group_role="editor",
-        incidentrelay_team=team,
+        beacon_team=team,
         team_role="responder",
         active=True,
         priority=20,
@@ -412,7 +412,7 @@ def test_admin_can_detach_team_from_sso_group_mapping(app):
 
     assert data["team_id"] is None
     assert data["team_role"] is None
-    assert mapping.incidentrelay_team_id is None
+    assert mapping.beacon_team_id is None
     assert mapping.team_role is None
 
 
@@ -426,7 +426,7 @@ def test_admin_cannot_map_team_from_another_group(app):
     mapping = SsoGroupMapping.create(
         provider=provider,
         external_group="dba-sso",
-        incidentrelay_group=group,
+        beacon_group=group,
         group_role="viewer",
         active=True,
         priority=100,
@@ -454,7 +454,7 @@ def test_admin_cannot_map_team_from_another_group(app):
 
     assert status == 400
     assert response.get_json()["error"] == "validation_error"
-    assert mapping.incidentrelay_team_id is None
+    assert mapping.beacon_team_id is None
 
 
 def test_non_admin_cannot_manage_sso(app):
@@ -482,7 +482,7 @@ def test_admin_can_soft_delete_sso_provider_and_disable_mappings(app):
     mapping = SsoGroupMapping.create(
         provider=provider,
         external_group="delete-sso",
-        incidentrelay_group=group,
+        beacon_group=group,
         group_role="viewer",
         active=True,
         priority=100,
@@ -702,7 +702,7 @@ def test_complete_sso_login_syncs_group_mappings():
     SsoGroupMapping.create(
         provider=provider,
         external_group="infra-sso",
-        incidentrelay_group=infra_group,
+        beacon_group=infra_group,
         group_role="editor",
         active=True,
         priority=10,
@@ -710,7 +710,7 @@ def test_complete_sso_login_syncs_group_mappings():
     SsoGroupMapping.create(
         provider=provider,
         external_group="noc-sso",
-        incidentrelay_group=noc_group,
+        beacon_group=noc_group,
         group_role="viewer",
         active=True,
         priority=20,
@@ -761,7 +761,7 @@ def test_complete_sso_login_remove_missing_group_memberships_disables_missing_ma
     SsoGroupMapping.create(
         provider=provider,
         external_group="infra-sso",
-        incidentrelay_group=infra_group,
+        beacon_group=infra_group,
         group_role="viewer",
         active=True,
         priority=10,
@@ -769,7 +769,7 @@ def test_complete_sso_login_remove_missing_group_memberships_disables_missing_ma
     SsoGroupMapping.create(
         provider=provider,
         external_group="noc-sso",
-        incidentrelay_group=noc_group,
+        beacon_group=noc_group,
         group_role="editor",
         active=True,
         priority=20,
@@ -820,7 +820,7 @@ def test_oidc_userinfo_subject_must_match_id_token_subject():
 def test_validate_oidc_id_token_accepts_signed_token(monkeypatch):
     provider = make_oidc_provider(
         slug="signed-token",
-        client_id="incidentrelay",
+        client_id="beacon",
         oidc_issuer="https://idp.example.com",
         oidc_jwks_uri="https://idp.example.com/jwks",
     )
@@ -846,7 +846,7 @@ def test_validate_oidc_id_token_accepts_signed_token(monkeypatch):
         {
             "iss": "https://idp.example.com",
             "sub": "oidc-subject",
-            "aud": "incidentrelay",
+            "aud": "beacon",
             "exp": now + 300,
             "iat": now,
             "nonce": "expected-nonce",
@@ -880,7 +880,7 @@ def test_validate_oidc_id_token_accepts_signed_token(monkeypatch):
 def test_validate_oidc_id_token_rejects_wrong_nonce(monkeypatch):
     provider = make_oidc_provider(
         slug="wrong-nonce",
-        client_id="incidentrelay",
+        client_id="beacon",
         oidc_issuer="https://idp.example.com",
         oidc_jwks_uri="https://idp.example.com/jwks",
     )
@@ -906,7 +906,7 @@ def test_validate_oidc_id_token_rejects_wrong_nonce(monkeypatch):
         {
             "iss": "https://idp.example.com",
             "sub": "oidc-subject",
-            "aud": "incidentrelay",
+            "aud": "beacon",
             "exp": now + 300,
             "iat": now,
             "nonce": "actual-nonce",
@@ -969,7 +969,7 @@ def test_complete_sso_login_syncs_group_mapping_case_insensitive_and_sets_active
     SsoGroupMapping.create(
         provider=provider,
         external_group="infra-sso",
-        incidentrelay_group=infra_group,
+        beacon_group=infra_group,
         group_role="editor",
         active=True,
         priority=10,
@@ -1012,7 +1012,7 @@ def test_complete_sso_login_denies_user_without_matching_group_mapping():
     SsoGroupMapping.create(
         provider=provider,
         external_group="infra-sso",
-        incidentrelay_group=infra_group,
+        beacon_group=infra_group,
         group_role="viewer",
         active=True,
         priority=10,

@@ -62,7 +62,7 @@ def normalize_uptime_kuma_state(value: Any) -> str:
 
 
 def normalize_uptime_kuma_status(value: Any) -> str:
-    """Map Uptime Kuma status to IncidentRelay firing/resolved lifecycle."""
+    """Map Uptime Kuma status to Beacon firing/resolved lifecycle."""
 
     state = normalize_uptime_kuma_state(value)
     if state in {"resolved", "maintenance"}:

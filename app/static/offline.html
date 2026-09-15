@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title id="offline-title">IncidentRelay offline</title>
+    <title id="offline-title">Beacon offline</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#1570ef">
     <style>
@@ -97,12 +97,12 @@
 <main>
     <div class="brand">
         <span class="dot"></span>
-        IncidentRelay
+        Beacon
     </div>
 
     <h1 id="offline-heading">You are offline</h1>
     <p id="offline-description">
-        IncidentRelay needs a network connection to show current alerts,
+        Beacon needs a network connection to show current alerts,
         rotations and service impact. Check your connection and try again.
     </p>
 
@@ -114,33 +114,33 @@
 (function () {
     const messages = {
         en: {
-            title: "IncidentRelay offline",
+            title: "Beacon offline",
             heading: "You are offline",
-            description: "IncidentRelay needs a network connection to show current alerts, rotations and service impact. Check your connection and try again.",
+            description: "Beacon needs a network connection to show current alerts, rotations and service impact. Check your connection and try again.",
             retry: "Retry"
         },
         ru: {
-            title: "IncidentRelay — нет подключения",
+            title: "Beacon — нет подключения",
             heading: "Нет подключения к сети",
-            description: "Для отображения актуальных алертов, ротаций и влияния на сервисы IncidentRelay требуется подключение к сети. Проверьте соединение и повторите попытку.",
+            description: "Для отображения актуальных алертов, ротаций и влияния на сервисы Beacon требуется подключение к сети. Проверьте соединение и повторите попытку.",
             retry: "Повторить"
         },
         de: {
-            title: "IncidentRelay – offline",
+            title: "Beacon – offline",
             heading: "Sie sind offline",
-            description: "IncidentRelay benötigt eine Netzwerkverbindung, um aktuelle Alarme, Rotationen und Auswirkungen auf Services anzuzeigen. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+            description: "Beacon benötigt eine Netzwerkverbindung, um aktuelle Alarme, Rotationen und Auswirkungen auf Services anzuzeigen. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
             retry: "Erneut versuchen"
         },
         zh: {
-            title: "IncidentRelay 离线",
+            title: "Beacon 离线",
             heading: "当前处于离线状态",
-            description: "IncidentRelay 需要网络连接才能显示最新告警、值班安排和服务影响。请检查网络连接后重试。",
+            description: "Beacon 需要网络连接才能显示最新告警、值班安排和服务影响。请检查网络连接后重试。",
             retry: "重试"
         }
     };
 
     const cookieMatch = document.cookie.match(
-        /(?:^|;\s*)incidentrelay_locale=([^;]+)/
+        /(?:^|;\s*)beacon_locale=([^;]+)/
     );
     const cookieLocale = cookieMatch
         ? decodeURIComponent(cookieMatch[1])

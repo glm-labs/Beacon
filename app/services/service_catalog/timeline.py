@@ -5,7 +5,7 @@ from app.modules.db.models import ServiceEvent
 from app.modules.common import utc_now
 
 
-def publish_service_event(service, *, category, event_type, title, summary=None, source="incidentrelay", source_ref=None, dedup_key=None, external_url=None, actor_user=None, actor_type=None, actor_label=None, severity=None, status=None, occurred_at=None, payload=None):
+def publish_service_event(service, *, category, event_type, title, summary=None, source="beacon", source_ref=None, dedup_key=None, external_url=None, actor_user=None, actor_type=None, actor_label=None, severity=None, status=None, occurred_at=None, payload=None):
     if dedup_key:
         existing = ServiceEvent.get_or_none(ServiceEvent.service == service.id, ServiceEvent.source == source, ServiceEvent.dedup_key == dedup_key)
         if existing:

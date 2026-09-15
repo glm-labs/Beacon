@@ -42,11 +42,11 @@ A rule can handle one or more event types:
 | `reminder`     | Unacknowledged alert reminders                |
 | `escalation`   | Escalation notifications                      |
 
-Acknowledged and resolved events do not select channels again. IncidentRelay
+Acknowledged and resolved events do not select channels again. Beacon
 updates the messages that were created by earlier deliveries.
 
 This means that changing or removing a notification policy does not prevent
-IncidentRelay from updating an already delivered message when the alert is
+Beacon from updating an already delivered message when the alert is
 acknowledged or resolved.
 
 ## Matchers
@@ -106,7 +106,7 @@ rules still receive a notification.
 
 ## Route channel modes
 
-A route controls how IncidentRelay combines its own channels with the matched
+A route controls how Beacon combines its own channels with the matched
 service notification policy.
 
 | Mode                        | Behavior                                                      |
@@ -210,7 +210,7 @@ non-critical production alert receives only Mattermost delivery.
 
 ## Disabled resources
 
-IncidentRelay ignores:
+Beacon ignores:
 
 - disabled policies;
 - disabled rules;

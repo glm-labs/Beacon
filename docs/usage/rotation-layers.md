@@ -100,9 +100,9 @@ When adding a user to a layer, you can set `starts_at`.
 }
 ```
 
-If `starts_at` is omitted, IncidentRelay uses the current time.
+If `starts_at` is omitted, Beacon uses the current time.
 
-If `starts_at` does not include a timezone offset, IncidentRelay treats it as local time in the layer timezone and stores it internally as UTC.
+If `starts_at` does not include a timezone offset, Beacon treats it as local time in the layer timezone and stores it internally as UTC.
 
 Example:
 
@@ -116,7 +116,7 @@ stored UTC value:      2026-06-10T06:00:00
 
 Removing a layer member does not delete historical data.
 
-Instead, IncidentRelay closes the current membership period:
+Instead, Beacon closes the current membership period:
 
 ```text
 active = false
@@ -131,7 +131,7 @@ Future shifts are calculated without this member.
 
 Re-adding the same user creates a new membership period.
 
-IncidentRelay does not reopen the old period and does not rewrite history.
+Beacon does not reopen the old period and does not rewrite history.
 
 ```text
 Old period:
@@ -163,7 +163,7 @@ Position 2: Anna
 
 Changing a member position should not rewrite historical shifts.
 
-For historical correctness, IncidentRelay closes the old membership period and creates a new one with the new position.
+For historical correctness, Beacon closes the old membership period and creates a new one with the new position.
 
 ## Restrictions
 

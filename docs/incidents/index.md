@@ -5,7 +5,7 @@ description: Incident management workflows for alerts, priorities, responders, s
 
 # Incident Management
 
-IncidentRelay groups incoming signals into alert groups that act as incidents for day-to-day response.
+Beacon groups incoming signals into alert groups that act as incidents for day-to-day response.
 
 Use this section for responder workflows:
 

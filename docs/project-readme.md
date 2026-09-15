@@ -1,11 +1,11 @@
 ---
-title: IncidentRelay Project README
+title: Beacon Project README
 description: Repository overview, workflow, installation and API summary.
 ---
 
-# IncidentRelay
+# Beacon
 
-IncidentRelay is a self-hosted on-call scheduling, alert routing and notification service.
+Beacon is a self-hosted on-call scheduling, alert routing and notification service.
 
 It provides:
 
@@ -28,7 +28,7 @@ It provides:
 Monitoring system -> Route -> Service -> Team -> Rotation -> Notification channels -> ACK / Resolve
 ```
 
-Routes decide how alerts enter IncidentRelay. Services describe what logical system is affected.
+Routes decide how alerts enter Beacon. Services describe what logical system is affected.
 
 Service and team display order:
 
@@ -48,27 +48,27 @@ Choose one method:
 
 ## Runtime services
 
-IncidentRelay should run as separate services:
+Beacon should run as separate services:
 
 ```text
-incidentrelay           # web API, UI, incoming webhooks
-incidentrelay-scheduler # reminders, escalations, periodic jobs
+beacon           # web API, UI, incoming webhooks
+beacon-scheduler # reminders, escalations, periodic jobs
 ```
 
 Telegram worker is optional and only needed when Telegram polling/actions are used.
 
 ## Configuration
 
-IncidentRelay reads config path from:
+Beacon reads config path from:
 
 ```text
-INCIDENTRELAY_CONFIG_FILE
+BEACON_CONFIG_FILE
 ```
 
 Example:
 
 ```bash
-export INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
+export BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
 ```
 
 Do not use the old `ONCALL_CONFIG_FILE` name.

@@ -1,25 +1,25 @@
-x-incidentrelay-image: &incidentrelay_image ${INCIDENTRELAY_IMAGE:-ghcr.io/roxy-wi/incidentrelay:2.2}
-x-incidentrelay-common-volumes: &incidentrelay_common_volumes
-  - incidentrelay-data:/var/lib/incidentrelay
-  - incidentrelay-logs:/var/log/incidentrelay
-  - ./custom_voice_providers:/usr/local/lib/incidentrelay/voice_providers:ro
+x-beacon-image: &beacon_image ${BEACON_IMAGE:-ghcr.io/glm-labs/beacon:2.2}
+x-beacon-common-volumes: &beacon_common_volumes
+  - beacon-data:/var/lib/beacon
+  - beacon-logs:/var/log/beacon
+  - ./custom_voice_providers:/usr/local/lib/beacon/voice_providers:ro
 
 services:
-  incidentrelay:
-    image: *incidentrelay_image
-    container_name: incidentrelay
+  beacon:
+    image: *beacon_image
+    container_name: beacon
     restart: unless-stopped
     environment:
-      INCIDENTRELAY_CONFIG_FILE: /etc/incidentrelay/incidentrelay.conf
-      INCIDENTRELAY_SERVICE: web
-      INCIDENTRELAY_RUN_MIGRATIONS: "1"
-      INCIDENTRELAY_PORT: "8080"
-      INCIDENTRELAY_WEB_WORKERS: "1"
-      INCIDENTRELAY_WEB_THREADS: "4"
-      INCIDENTRELAY_WEB_TIMEOUT: "120"
+      BEACON_CONFIG_FILE: /etc/beacon/beacon.conf
+      BEACON_SERVICE: web
+      BEACON_RUN_MIGRATIONS: "1"
+      BEACON_PORT: "8080"
+      BEACON_WEB_WORKERS: "1"
+      BEACON_WEB_THREADS: "4"
+      BEACON_WEB_TIMEOUT: "120"
     ports:
       - "8080:8080"
-    volumes: *incidentrelay_common_volumes
+    volumes: *beacon_common_volumes
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/api/health || curl -fsS http://127.0.0.1:8080/login >/dev/null"]
       interval: 30s
@@ -27,47 +27,47 @@ services:
       retries: 5
       start_period: 30s
 
-  incidentrelay-scheduler:
-    image: *incidentrelay_image
-    container_name: incidentrelay-scheduler
+  beacon-scheduler:
+    image: *beacon_image
+    container_name: beacon-scheduler
     restart: unless-stopped
     environment:
-      INCIDENTRELAY_CONFIG_FILE: /etc/incidentrelay/incidentrelay.conf
-      INCIDENTRELAY_SERVICE: scheduler
-      INCIDENTRELAY_RUN_MIGRATIONS: "0"
-    volumes: *incidentrelay_common_volumes
+      BEACON_CONFIG_FILE: /etc/beacon/beacon.conf
+      BEACON_SERVICE: scheduler
+      BEACON_RUN_MIGRATIONS: "0"
+    volumes: *beacon_common_volumes
     depends_on:
-      incidentrelay:
+      beacon:
         condition: service_healthy
 
-  incidentrelay-telegram:
-    image: *incidentrelay_image
-    container_name: incidentrelay-telegram
+  beacon-telegram:
+    image: *beacon_image
+    container_name: beacon-telegram
     restart: unless-stopped
     environment:
-      INCIDENTRELAY_CONFIG_FILE: /etc/incidentrelay/incidentrelay.conf
-      INCIDENTRELAY_SERVICE: telegram
-      INCIDENTRELAY_RUN_MIGRATIONS: "0"
+      BEACON_CONFIG_FILE: /etc/beacon/beacon.conf
+      BEACON_SERVICE: telegram
+      BEACON_RUN_MIGRATIONS: "0"
       PYTHONUNBUFFERED: "1"
-    volumes: *incidentrelay_common_volumes
+    volumes: *beacon_common_volumes
     depends_on:
-      incidentrelay:
+      beacon:
         condition: service_healthy
 
-  incidentrelay-slack:
-    image: *incidentrelay_image
-    container_name: incidentrelay-slack
+  beacon-slack:
+    image: *beacon_image
+    container_name: beacon-slack
     restart: unless-stopped
     environment:
-      INCIDENTRELAY_CONFIG_FILE: /etc/incidentrelay/incidentrelay.conf
-      INCIDENTRELAY_SERVICE: slack
-      INCIDENTRELAY_RUN_MIGRATIONS: "0"
+      BEACON_CONFIG_FILE: /etc/beacon/beacon.conf
+      BEACON_SERVICE: slack
+      BEACON_RUN_MIGRATIONS: "0"
       PYTHONUNBUFFERED: "1"
-    volumes: *incidentrelay_common_volumes
+    volumes: *beacon_common_volumes
     depends_on:
-      incidentrelay:
+      beacon:
         condition: service_healthy
 
 volumes:
-  incidentrelay-data:
-  incidentrelay-logs:
+  beacon-data:
+  beacon-logs:

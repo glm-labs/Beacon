@@ -346,7 +346,7 @@ def enqueue_execution_webhooks(
         key_material = f"{execution.uid}:{action.uid}:{rule_path}:{ordinal}"
         idempotency_key = hashlib.sha256(key_material.encode("utf-8")).hexdigest()
         headers.setdefault("Idempotency-Key", idempotency_key)
-        headers.setdefault("User-Agent", "IncidentRelay-Orchestration/1")
+        headers.setdefault("User-Agent", "Beacon-Orchestration/1")
         if body and not any(name.lower() == "content-type" for name in headers):
             headers["Content-Type"] = "application/json"
         metadata = {

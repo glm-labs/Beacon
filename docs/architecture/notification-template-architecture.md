@@ -5,7 +5,7 @@ Related issue: #65 — Support customizable notification templates
 
 ## Purpose
 
-Introduce a unified notification rendering architecture for IncidentRelay without coupling templates to individual notifier implementations.
+Introduce a unified notification rendering architecture for Beacon without coupling templates to individual notifier implementations.
 
 The first implementation should remain relatively small, but its data model and rendering boundaries must support future features such as reusable templates, event-specific templates, defaults, versioning, and policy-level overrides.
 
@@ -112,7 +112,7 @@ A channel receives an optional template reference:
 notification_template_id = nullable
 ```
 
-A `NULL` value means that IncidentRelay uses its built-in default rendering for that channel.
+A `NULL` value means that Beacon uses its built-in default rendering for that channel.
 
 A template may be reused by multiple channels.
 
@@ -298,7 +298,7 @@ Provider-specific formatting, payload shape, button blocks, callback identifiers
 
 ## System controls
 
-Templates customize content but must not control IncidentRelay operational behavior.
+Templates customize content but must not control Beacon operational behavior.
 
 The following remain outside user templates:
 
@@ -318,7 +318,7 @@ Conceptually:
 ```text
 Rendered custom content
         +
-IncidentRelay system controls
+Beacon system controls
         |
         v
 Provider payload
@@ -573,9 +573,9 @@ Renderer
         v
 RenderedNotification
         |
-        +--> Slack adapter + IncidentRelay controls
-        +--> Telegram adapter + IncidentRelay controls
-        +--> Mattermost adapter + IncidentRelay controls
+        +--> Slack adapter + Beacon controls
+        +--> Telegram adapter + Beacon controls
+        +--> Mattermost adapter + Beacon controls
         +--> Email adapter
         +--> other adapters
 ```
@@ -584,7 +584,7 @@ The first implementation does not need to expose all of these resolution levels.
 
 ## Decision summary
 
-IncidentRelay should implement customizable notifications as a reusable rendering subsystem, not as ad-hoc template strings embedded independently in each notifier.
+Beacon should implement customizable notifications as a reusable rendering subsystem, not as ad-hoc template strings embedded independently in each notifier.
 
 A standalone `NotificationTemplate` entity, a normalized allowlisted context, a restricted placeholder renderer, a centralized resolver, and a transport-neutral rendered result provide the desired balance.
 

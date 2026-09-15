@@ -276,7 +276,7 @@ def handle_telegram_callback(channel, callback):
             answer_telegram_callback(
                 channel,
                 callback.id,
-                "Telegram user is not linked to IncidentRelay",
+                "Telegram user is not linked to Beacon",
                 show_alert=True,
             )
             return
@@ -366,7 +366,7 @@ def handle_telegram_callback(channel, callback):
             answer_telegram_callback(
                 channel,
                 callback.id,
-                "IncidentRelay action failed",
+                "Beacon action failed",
                 show_alert=True,
             )
         except Exception:

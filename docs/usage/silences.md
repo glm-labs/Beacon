@@ -7,7 +7,7 @@ description: Suppress notifications for matching alerts with silence rules.
 
 Silences temporarily suppress alert notifications for planned maintenance, noisy alerts or known incidents that do not need paging.
 
-A silence belongs to one team and uses the shared IncidentRelay matcher format. When an incoming alert matches an active silence, IncidentRelay marks it as silenced and skips normal notifications.
+A silence belongs to one team and uses the shared Beacon matcher format. When an incoming alert matches an active silence, Beacon marks it as silenced and skips normal notifications.
 
 ## How matching works
 
@@ -116,7 +116,7 @@ By default, a Silence affects only alert occurrences received while the Silence 
 
 Enable **Apply to existing unresolved alerts** only when the Silence should also suppress matching firing alerts immediately. This is useful for emergency alert storms, but it is intentionally disabled by default because responders may already be working on an existing incident.
 
-By default, **Reactivate silenced alerts when this Silence ends** is enabled. When the final matching Silence ends or is disabled, alerts that were created or retroactively suppressed by that Silence become active again. IncidentRelay then starts the normal notification flow for alerts that were never notified, or sends an update for alerts that had already produced notifications. Acknowledged alert groups keep their acknowledged state.
+By default, **Reactivate silenced alerts when this Silence ends** is enabled. When the final matching Silence ends or is disabled, alerts that were created or retroactively suppressed by that Silence become active again. Beacon then starts the normal notification flow for alerts that were never notified, or sends an update for alerts that had already produced notifications. Acknowledged alert groups keep their acknowledged state.
 
 Disable this option only when affected alerts should remain silenced after the Silence ends. Those alerts will not be reactivated automatically. To release them later, edit the Silence, enable this option and save it. The setting applies independently to each Silence.
 

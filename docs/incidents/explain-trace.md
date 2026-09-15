@@ -1,12 +1,12 @@
 # Alert Explain Trace
 
-Alert Explain Trace records how IncidentRelay processed an incoming alert.
+Alert Explain Trace records how Beacon processed an incoming alert.
 
 It is useful when you need to understand why an alert was routed to a specific team, grouped into an existing incident, suppressed by maintenance or silence, or rejected because no route matched.
 
 ## When traces are created
 
-IncidentRelay creates an explain trace for each incoming alert processed by `upsert_alert()`.
+Beacon creates an explain trace for each incoming alert processed by `upsert_alert()`.
 
 A trace is created for both successful and stopped processing paths:
 
@@ -238,7 +238,7 @@ explain_trace_days = 30
 
 An explicit `explain_trace_days = 0` disables standalone Explain Trace cleanup. Traces linked to an alert or alert group are still removed when that alert history is deleted through database cascades. Cleanup runs as part of the single `retention_cleanup_job`; its cadence is controlled by `retention.cleanup_interval_seconds`.
 
-IncidentRelay 2.1 accepts the old `[alerts] alert_explain_trace_retention_days` value only as an upgrade fallback when `retention.explain_trace_days` is absent. New configuration should use `[retention]`.
+Beacon 2.1 accepts the old `[alerts] alert_explain_trace_retention_days` value only as an upgrade fallback when `retention.explain_trace_days` is absent. New configuration should use `[retention]`.
 
 ## Troubleshooting
 

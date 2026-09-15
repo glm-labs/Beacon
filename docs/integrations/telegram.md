@@ -27,13 +27,13 @@ Typical config:
 If Telegram actions or polling are used, run the Telegram worker service if your installation provides one:
 
 ```bash
-systemctl enable --now incidentrelay-telegram-worker
+systemctl enable --now beacon-telegram-worker
 ```
 
 For RPM installations:
 
 ```bash
-journalctl -u incidentrelay-telegram-worker -f
+journalctl -u beacon-telegram-worker -f
 ```
 
 ## User Telegram ID

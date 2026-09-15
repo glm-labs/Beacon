@@ -39,7 +39,7 @@ Send test push
 Disable
 ```
 
-Browser push is not a notification channel. When an alert is assigned to the user, IncidentRelay can send push notifications to the user's active browser/PWA devices. ACK and Resolve buttons use short-lived one-time action tokens.
+Browser push is not a notification channel. When an alert is assigned to the user, Beacon can send push notifications to the user's active browser/PWA devices. ACK and Resolve buttons use short-lived one-time action tokens.
 
 Read more: [Browser Push](browser-push.md).
 

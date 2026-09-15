@@ -1,0 +1,19 @@
+apiVersion: v2
+name: beacon
+description: On-call scheduling, alert routing and incident notification service
+type: application
+version: 2.2.0
+appVersion: "2.2"
+kubeVersion: ">=1.23.0-0"
+home: https://github.com/glm-labs/Beacon
+sources:
+  - https://github.com/glm-labs/Beacon
+keywords:
+  - oncall
+  - incident
+  - alerting
+  - notifications
+annotations:
+  org.opencontainers.image.source: https://github.com/glm-labs/Beacon
+  org.opencontainers.image.description: Beacon Helm chart for on-call scheduling, alert routing and incident response
+  org.opencontainers.image.licenses: MIT

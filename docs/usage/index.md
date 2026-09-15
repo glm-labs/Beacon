@@ -1,6 +1,6 @@
 ---
 title: Usage
-description: Common day-to-day IncidentRelay workflows.
+description: Common day-to-day Beacon workflows.
 ---
 
 # Usage

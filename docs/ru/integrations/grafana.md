@@ -1,6 +1,6 @@
 # Интеграция с Grafana Alerting
 
-IncidentRelay может принимать уведомления Grafana Alerting через отдельный эндпоинт-вебхук. Каждый экземпляр алерта Grafana нормализуется, маршрутизируется, группируется, дедуплицируется и обрабатывается через стандартный жизненный цикл алертов IncidentRelay.
+Beacon может принимать уведомления Grafana Alerting через отдельный эндпоинт-вебхук. Каждый экземпляр алерта Grafana нормализуется, маршрутизируется, группируется, дедуплицируется и обрабатывается через стандартный жизненный цикл алертов Beacon.
 
 ## Эндпоинт
 
@@ -8,16 +8,16 @@ IncidentRelay может принимать уведомления Grafana Alert
 POST /api/integrations/grafana
 ```
 
-Эндпоинт требует токен приёма активного маршрута IncidentRelay, источником которого является `grafana`.
+Эндпоинт требует токен приёма активного маршрута Beacon, источником которого является `grafana`.
 
 ```http
 Authorization: Bearer <route-intake-token>
 Content-Type: application/json
 ```
 
-## Создание маршрута IncidentRelay
+## Создание маршрута Beacon
 
-1. Откройте **Routes** в IncidentRelay.
+1. Откройте **Routes** в Beacon.
 2. Создайте маршрут или отредактируйте существующий.
 3. Выберите **Grafana** в качестве источника.
 4. Выберите команду, которой принадлежат алерты.
@@ -56,17 +56,17 @@ Content-Type: application/json
 2. Откройте вкладку **Contact points**.
 3. Добавьте точку контакта (contact point).
 4. Выберите **Webhook** в качестве интеграции.
-5. Укажите URL эндпоинта Grafana IncidentRelay:
+5. Укажите URL эндпоинта Grafana Beacon:
 
    ```text
-   https://incidentrelay.example.com/api/integrations/grafana
+   https://beacon.example.com/api/integrations/grafana
    ```
 
 6. Установите HTTP-метод `POST`.
 7. В настройках авторизации задайте:
    - **Authentication Header Scheme:** `Bearer`
-   - **Authentication Header Credentials:** токен маршрута IncidentRelay
-8. Оставьте **Disable resolved message** отключённым, чтобы IncidentRelay получал уведомления о восстановлении.
+   - **Authentication Header Credentials:** токен маршрута Beacon
+8. Оставьте **Disable resolved message** отключённым, чтобы Beacon получал уведомления о восстановлении.
 9. Сохраните точку контакта.
 10. Используйте тестовое действие Grafana для проверки доставки.
 
@@ -82,31 +82,31 @@ apiVersion: 1
 
 contactPoints:
   - orgId: 1
-    name: IncidentRelay
+    name: Beacon
     receivers:
-      - uid: incidentrelay-webhook
+      - uid: beacon-webhook
         type: webhook
         disableResolveMessage: false
         settings:
-          url: https://incidentrelay.example.com/api/integrations/grafana
+          url: https://beacon.example.com/api/integrations/grafana
           httpMethod: POST
           authorization_scheme: Bearer
-          authorization_credentials: $INCIDENTRELAY_ROUTE_TOKEN
+          authorization_credentials: $BEACON_ROUTE_TOKEN
 ```
 
-Передайте `INCIDENTRELAY_ROUTE_TOKEN` через окружение процесса/контейнера Grafana вместо хранения токена в provisioning-файле. Оставьте `disableResolveMessage: false`, чтобы IncidentRelay получал события восстановления.
+Передайте `BEACON_ROUTE_TOKEN` через окружение процесса/контейнера Grafana вместо хранения токена в provisioning-файле. Оставьте `disableResolveMessage: false`, чтобы Beacon получал события восстановления.
 
 Например, сохраните файл как:
 
 ```text
-/etc/grafana/provisioning/alerting/incidentrelay.yaml
+/etc/grafana/provisioning/alerting/beacon.yaml
 ```
 
 После этого перезапустите Grafana или перезагрузите provisioned alerting resources через provisioning API Grafana. Contact point всё равно нужно выбрать в alert rule или notification policy.
 
 ## Рекомендуемые метки Grafana
 
-Добавьте стабильные метки к правилам алертов Grafana, чтобы IncidentRelay мог предсказуемо маршрутизировать и группировать их.
+Добавьте стабильные метки к правилам алертов Grafana, чтобы Beacon мог предсказуемо маршрутизировать и группировать их.
 
 ```yaml
 labels:
@@ -131,7 +131,7 @@ labels:
 
 ## Нормализация алертов
 
-IncidentRelay обрабатывает каждый объект в массиве `alerts` Grafana независимо.
+Beacon обрабатывает каждый объект в массиве `alerts` Grafana независимо.
 
 ### Статус
 
@@ -153,7 +153,7 @@ firing
 
 ### Заголовок
 
-IncidentRelay выбирает первое доступное значение из:
+Beacon выбирает первое доступное значение из:
 
 1. `annotations.summary`
 2. `labels.alertname`
@@ -162,7 +162,7 @@ IncidentRelay выбирает первое доступное значение 
 
 ### Сообщение
 
-IncidentRelay выбирает первое доступное значение из:
+Beacon выбирает первое доступное значение из:
 
 1. `annotations.description`
 2. `annotations.message`
@@ -171,7 +171,7 @@ IncidentRelay выбирает первое доступное значение 
 
 ### Важность
 
-IncidentRelay выбирает первую доступную метку из:
+Beacon выбирает первую доступную метку из:
 
 1. `severity`
 2. `priority`
@@ -179,7 +179,7 @@ IncidentRelay выбирает первую доступную метку из:
 
 ### Команда
 
-IncidentRelay выбирает первое доступное значение из:
+Beacon выбирает первое доступное значение из:
 
 1. `labels.team`
 2. `labels.oncall_team`
@@ -187,11 +187,11 @@ IncidentRelay выбирает первое доступное значение 
 
 Приоритет остаётся за сопоставлением маршрута. Метка не обходит обычные проверки доступа к маршруту или проверки матчеров.
 
-## Метки, добавляемые IncidentRelay
+## Метки, добавляемые Beacon
 
 При наличии в полезной нагрузке Grafana интеграция предоставляет следующие значения в виде меток:
 
-| Метка IncidentRelay | Поле Grafana |
+| Метка Beacon | Поле Grafana |
 |---|---|
 | `dashboard_url` | `dashboardURL` |
 | `panel_url` | `panelURL` |
@@ -213,9 +213,9 @@ IncidentRelay выбирает первое доступное значение 
 
 ## Дедупликация
 
-Когда Grafana предоставляет `fingerprint`, IncidentRelay использует его в качестве ключа дедупликации.
+Когда Grafana предоставляет `fingerprint`, Beacon использует его в качестве ключа дедупликации.
 
-Когда `fingerprint` отсутствует, IncidentRelay генерирует стабильный ключ из:
+Когда `fingerprint` отсутствует, Beacon генерирует стабильный ключ из:
 
 - источника Grafana;
 - UID правила алерта, если доступен;
@@ -227,7 +227,7 @@ IncidentRelay выбирает первое доступное значение 
 
 ## Сохранённая полезная нагрузка
 
-IncidentRelay сохраняет исходный контекст группы Grafana, но каждый нормализованный алерт IncidentRelay хранит в сохранённом массиве `alerts` только свой собственный экземпляр алерта Grafana.
+Beacon сохраняет исходный контекст группы Grafana, но каждый нормализованный алерт Beacon хранит в сохранённом массиве `alerts` только свой собственный экземпляр алерта Grafana.
 
 Это сохраняет такие поля, как:
 
@@ -243,7 +243,7 @@ IncidentRelay сохраняет исходный контекст группы 
 
 ```json
 {
-  "receiver": "incidentrelay",
+  "receiver": "beacon",
   "status": "firing",
   "orgId": 1,
   "groupKey": "{}:{alertname=\"DiskFull\"}",
@@ -292,7 +292,7 @@ IncidentRelay сохраняет исходный контекст группы 
 
 ```bash
 curl -X POST \
-  "https://incidentrelay.example.com/api/integrations/grafana" \
+  "https://beacon.example.com/api/integrations/grafana" \
   -H "Authorization: Bearer ROUTE_INTAKE_TOKEN" \
   -H "Content-Type: application/json" \
   --data-binary @grafana-payload.json
@@ -359,7 +359,7 @@ Authentication Header Credentials: <route-intake-token>
 
 Убедитесь, что в точке контакта вебхука Grafana не включён параметр **Disable resolved message**.
 
-IncidentRelay использует статус каждого элемента в массиве `alerts`, а не только статус верхнего уровня.
+Beacon использует статус каждого элемента в массиве `alerts`, а не только статус верхнего уровня.
 
 ### Алерты дублируются
 

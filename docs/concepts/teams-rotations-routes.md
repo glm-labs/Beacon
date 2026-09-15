@@ -5,7 +5,7 @@ description: How teams, layered rotations and alert routes work together
 
 # Teams, Rotations, Layers and Routes
 
-IncidentRelay routes alerts through teams, rotations, layers and notification channels.
+Beacon routes alerts through teams, rotations, layers and notification channels.
 
 ```text
 Incoming alert
@@ -78,7 +78,7 @@ Timezone: Europe/Berlin
 Reminder interval: 300 seconds
 ```
 
-When a rotation is created, IncidentRelay creates a default layer. If `Add all active team members to this rotation` is enabled, active team members are added to that default layer in order.
+When a rotation is created, Beacon creates a default layer. If `Add all active team members to this rotation` is enabled, active team members are added to that default layer in order.
 
 ## Layer
 
@@ -153,7 +153,7 @@ Order of precedence:
 rotation override > highest-priority active layer > no assignee
 ```
 
-If no layer is active, IncidentRelay returns no scheduled on-call user for that rotation. Routing and escalation logic can then decide how to handle the alert.
+If no layer is active, Beacon returns no scheduled on-call user for that rotation. Routing and escalation logic can then decide how to handle the alert.
 
 ## Overrides
 

@@ -1,15 +1,15 @@
 ---
 title: Custom Voice Providers
-description: Overview of IncidentRelay custom voice providers
+description: Overview of Beacon custom voice providers
 ---
 
 # Custom Voice Providers
 
-IncidentRelay can load custom Python voice providers for self-hosted installations.
+Beacon can load custom Python voice providers for self-hosted installations.
 
 A voice provider is a Python module that knows how to place a phone call through a specific provider API: Mango, Voximplant, Zadarma, Asterisk gateway, internal PBX, or any other service.
 
-IncidentRelay itself does not need to know provider-specific API details. It loads your provider module and communicates with it through a stable provider API.
+Beacon itself does not need to know provider-specific API details. It loads your provider module and communicates with it through a stable provider API.
 
 ## Supported features
 
@@ -27,13 +27,13 @@ The provider API is designed for:
 Default custom providers directory:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers
+/usr/local/lib/beacon/voice_providers
 ```
 
 Example:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers/
+/usr/local/lib/beacon/voice_providers/
 ├── README.md
 ├── mango.py
 ├── zadarma.py
@@ -45,9 +45,9 @@ Only server administrators should be able to write to this directory, because pr
 Recommended permissions:
 
 ```bash
-sudo mkdir -p /usr/local/lib/incidentrelay/voice_providers
-sudo chown root:root /usr/local/lib/incidentrelay/voice_providers
-sudo chmod 755 /usr/local/lib/incidentrelay/voice_providers
+sudo mkdir -p /usr/local/lib/beacon/voice_providers
+sudo chown root:root /usr/local/lib/beacon/voice_providers
+sudo chmod 755 /usr/local/lib/beacon/voice_providers
 ```
 
 ## Documentation sections

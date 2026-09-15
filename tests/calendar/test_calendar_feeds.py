@@ -159,7 +159,7 @@ def test_export_calendar_feed_returns_ics_and_marks_last_used(
     assert response.status_code == 200
     assert response.mimetype == "text/calendar"
     assert response.headers["Cache-Control"] == "no-store"
-    assert "incidentrelay-team" in response.headers["Content-Disposition"]
+    assert "beacon-team" in response.headers["Content-Disposition"]
 
     body = response.data.decode("utf-8")
 

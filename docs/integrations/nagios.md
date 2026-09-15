@@ -1,6 +1,6 @@
 # Nagios Core / Nagios XI
 
-IncidentRelay can receive host and service notifications from Nagios Core and Nagios XI at:
+Beacon can receive host and service notifications from Nagios Core and Nagios XI at:
 
 ```text
 POST /api/integrations/nagios
@@ -10,30 +10,30 @@ Create a Route with source **Nagios**, then use its intake token as an `Authoriz
 
 ## Lifecycle mapping
 
-| Nagios notification | IncidentRelay |
+| Nagios notification | Beacon |
 |---|---|
 | `PROBLEM` | firing alert |
 | `RECOVERY` or state `OK` / `UP` | resolved alert |
-| `ACKNOWLEDGEMENT` | acknowledge the matching IncidentRelay alert group |
+| `ACKNOWLEDGEMENT` | acknowledge the matching Beacon alert group |
 | flapping / downtime / custom notifications | accepted and ignored |
 
 Host alerts deduplicate by host. Service alerts deduplicate by host + service description, so a later recovery updates the original alert instead of creating a new one.
 
 ## Recommended sender
 
-The repository includes `examples/nagios/incidentrelay_notify.py`. It uses only the Python standard library and safely JSON-encodes Nagios macro values, including quotes and multi-line plugin output.
+The repository includes `examples/nagios/beacon_notify.py`. It uses only the Python standard library and safely JSON-encodes Nagios macro values, including quotes and multi-line plugin output.
 
 Copy it to the Nagios plugin directory, for example:
 
 ```bash
-install -m 0755 examples/nagios/incidentrelay_notify.py \
-  /usr/local/nagios/libexec/incidentrelay_notify.py
+install -m 0755 examples/nagios/beacon_notify.py \
+  /usr/local/nagios/libexec/beacon_notify.py
 ```
 
-Store the IncidentRelay URL and route token in `resource.cfg` using unused `$USERn$` macros:
+Store the Beacon URL and route token in `resource.cfg` using unused `$USERn$` macros:
 
 ```text
-$USER10$=https://incidentrelay.example.com/api/integrations/nagios
+$USER10$=https://beacon.example.com/api/integrations/nagios
 $USER11$=YOUR_ROUTE_INTAKE_TOKEN
 ```
 
@@ -43,19 +43,19 @@ Nagios exposes most standard macros to notification scripts as `NAGIOS_*` enviro
 
 ```text
 define command {
-    command_name notify-by-incidentrelay
-    command_line /usr/bin/python3 /usr/local/nagios/libexec/incidentrelay_notify.py --url '$USER10$' --token '$USER11$'
+    command_name notify-by-beacon
+    command_line /usr/bin/python3 /usr/local/nagios/libexec/beacon_notify.py --url '$USER10$' --token '$USER11$'
 }
 ```
 
-Use `notify-by-incidentrelay` as both the host and service notification command for the desired contacts/contact groups. For Nagios XI, create the same command in **Core Config Manager → Commands**.
+Use `notify-by-beacon` as both the host and service notification command for the desired contacts/contact groups. For Nagios XI, create the same command in **Core Config Manager → Commands**.
 
 Keep Nagios macro cleansing enabled (`illegal_macro_output_chars`) as recommended by Nagios, even though the sender reads the already-exported notification environment instead of placing plugin output directly in the command line.
 
 ## Direct JSON example
 
 ```bash
-curl -X POST 'https://incidentrelay.example.com/api/integrations/nagios' \
+curl -X POST 'https://beacon.example.com/api/integrations/nagios' \
   -H 'Authorization: Bearer ROUTE_TOKEN' \
   -H 'Content-Type: application/json' \
   -d '{

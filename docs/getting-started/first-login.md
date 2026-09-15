@@ -1,6 +1,6 @@
 ---
 title: First Login and Setup
-description: Initial setup in the IncidentRelay web UI
+description: Initial setup in the Beacon web UI
 ---
 
 # First Login and Setup
@@ -157,7 +157,7 @@ Timezone: UTC or your team timezone
 Reminder interval: 300 seconds
 ```
 
-A rotation is the calendar object used by routes, services and alerts. When a rotation is created, IncidentRelay creates a `Default layer` inside it.
+A rotation is the calendar object used by routes, services and alerts. When a rotation is created, Beacon creates a `Default layer` inside it.
 
 If `Add all active team members to this rotation` is enabled, all active team members are added to the default layer in team order.
 

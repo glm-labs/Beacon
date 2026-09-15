@@ -1,9 +1,9 @@
 ---
 title: Voice Provider Examples
-description: Example custom voice providers for IncidentRelay.
+description: Example custom voice providers for Beacon.
 ---
 
-# IncidentRelay Voice Provider Examples
+# Beacon Voice Provider Examples
 
 This directory contains example custom voice providers.
 
@@ -18,10 +18,10 @@ stub_callback_test.py  Minimal provider useful for callback tests.
 ## Install an example provider
 
 ```bash
-sudo mkdir -p /usr/local/lib/incidentrelay/voice_providers
+sudo mkdir -p /usr/local/lib/beacon/voice_providers
 sudo cp examples/voice_providers/example_http.py \
-  /usr/local/lib/incidentrelay/voice_providers/example_http.py
-sudo systemctl restart incidentrelay
+  /usr/local/lib/beacon/voice_providers/example_http.py
+sudo systemctl restart beacon
 ```
 
 Then use this channel config:

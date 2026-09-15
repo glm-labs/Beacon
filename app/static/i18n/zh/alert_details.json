@@ -89,7 +89,7 @@
   "alert_details.form.service": "服务",
   "alert_details.manual.service_help": "选择服务后，事件将采用该服务的归属关系和默认升级设置。",
   "alert_details.manual.notify_team": "通知团队",
-  "alert_details.manual.notify_help": "启用后，IncidentRelay 将通过常规告警通知流程安排通知。",
+  "alert_details.manual.notify_help": "启用后，Beacon 将通过常规告警通知流程安排通知。",
   "alert_details.loading": "正在加载...",
   "alert_details.loading.comments": "正在加载评论...",
   "alert_details.loading.priority": "正在加载优先级...",

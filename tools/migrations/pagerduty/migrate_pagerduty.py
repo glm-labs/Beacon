@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Migrate PagerDuty configuration to IncidentRelay through public HTTP APIs.
+"""Migrate PagerDuty configuration to Beacon through public HTTP APIs.
 
 The command is dry-run by default. It does not connect to either database and
-never writes API tokens to the report. In --apply mode, generated IncidentRelay
+never writes API tokens to the report. In --apply mode, generated Beacon
 route intake tokens are stored only in a chmod-0600 JSON file.
 
 Supported in this first version:
@@ -152,12 +152,12 @@ class Reporter:
             write_json(output_dir / "plan.json", payload)
 
         lines = [
-            "# PagerDuty → IncidentRelay migration report",
+            "# PagerDuty → Beacon migration report",
             "",
             f"- Mode: **{metadata.get('mode')}**",
             f"- Generated: `{metadata.get('generated_at')}`",
             f"- PagerDuty API: `{metadata.get('pagerduty_url')}`",
-            f"- IncidentRelay: `{metadata.get('incidentrelay_url')}`",
+            f"- Beacon: `{metadata.get('beacon_url')}`",
             f"- Target group ID: `{metadata.get('group_id')}`",
             "",
             "## Summary",
@@ -287,7 +287,7 @@ class PagerDutyClient:
         headers = {
             "Authorization": f"Token token={token}",
             "Accept": "application/vnd.pagerduty+json;version=2",
-            "User-Agent": "IncidentRelay-PagerDuty-Migrator/1.0",
+            "User-Agent": "Beacon-PagerDuty-Migrator/1.0",
         }
         if from_email:
             headers["From"] = from_email
@@ -404,8 +404,8 @@ class PagerDutyClient:
         return []
 
 
-class IncidentRelayClient:
-    """IncidentRelay public API client."""
+class BeaconClient:
+    """Beacon public API client."""
 
     def __init__(
         self,
@@ -421,7 +421,7 @@ class IncidentRelayClient:
             self.base_url,
             {
                 "Authorization": f"Bearer {token}",
-                "User-Agent": "IncidentRelay-PagerDuty-Migrator/1.0",
+                "User-Agent": "Beacon-PagerDuty-Migrator/1.0",
             },
             verify_tls=verify_tls,
             timeout=timeout,
@@ -605,7 +605,7 @@ class Migrator:
     def __init__(
         self,
         pd: PagerDutyClient,
-        ir: IncidentRelayClient,
+        ir: BeaconClient,
         state: StateStore,
         secrets: SecretStore,
         reporter: Reporter,
@@ -703,13 +703,13 @@ class Migrator:
         )
         if not self.group:
             raise MigrationError(
-                f"IncidentRelay group {self.options.group_id} is not visible to the API token"
+                f"Beacon group {self.options.group_id} is not visible to the API token"
             )
         self.reporter.add(
             "info",
             "group",
             "target",
-            f"using IncidentRelay group {self.group.get('name') or self.options.group_id}",
+            f"using Beacon group {self.group.get('name') or self.options.group_id}",
             self.options.group_id,
         )
 
@@ -867,7 +867,7 @@ class Migrator:
             "info",
             "inventory",
             "loaded",
-            "IncidentRelay target inventory loaded",
+            "Beacon target inventory loaded",
             users=len(self.ir_users),
             teams=len(self.ir_teams),
         )
@@ -903,7 +903,7 @@ class Migrator:
                 self.state.set("users", source_id, target_id)
                 self.reporter.add(
                     "info", "user", "adopt", "matched existing user by email", source_id,
-                    email=email, incidentrelay_id=target_id,
+                    email=email, beacon_id=target_id,
                 )
                 self.ensure_group_membership(target_id)
                 continue
@@ -913,7 +913,7 @@ class Migrator:
                     "warning",
                     "user",
                     "skip",
-                    "no IncidentRelay user with matching email; dependent schedule targets may be skipped",
+                    "no Beacon user with matching email; dependent schedule targets may be skipped",
                     source_id,
                     email=email,
                 )
@@ -994,7 +994,7 @@ class Migrator:
                 self.state.set("teams", source_id, target_id)
                 self.reporter.add(
                     "info", "team", "adopt", "matched existing team", source_id,
-                    incidentrelay_id=target_id,
+                    beacon_id=target_id,
                 )
             else:
                 payload = {
@@ -1095,7 +1095,7 @@ class Migrator:
                 "create" if self.options.apply else "plan",
                 "added user to team",
                 pd_user_id,
-                incidentrelay_team_id=ir_team_id,
+                beacon_team_id=ir_team_id,
                 role=role,
             )
 
@@ -1132,7 +1132,7 @@ class Migrator:
                     "warning",
                     "schedule",
                     "clone",
-                    "schedule is shared by multiple teams and will be cloned in IncidentRelay",
+                    "schedule is shared by multiple teams and will be cloned in Beacon",
                     schedule_id,
                     copies=len(target_team_ids),
                 )
@@ -1165,7 +1165,7 @@ class Migrator:
             rotation_id = int(found["id"])
             self.reporter.add(
                 "info", "rotation", "adopt", "matched existing rotation by name", schedule_id,
-                incidentrelay_id=rotation_id, team_id=team_id,
+                beacon_id=rotation_id, team_id=team_id,
             )
         else:
             first_layer = as_list(schedule.get("schedule_layers"))[0]
@@ -1217,7 +1217,7 @@ class Migrator:
                 existing_ids.add(ir_user_id)
                 self.reporter.add(
                     "info", "team_membership", "create" if self.options.apply else "plan",
-                    "added schedule participant to team", pd_user_id, incidentrelay_team_id=team_id,
+                    "added schedule participant to team", pd_user_id, beacon_team_id=team_id,
                 )
 
     def ensure_schedule_layers(
@@ -1428,7 +1428,7 @@ class Migrator:
             ir_policy_id = int(found["id"])
             self.reporter.add(
                 "info", "policy", "adopt", "matched existing policy by name", policy_id,
-                incidentrelay_id=ir_policy_id,
+                beacon_id=ir_policy_id,
             )
         else:
             repeat_count = min(max(int(policy.get("num_loops") or 0), 0), 50)
@@ -1474,7 +1474,7 @@ class Migrator:
                     "warning",
                     "policy_rule",
                     "degraded",
-                    "parallel PagerDuty targets are converted to consecutive IncidentRelay rules; additional targets have zero delay",
+                    "parallel PagerDuty targets are converted to consecutive Beacon rules; additional targets have zero delay",
                     f"{policy_id}:{rule_index}",
                     target_count=len(targets),
                 )
@@ -1482,7 +1482,7 @@ class Migrator:
             for target_index, target in enumerate(targets):
                 if position > 100:
                     self.reporter.add(
-                        "warning", "policy_rule", "skip", "IncidentRelay policy rule limit (100) reached", policy_id,
+                        "warning", "policy_rule", "skip", "Beacon policy rule limit (100) reached", policy_id,
                     )
                     return
                 target_type, target_id = self.resolve_policy_target(target, team_id)
@@ -1556,7 +1556,7 @@ class Migrator:
         existing.append(payload)
         self.reporter.add(
             "info", "team_membership", "create" if self.options.apply else "plan",
-            "added escalation target user to team", user_id, incidentrelay_team_id=team_id,
+            "added escalation target user to team", user_id, beacon_team_id=team_id,
         )
 
     def migrate_services(self) -> None:
@@ -1575,7 +1575,7 @@ class Migrator:
             if len(target_teams) > 1:
                 self.reporter.add(
                     "warning", "service", "degraded", "PagerDuty service has multiple teams; first mapped team selected", source_id,
-                    incidentrelay_team_id=team_id,
+                    beacon_team_id=team_id,
                 )
             self.ensure_service(source_id, service, team_id, policy_id)
 
@@ -1621,7 +1621,7 @@ class Migrator:
             service_id = int(found["id"])
             self.reporter.add(
                 "info", "service", "adopt", "matched existing service", source_id,
-                incidentrelay_id=service_id,
+                beacon_id=service_id,
             )
         else:
             payload = {
@@ -1697,7 +1697,7 @@ class Migrator:
                 "adopt",
                 "matched existing route; intake token cannot be recovered and is not written to secrets file",
                 source_id,
-                incidentrelay_id=route_id,
+                beacon_id=route_id,
             )
             return
         payload = {
@@ -1731,7 +1731,7 @@ class Migrator:
                 {
                     "pagerduty_service_id": source_id,
                     "pagerduty_service_name": service.get("name"),
-                    "incidentrelay_route_id": route_id,
+                    "beacon_route_id": route_id,
                     "endpoint": f"{self.ir.base_url}/api/integrations/webhook",
                     "routing_key": intake_token,
                 },
@@ -1742,7 +1742,7 @@ class Migrator:
                 "secret_saved",
                 "generated intake token saved to the protected route secrets file",
                 source_id,
-                incidentrelay_id=route_id,
+                beacon_id=route_id,
             )
 
     def migrate_maintenance_windows(self) -> None:
@@ -1826,9 +1826,9 @@ class Migrator:
                 "info",
                 entity,
                 "create",
-                "created in IncidentRelay",
+                "created in Beacon",
                 source_id,
-                incidentrelay_id=result.get("id"),
+                beacon_id=result.get("id"),
             )
             return result
         planned = {"id": self.planned_id()}
@@ -1836,7 +1836,7 @@ class Migrator:
             "info",
             entity,
             "plan",
-            "would create in IncidentRelay",
+            "would create in Beacon",
             source_id,
             endpoint=path,
             name=payload.get("name") or payload.get("username"),
@@ -1886,7 +1886,7 @@ def choose_interval(duration_seconds: int) -> tuple[str, int, str]:
             value = duration // seconds
             if 1 <= value <= 365:
                 return "custom", value, unit
-    # IncidentRelay custom intervals are minute-granular. Round up rather than
+    # Beacon custom intervals are minute-granular. Round up rather than
     # shortening PagerDuty coverage.
     value = min(max((duration + 59) // 60, 1), 365)
     return "custom", value, "minutes"
@@ -2205,7 +2205,7 @@ def write_route_csv(secret_path: Path, csv_path: Path) -> None:
             {
                 "pagerduty_service_id": item.get("pagerduty_service_id"),
                 "pagerduty_service_name": item.get("pagerduty_service_name"),
-                "incidentrelay_route_id": item.get("incidentrelay_route_id"),
+                "beacon_route_id": item.get("beacon_route_id"),
                 "endpoint": item.get("endpoint"),
                 "routing_key": item.get("routing_key"),
             }
@@ -2232,7 +2232,7 @@ def parse_stages(value: str) -> set[str]:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Migrate PagerDuty configuration to IncidentRelay through HTTP APIs.",
+        description="Migrate PagerDuty configuration to Beacon through HTTP APIs.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
@@ -2251,16 +2251,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional PagerDuty From header email",
     )
     parser.add_argument(
-        "--incidentrelay-url",
-        default=os.getenv("INCIDENTRELAY_URL"),
-        help="IncidentRelay base URL; can also use INCIDENTRELAY_URL",
+        "--beacon-url",
+        default=os.getenv("BEACON_URL"),
+        help="Beacon base URL; can also use BEACON_URL",
     )
     parser.add_argument(
-        "--incidentrelay-token",
-        default=os.getenv("INCIDENTRELAY_TOKEN"),
-        help="IncidentRelay admin API token; can also use INCIDENTRELAY_TOKEN",
+        "--beacon-token",
+        default=os.getenv("BEACON_TOKEN"),
+        help="Beacon admin API token; can also use BEACON_TOKEN",
     )
-    parser.add_argument("--group-id", required=True, type=int, help="Target IncidentRelay group ID")
+    parser.add_argument("--group-id", required=True, type=int, help="Target Beacon group ID")
     parser.add_argument(
         "--apply",
         action="store_true",
@@ -2282,13 +2282,13 @@ def build_parser() -> argparse.ArgumentParser:
         "--group-role",
         choices=("viewer", "editor", "user_admin"),
         default="viewer",
-        help="IncidentRelay group role for migrated users",
+        help="Beacon group role for migrated users",
     )
     parser.add_argument(
         "--team-role",
         choices=("viewer", "responder", "manager"),
         default="responder",
-        help="Default IncidentRelay team role",
+        help="Default Beacon team role",
     )
     parser.add_argument(
         "--name-prefix",
@@ -2320,7 +2320,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT)
     parser.add_argument("--retries", type=int, default=DEFAULT_RETRIES)
     parser.add_argument("--insecure-pagerduty", action="store_true")
-    parser.add_argument("--insecure-incidentrelay", action="store_true")
+    parser.add_argument("--insecure-beacon", action="store_true")
     parser.add_argument(
         "--strict",
         action="store_true",
@@ -2333,10 +2333,10 @@ def validate_args(args: argparse.Namespace) -> None:
     missing = []
     if not args.pagerduty_token:
         missing.append("--pagerduty-token or PAGERDUTY_TOKEN")
-    if not args.incidentrelay_url:
-        missing.append("--incidentrelay-url or INCIDENTRELAY_URL")
-    if not args.incidentrelay_token:
-        missing.append("--incidentrelay-token or INCIDENTRELAY_TOKEN")
+    if not args.beacon_url:
+        missing.append("--beacon-url or BEACON_URL")
+    if not args.beacon_token:
+        missing.append("--beacon-token or BEACON_TOKEN")
     if missing:
         raise MigrationError("missing required configuration: " + ", ".join(missing))
     if args.overrides_until_days < 0:
@@ -2361,10 +2361,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             timeout=args.timeout,
             retries=args.retries,
         )
-        ir = IncidentRelayClient(
-            args.incidentrelay_url,
-            args.incidentrelay_token,
-            verify_tls=not args.insecure_incidentrelay,
+        ir = BeaconClient(
+            args.beacon_url,
+            args.beacon_token,
+            verify_tls=not args.insecure_beacon,
             timeout=args.timeout,
             retries=args.retries,
         )
@@ -2387,7 +2387,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             "mode": "apply" if args.apply else "dry-run",
             "generated_at": iso_z(datetime.now(timezone.utc)),
             "pagerduty_url": args.pagerduty_url,
-            "incidentrelay_url": args.incidentrelay_url,
+            "beacon_url": args.beacon_url,
             "group_id": args.group_id,
             "stages": sorted(args.only),
         }

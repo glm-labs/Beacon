@@ -48,7 +48,7 @@ def _sli(service, sli_type, **kwargs):
         slug=kwargs.pop("slug", sli_type.replace("_", "-")),
         name=kwargs.pop("name", sli_type),
         sli_type=sli_type,
-        source=kwargs.pop("source", "incidentrelay_alert_groups"),
+        source=kwargs.pop("source", "beacon_alert_groups"),
         configuration=kwargs.pop("configuration", {}),
         severity=kwargs.pop("severity", None),
         priority=kwargs.pop("priority", None),

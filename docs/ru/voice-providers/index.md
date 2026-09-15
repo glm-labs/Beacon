@@ -1,15 +1,15 @@
 ---
 title: Пользовательские голосовые провайдеры
-description: Обзор пользовательских голосовых провайдеров IncidentRelay
+description: Обзор пользовательских голосовых провайдеров Beacon
 ---
 
 # Пользовательские голосовые провайдеры
 
-IncidentRelay может загружать пользовательские голосовые провайдеры на Python для self-hosted установок.
+Beacon может загружать пользовательские голосовые провайдеры на Python для self-hosted установок.
 
 Голосовой провайдер — это Python-модуль, который умеет совершать телефонный вызов через API конкретного провайдера: Mango, Voximplant, Zadarma, шлюз Asterisk, внутреннюю PBX или любой другой сервис.
 
-Самому IncidentRelay не нужно знать специфические детали API провайдера. Он загружает ваш модуль провайдера и взаимодействует с ним через стабильный провайдерский API.
+Самому Beacon не нужно знать специфические детали API провайдера. Он загружает ваш модуль провайдера и взаимодействует с ним через стабильный провайдерский API.
 
 ## Поддерживаемые возможности
 
@@ -27,13 +27,13 @@ IncidentRelay может загружать пользовательские г�
 Каталог пользовательских провайдеров по умолчанию:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers
+/usr/local/lib/beacon/voice_providers
 ```
 
 Пример:
 
 ```text
-/usr/local/lib/incidentrelay/voice_providers/
+/usr/local/lib/beacon/voice_providers/
 ├── README.md
 ├── mango.py
 ├── zadarma.py
@@ -45,9 +45,9 @@ IncidentRelay может загружать пользовательские г�
 Рекомендуемые права доступа:
 
 ```bash
-sudo mkdir -p /usr/local/lib/incidentrelay/voice_providers
-sudo chown root:root /usr/local/lib/incidentrelay/voice_providers
-sudo chmod 755 /usr/local/lib/incidentrelay/voice_providers
+sudo mkdir -p /usr/local/lib/beacon/voice_providers
+sudo chown root:root /usr/local/lib/beacon/voice_providers
+sudo chmod 755 /usr/local/lib/beacon/voice_providers
 ```
 
 ## Разделы документации

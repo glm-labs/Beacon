@@ -42,7 +42,7 @@ def test_azure_monitor_endpoint_accepts_basic_route_auth(client, db):
 
     response = client.post(
         "/api/integrations/azure-monitor",
-        headers=_basic_header("incidentrelay", raw_token),
+        headers=_basic_header("beacon", raw_token),
         json=_azure_payload(),
     )
 

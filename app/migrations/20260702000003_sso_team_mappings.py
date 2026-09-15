@@ -1,4 +1,4 @@
-"""Add optional IncidentRelay team target to SSO group mappings."""
+"""Add optional Beacon team target to SSO group mappings."""
 
 import re
 
@@ -81,11 +81,11 @@ def upgrade():
     table_name = SsoGroupMapping._meta.table_name
     operations = []
 
-    if not _column_exists(table_name, "incidentrelay_team_id"):
+    if not _column_exists(table_name, "beacon_team_id"):
         operations.append(
             migrator.add_column(
                 table_name,
-                "incidentrelay_team_id",
+                "beacon_team_id",
                 IntegerField(null=True),
             )
         )
@@ -103,11 +103,11 @@ def upgrade():
         migrate(*operations)
 
     # Older installations used a unique index that prevented mapping one external
-    # SSO group to several teams inside the same IncidentRelay group.
+    # SSO group to several teams inside the same Beacon group.
     for index_name in (
-        "ssogroupmapping_provider_id_external_group_incidentrelay_group_id",
-        "sso_group_mapping_provider_id_external_group_incidentrelay_group_id",
-        "sso_group_mapping_provider_external_group_incidentrelay_group",
+        "ssogroupmapping_provider_id_external_group_beacon_group_id",
+        "sso_group_mapping_provider_id_external_group_beacon_group_id",
+        "sso_group_mapping_provider_external_group_beacon_group",
     ):
         _drop_index_if_exists(table_name, index_name)
 
@@ -117,8 +117,8 @@ def upgrade():
         [
             "provider_id",
             "external_group",
-            "incidentrelay_group_id",
-            "incidentrelay_team_id",
+            "beacon_group_id",
+            "beacon_team_id",
         ],
         unique=True,
     )
@@ -126,7 +126,7 @@ def upgrade():
     _create_index_if_missing(
         table_name,
         "idx_sso_group_mapping_team_id",
-        ["incidentrelay_team_id"],
+        ["beacon_team_id"],
     )
 
 
@@ -142,15 +142,15 @@ def downgrade():
     if _column_exists(table_name, "team_role"):
         operations.append(migrator.drop_column(table_name, "team_role"))
 
-    if _column_exists(table_name, "incidentrelay_team_id"):
-        operations.append(migrator.drop_column(table_name, "incidentrelay_team_id"))
+    if _column_exists(table_name, "beacon_team_id"):
+        operations.append(migrator.drop_column(table_name, "beacon_team_id"))
 
     if operations:
         migrate(*operations)
 
     _create_index_if_missing(
         table_name,
-        "ssogroupmapping_provider_id_external_group_incidentrelay_group_id",
-        ["provider_id", "external_group", "incidentrelay_group_id"],
+        "ssogroupmapping_provider_id_external_group_beacon_group_id",
+        ["provider_id", "external_group", "beacon_group_id"],
         unique=True,
     )

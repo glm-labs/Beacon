@@ -1,6 +1,6 @@
 ---
 title: Escalation Policies
-description: Configure multi-step alert escalation chains in IncidentRelay
+description: Configure multi-step alert escalation chains in Beacon
 ---
 
 # Escalation Policies
@@ -51,7 +51,7 @@ The route points directly to a rotation.
 Route -> Rotation -> Team reminder-based escalation
 ```
 
-In this mode, IncidentRelay uses the team settings:
+In this mode, Beacon uses the team settings:
 
 - `Simple rotation escalation`;
 - `Simple escalation after reminders`.
@@ -66,7 +66,7 @@ The route points to an escalation policy.
 Route -> Escalation policy -> Rules
 ```
 
-In this mode, IncidentRelay uses policy rules and rule delays.
+In this mode, Beacon uses policy rules and rule delays.
 
 Team reminder-based escalation is ignored for this route:
 

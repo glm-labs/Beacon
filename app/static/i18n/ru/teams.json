@@ -65,7 +65,7 @@
   "teams.details.status": "Статус",
   "teams.form.create": "Создать команду",
   "teams.form.edit": "Изменить команду №{id}",
-  "teams.form.subtitle": "Создание или изменение команды IncidentRelay.",
+  "teams.form.subtitle": "Создание или изменение команды Beacon.",
   "teams.form.group": "Группа",
   "teams.form.name": "Название",
   "teams.form.name_placeholder": "Инфраструктура",

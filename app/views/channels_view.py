@@ -408,13 +408,13 @@ def test_channel(channel_id):
         assignee=build_test_assignee(channel),
         status="test",
         source="manual-test",
-        title="IncidentRelay test notification",
-        message="This is a test notification from the IncidentRelay.",
+        title="Beacon test notification",
+        message="This is a test notification from the Beacon.",
         severity="info",
     )
 
     try:
-        notifier.send(channel, fake_alert, "IncidentRelay test notification", event_type="test")
+        notifier.send(channel, fake_alert, "Beacon test notification", event_type="test")
     except Exception as exc:
         write_audit(
             "channel.test.failed",

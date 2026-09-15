@@ -135,7 +135,7 @@ impact_snapshot_interval_seconds = 300
 impact_snapshot_retention_days = 365
 ```
 
-With these settings, IncidentRelay stores a snapshot every five minutes and keeps one year of history.
+With these settings, Beacon stores a snapshot every five minutes and keeps one year of history.
 
 ## Typical use cases
 

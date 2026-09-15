@@ -23,7 +23,7 @@ def _handle_shutdown(signum, frame):
 
 
 def main():
-    """Start IncidentRelay scheduler worker."""
+    """Start Beacon scheduler worker."""
     signal.signal(signal.SIGTERM, _handle_shutdown)
     signal.signal(signal.SIGINT, _handle_shutdown)
 

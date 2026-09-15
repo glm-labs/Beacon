@@ -3,7 +3,7 @@
 from copy import deepcopy
 
 
-CHANNEL_SECRET_PLACEHOLDER = "__INCIDENTRELAY_SECRET__"
+CHANNEL_SECRET_PLACEHOLDER = "__BEACON_SECRET__"
 
 _CHANNEL_SECRET_KEYS = {
     "telegram": {"bot_token"},

@@ -33,7 +33,7 @@ Alert assignee -> assignee.email -> global SMTP server
 [smtp]
 host = 127.0.0.1
 port = 25
-from = incidentrelay@example.com
+from = beacon@example.com
 use_tls = false
 user =
 password =
@@ -45,9 +45,9 @@ password =
 [smtp]
 host = smtp.example.com
 port = 587
-from = incidentrelay@example.com
+from = beacon@example.com
 use_tls = true
-user = incidentrelay@example.com
+user = beacon@example.com
 password = change-me
 ```
 
@@ -80,7 +80,7 @@ password = change-me
 
 ## Кнопка теста
 
-При тестировании канала Email IncidentRelay отправляет тестовое письмо на email-адрес из профиля текущего пользователя.
+При тестировании канала Email Beacon отправляет тестовое письмо на email-адрес из профиля текущего пользователя.
 
 Если у текущего пользователя нет email-адреса, тест возвращает ошибку с указанием пользователю задать email в своём профиле.
 
@@ -98,4 +98,4 @@ password = change-me
 
 ### Лог сообщает `notification sent`, но почтовый ящик пуст
 
-SMTP-сервер принял сообщение от IncidentRelay. Проверьте логи нижестоящего SMTP-релея, карантин спама, политику получателя, SPF/DMARC и правила почтового ящика.
+SMTP-сервер принял сообщение от Beacon. Проверьте логи нижестоящего SMTP-релея, карантин спама, политику получателя, SPF/DMARC и правила почтового ящика.

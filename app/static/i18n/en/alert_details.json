@@ -89,7 +89,7 @@
   "alert_details.form.service": "Service",
   "alert_details.manual.service_help": "If a service is selected, the incident will use service ownership and escalation defaults.",
   "alert_details.manual.notify_team": "Notify team",
-  "alert_details.manual.notify_help": "When enabled, IncidentRelay will schedule notification through the normal alert notification flow.",
+  "alert_details.manual.notify_help": "When enabled, Beacon will schedule notification through the normal alert notification flow.",
   "alert_details.loading": "Loading...",
   "alert_details.loading.comments": "Loading comments...",
   "alert_details.loading.priority": "Loading priority...",

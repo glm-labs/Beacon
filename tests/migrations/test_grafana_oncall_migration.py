@@ -12,7 +12,7 @@ from tools.migrations.grafana_oncall.migrate import (
 )
 
 
-class FakeIncidentRelayClient:
+class FakeBeaconClient:
     def __init__(self):
         self.base_url = "https://ir.example.com"
         self.posts = []
@@ -169,14 +169,14 @@ class GrafanaOnCallMigrationTests(unittest.TestCase):
             cadence_from_shift({"frequency": "monthly", "interval": 1})
         )
 
-    def test_slugify_is_incidentrelay_safe(self):
+    def test_slugify_is_beacon_safe(self):
         self.assertEqual(slugify("Platform & SRE"), "platform-sre")
         self.assertEqual(slugify("___"), "imported-")
 
     def test_dry_run_plans_without_writes(self):
         with tempfile.TemporaryDirectory() as directory:
             tmp_path = Path(directory)
-            ir = FakeIncidentRelayClient()
+            ir = FakeBeaconClient()
             state = StateStore(
                 tmp_path / "state.json",
                 "https://oncall.example.com",
@@ -206,7 +206,7 @@ class GrafanaOnCallMigrationTests(unittest.TestCase):
     def test_apply_migrates_supported_configuration(self):
         with tempfile.TemporaryDirectory() as directory:
             tmp_path = Path(directory)
-            ir = FakeIncidentRelayClient()
+            ir = FakeBeaconClient()
             state = StateStore(
                 tmp_path / "state.json",
                 "https://oncall.example.com",

@@ -45,13 +45,13 @@ webhook
 
 ## Универсальный исходящий вебхук
 
-Универсальный исходящий вебхук отправляет полезную нагрузку уведомлений IncidentRelay на произвольный HTTP-эндпоинт.
+Универсальный исходящий вебхук отправляет полезную нагрузку уведомлений Beacon на произвольный HTTP-эндпоинт.
 
 Типовая конфигурация:
 
 ```json
 {
-  "webhook_url": "https://example.com/incidentrelay/notifications"
+  "webhook_url": "https://example.com/beacon/notifications"
 }
 ```
 

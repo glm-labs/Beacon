@@ -1,18 +1,18 @@
 services:
-  incidentrelay:
-    image: incidentrelay:dev
+  beacon:
+    image: beacon:dev
     build:
       context: .
       dockerfile: docker/Dockerfile
 
-  incidentrelay-scheduler:
-    image: incidentrelay:dev
+  beacon-scheduler:
+    image: beacon:dev
     build:
       context: .
       dockerfile: docker/Dockerfile
 
-  incidentrelay-telegram:
-    image: incidentrelay:dev
+  beacon-telegram:
+    image: beacon:dev
     build:
       context: .
       dockerfile: docker/Dockerfile

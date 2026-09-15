@@ -97,6 +97,6 @@ def build_ics_for_calendar_feed(feed):
         event.setdefault("team_slug", feed.team.slug)
 
     return build_calendar_ics(
-        calendar_name=f"IncidentRelay - {feed.team.name} on-call",
+        calendar_name=f"Beacon - {feed.team.name} on-call",
         events=events,
     )

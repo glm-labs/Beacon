@@ -1,6 +1,6 @@
 ---
 title: Provider API
-description: How to write a custom IncidentRelay voice provider
+description: How to write a custom Beacon voice provider
 ---
 
 # Provider API
@@ -173,17 +173,17 @@ def place_call(self, request: VoiceCallRequest) -> VoiceCallResult:
 |---|---|
 | `request.phone` | Target phone number |
 | `request.text` | Text that should be spoken during the call |
-| `request.alert_id` | IncidentRelay alert ID |
+| `request.alert_id` | Beacon alert ID |
 | `request.event_type` | Notification event type: `notification`, `reminder`, `escalation`, `test` |
 | `request.callback_url` | Callback URL for status and DTMF events |
-| `request.callback_secret` | Server-only callback credential; send it in `Authorization: Bearer ...` (or `X-IncidentRelay-Callback-Secret`), never in the URL |
+| `request.callback_secret` | Server-only callback credential; send it in `Authorization: Bearer ...` (or `X-Beacon-Callback-Secret`), never in the URL |
 | `request.severity` | Alert severity |
 | `request.title` | Alert title |
 | `request.message` | Alert message |
 | `request.assignee` | Human-readable assignee name |
 | `request.team` | Team slug |
 | `request.action_hints` | Recommended keypad actions |
-| `request.metadata` | Additional IncidentRelay metadata |
+| `request.metadata` | Additional Beacon metadata |
 
 Example `action_hints`:
 
@@ -220,7 +220,7 @@ return VoiceCallResult(
 
 External call ID returned by the provider.
 
-IncidentRelay stores it as `external_message_id`.
+Beacon stores it as `external_message_id`.
 
 This ID is later used to match provider callbacks with the original alert notification.
 
@@ -273,7 +273,7 @@ return [
 | `event_type` | Normalized event type: `status`, `dtmf`, `error` |
 | `status` | Call status |
 | `digit` | DTMF digit pressed by the call recipient |
-| `action` | Optional normalized IncidentRelay action |
+| `action` | Optional normalized Beacon action |
 | `alert_id` | Optional alert ID |
 | `message` | Optional human-readable callback message |
 | `raw` | Original provider callback payload |

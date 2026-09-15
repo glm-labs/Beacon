@@ -1,14 +1,14 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "incidentrelay.name" -}}
+{{- define "beacon.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Create a default fully qualified app name (63 char limit).
 */}}
-{{- define "incidentrelay.fullname" -}}
+{{- define "beacon.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -24,16 +24,16 @@ Create a default fully qualified app name (63 char limit).
 {{/*
 Chart name and version for the chart label.
 */}}
-{{- define "incidentrelay.chart" -}}
+{{- define "beacon.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels.
 */}}
-{{- define "incidentrelay.labels" -}}
-helm.sh/chart: {{ include "incidentrelay.chart" . }}
-{{ include "incidentrelay.selectorLabels" . }}
+{{- define "beacon.labels" -}}
+helm.sh/chart: {{ include "beacon.chart" . }}
+{{ include "beacon.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -43,17 +43,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels.
 */}}
-{{- define "incidentrelay.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "incidentrelay.name" . }}
+{{- define "beacon.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "beacon.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Service account name.
 */}}
-{{- define "incidentrelay.serviceAccountName" -}}
+{{- define "beacon.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "incidentrelay.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "beacon.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
@@ -62,15 +62,15 @@ Service account name.
 {{/*
 Image reference.
 */}}
-{{- define "incidentrelay.image" -}}
+{{- define "beacon.image" -}}
 {{- printf "%s:%s" .Values.image.repository (default .Chart.AppVersion .Values.image.tag) }}
 {{- end }}
 
 {{/*
-Name of the Secret holding incidentrelay.conf.
+Name of the Secret holding beacon.conf.
 */}}
-{{- define "incidentrelay.configSecretName" -}}
-{{- default (printf "%s-config" (include "incidentrelay.fullname" .)) .Values.existingConfigSecret }}
+{{- define "beacon.configSecretName" -}}
+{{- default (printf "%s-config" (include "beacon.fullname" .)) .Values.existingConfigSecret }}
 {{- end }}
 
 {{/*
@@ -78,7 +78,7 @@ Validate chart-rendered configuration before creating workloads. Use get/default
 so upgrades that reuse pre-2.0 values fail cleanly instead of dereferencing a
 missing nested map.
 */}}
-{{- define "incidentrelay.validateValues" -}}
+{{- define "beacon.validateValues" -}}
 {{- if not .Values.existingConfigSecret -}}
 {{- $config := default (dict) .Values.config -}}
 {{- $main := default (dict) (get $config "main") -}}
@@ -123,9 +123,9 @@ security-related options introduced after 1.x are materialized before the INI
 file is rendered, so the container entrypoint never generates different keys
 inside separate PostgreSQL/multi-node pods.
 */}}
-{{- define "incidentrelay.config" -}}
+{{- define "beacon.config" -}}
 {{- if not .Values.existingConfigSecret -}}
-{{- include "incidentrelay.validateValues" . -}}
+{{- include "beacon.validateValues" . -}}
 {{- end -}}
 {{- $config := deepCopy (default (dict) .Values.config) -}}
 {{- $main := default (dict) (get $config "main") -}}
@@ -138,7 +138,7 @@ inside separate PostgreSQL/multi-node pods.
       "rbac_enforced" true
       "jwt_secret" ""
       "jwt_expire_minutes" 1440
-      "jwt_cookie_name" "incidentrelay_jwt"
+      "jwt_cookie_name" "beacon_jwt"
       "jwt_cookie_secure" false
       "login_ip_max_failures" 60
       "login_ip_window_seconds" 60
@@ -172,28 +172,28 @@ Keep worker pods on the web pod's node whenever the shared data volume is
 enabled. This makes the default ReadWriteOnce PVC schedulable for every worker
 and also keeps the SQLite deployment on one node.
 */}}
-{{- define "incidentrelay.dataWorkerAffinity" -}}
+{{- define "beacon.dataWorkerAffinity" -}}
 podAffinity:
   requiredDuringSchedulingIgnoredDuringExecution:
     - labelSelector:
         matchLabels:
-          {{- include "incidentrelay.selectorLabels" . | nindent 10 }}
+          {{- include "beacon.selectorLabels" . | nindent 10 }}
           app.kubernetes.io/component: web
       topologyKey: kubernetes.io/hostname
 {{- end }}
 
 {{/*
-Name of the PVC backing /var/lib/incidentrelay.
+Name of the PVC backing /var/lib/beacon.
 */}}
-{{- define "incidentrelay.dataClaimName" -}}
-{{- default (printf "%s-data" (include "incidentrelay.fullname" .)) .Values.persistence.existingClaim }}
+{{- define "beacon.dataClaimName" -}}
+{{- default (printf "%s-data" (include "beacon.fullname" .)) .Values.persistence.existingClaim }}
 {{- end }}
 
 {{/*
 Validate custom CA settings. The chart can either render the custom bundle or
 read it from an existing ConfigMap, but never both at the same time.
 */}}
-{{- define "incidentrelay.validateCustomCA" -}}
+{{- define "beacon.validateCustomCA" -}}
 {{- $customCA := default (dict) .Values.customCA -}}
 {{- $bundle := default "" (get $customCA "bundle") | toString | trim -}}
 {{- $existingConfigMap := default "" (get $customCA "existingConfigMap") | toString | trim -}}
@@ -205,8 +205,8 @@ read it from an existing ConfigMap, but never both at the same time.
 {{/*
 Return a non-empty value when custom CA trust is configured.
 */}}
-{{- define "incidentrelay.customCAEnabled" -}}
-{{- include "incidentrelay.validateCustomCA" . -}}
+{{- define "beacon.customCAEnabled" -}}
+{{- include "beacon.validateCustomCA" . -}}
 {{- $customCA := default (dict) .Values.customCA -}}
 {{- $bundle := default "" (get $customCA "bundle") | toString | trim -}}
 {{- $existingConfigMap := default "" (get $customCA "existingConfigMap") | toString | trim -}}
@@ -216,17 +216,17 @@ Return a non-empty value when custom CA trust is configured.
 {{/*
 Name of the ConfigMap holding only the user-provided CA certificates.
 */}}
-{{- define "incidentrelay.customCAConfigMapName" -}}
+{{- define "beacon.customCAConfigMapName" -}}
 {{- $customCA := default (dict) .Values.customCA -}}
 {{- $existingConfigMap := default "" (get $customCA "existingConfigMap") | toString | trim -}}
-{{- default (printf "%s-custom-ca" (include "incidentrelay.fullname" .)) $existingConfigMap -}}
+{{- default (printf "%s-custom-ca" (include "beacon.fullname" .)) $existingConfigMap -}}
 {{- end }}
 
 {{/*
 Source key inside the custom CA ConfigMap. Inline bundles always use ca.crt;
 existing ConfigMaps may expose the bundle under a different key.
 */}}
-{{- define "incidentrelay.customCASourceKey" -}}
+{{- define "beacon.customCASourceKey" -}}
 {{- $customCA := default (dict) .Values.customCA -}}
 {{- $existingConfigMap := default "" (get $customCA "existingConfigMap") | toString | trim -}}
 {{- if $existingConfigMap -}}
@@ -240,12 +240,12 @@ Checksum annotation for custom CA configuration. Inline bundle changes trigger a
 rollout automatically. For an external ConfigMap the chart can hash only the
 reference; restart pods after changing the external ConfigMap contents.
 */}}
-{{- define "incidentrelay.customCAChecksum" -}}
-{{- if include "incidentrelay.customCAEnabled" . -}}
+{{- define "beacon.customCAChecksum" -}}
+{{- if include "beacon.customCAEnabled" . -}}
 {{- $customCA := default (dict) .Values.customCA -}}
 {{- $bundle := default "" (get $customCA "bundle") | toString -}}
 {{- $existingConfigMap := default "" (get $customCA "existingConfigMap") | toString | trim -}}
-{{- $key := include "incidentrelay.customCASourceKey" . -}}
+{{- $key := include "beacon.customCASourceKey" . -}}
 {{- if $bundle -}}
 checksum/custom-ca: {{ $bundle | sha256sum }}
 {{- else -}}
@@ -258,24 +258,24 @@ checksum/custom-ca: {{ printf "%s:%s" $existingConfigMap $key | sha256sum }}
 Environment variables used by Python/OpenSSL and Requests so every component
 uses the combined system + custom trust bundle.
 */}}
-{{- define "incidentrelay.customCAEnv" -}}
-{{- if include "incidentrelay.customCAEnabled" . }}
+{{- define "beacon.customCAEnv" -}}
+{{- if include "beacon.customCAEnabled" . }}
 - name: SSL_CERT_FILE
-  value: /etc/incidentrelay/ca/ca-bundle.crt
+  value: /etc/beacon/ca/ca-bundle.crt
 - name: REQUESTS_CA_BUNDLE
-  value: /etc/incidentrelay/ca/ca-bundle.crt
+  value: /etc/beacon/ca/ca-bundle.crt
 {{- end }}
 {{- end }}
 
 {{/*
 Init container that copies the image system trust store and appends custom PEM
-certificates. It uses the same IncidentRelay image, so the system bundle path is
+certificates. It uses the same Beacon image, so the system bundle path is
 identical to the application container.
 */}}
-{{- define "incidentrelay.customCAInitContainer" -}}
-{{- if include "incidentrelay.customCAEnabled" . }}
+{{- define "beacon.customCAInitContainer" -}}
+{{- if include "beacon.customCAEnabled" . }}
 - name: build-ca-bundle
-  image: {{ include "incidentrelay.image" . }}
+  image: {{ include "beacon.image" . }}
   imagePullPolicy: {{ .Values.image.pullPolicy }}
   command:
     - /bin/sh
@@ -308,25 +308,25 @@ identical to the application container.
 {{/*
 Volumes shared by every component.
 */}}
-{{- define "incidentrelay.volumes" -}}
+{{- define "beacon.volumes" -}}
 - name: config
   secret:
-    secretName: {{ include "incidentrelay.configSecretName" . }}
+    secretName: {{ include "beacon.configSecretName" . }}
 - name: data
   {{- if .Values.persistence.enabled }}
   persistentVolumeClaim:
-    claimName: {{ include "incidentrelay.dataClaimName" . }}
+    claimName: {{ include "beacon.dataClaimName" . }}
   {{- else }}
   emptyDir: {}
   {{- end }}
 - name: logs
   emptyDir: {}
-{{- if include "incidentrelay.customCAEnabled" . }}
+{{- if include "beacon.customCAEnabled" . }}
 - name: custom-ca-source
   configMap:
-    name: {{ include "incidentrelay.customCAConfigMapName" . }}
+    name: {{ include "beacon.customCAConfigMapName" . }}
     items:
-      - key: {{ include "incidentrelay.customCASourceKey" . | quote }}
+      - key: {{ include "beacon.customCASourceKey" . | quote }}
         path: ca.crt
 - name: custom-ca-bundle
   emptyDir: {}
@@ -339,17 +339,17 @@ Volumes shared by every component.
 {{/*
 Volume mounts shared by every component.
 */}}
-{{- define "incidentrelay.volumeMounts" -}}
+{{- define "beacon.volumeMounts" -}}
 - name: config
-  mountPath: /etc/incidentrelay
+  mountPath: /etc/beacon
   readOnly: true
 - name: data
-  mountPath: /var/lib/incidentrelay
+  mountPath: /var/lib/beacon
 - name: logs
-  mountPath: /var/log/incidentrelay
-{{- if include "incidentrelay.customCAEnabled" . }}
+  mountPath: /var/log/beacon
+{{- if include "beacon.customCAEnabled" . }}
 - name: custom-ca-bundle
-  mountPath: /etc/incidentrelay/ca
+  mountPath: /etc/beacon/ca
   readOnly: true
 {{- end }}
 {{- with .Values.extraVolumeMounts }}
@@ -361,8 +361,8 @@ Volume mounts shared by every component.
 Pod annotation with the config checksum so config changes roll pods.
 Empty when an existing Secret is used (the chart cannot see its content).
 */}}
-{{- define "incidentrelay.configChecksum" -}}
+{{- define "beacon.configChecksum" -}}
 {{- if not .Values.existingConfigSecret -}}
-checksum/config: {{ include "incidentrelay.config" . | sha256sum }}
+checksum/config: {{ include "beacon.config" . | sha256sum }}
 {{- end }}
 {{- end }}

@@ -79,7 +79,7 @@ def build_openapi_spec():
     return {
         "openapi": "3.0.3",
         "info": {
-            "title": "IncidentRelay API",
+            "title": "Beacon API",
             "version": get_service_version(),
             "description": (
                 "API-first on-call management service. The API manages teams, "
@@ -106,7 +106,7 @@ def build_openapi_spec():
                     "scheme": "basic",
                     "description": (
                         "Provider-specific route authentication. Azure Monitor "
-                        "webhooks use username incidentrelay and the route intake "
+                        "webhooks use username beacon and the route intake "
                         "token as the HTTP Basic password."
                     ),
                 },

@@ -1,16 +1,16 @@
-![IncidentRelay](app/static/images/incidentrelay-logo.svg)
+![Beacon](app/static/images/beacon-logo.svg)
 
-# IncidentRelay
+# Beacon
 
 **Self-hosted on-call, alert routing, event orchestration and incident response for teams that want to keep operational control in their own infrastructure.**
 
-IncidentRelay receives alerts from monitoring systems, normalizes and orchestrates them, routes them to the responsible service and team, groups related signals into incidents, applies priority and escalation rules, and delivers notifications to on-call responders.
+Beacon receives alerts from monitoring systems, normalizes and orchestrates them, routes them to the responsible service and team, groups related signals into incidents, applies priority and escalation rules, and delivers notifications to on-call responders.
 
 It is designed for SRE, DevOps, platform, infrastructure and operations teams that need PagerDuty-style building blocks without depending on a hosted incident-management platform.
 
 ![Alerts](screenshots/alerts.png)
 
-## What IncidentRelay provides
+## What Beacon provides
 
 ### Alert intake, routing and orchestration
 
@@ -70,7 +70,7 @@ It is designed for SRE, DevOps, platform, infrastructure and operations teams th
 
 ## Alert flow
 
-A simplified IncidentRelay 2.x flow looks like this:
+A simplified Beacon 2.x flow looks like this:
 
 ```text
 Monitoring system
@@ -92,7 +92,7 @@ Shared channels + personal notification rules
 ACK / Resolve / responders / stakeholders
 ```
 
-Routes control how alerts enter IncidentRelay and provide the security boundary for intake tokens. Services describe **what** is affected. Notification delivery can come directly from route channels, from a service Notification Policy, or from both, depending on route configuration. Event Orchestration can override routing, service and policy decisions for matching events.
+Routes control how alerts enter Beacon and provide the security boundary for intake tokens. Services describe **what** is affected. Notification delivery can come directly from route channels, from a service Notification Policy, or from both, depending on route configuration. Event Orchestration can override routing, service and policy decisions for matching events.
 
 Browser/PWA push and personal notification rules are evaluated separately from shared route/service channels.
 
@@ -170,7 +170,7 @@ Read more: [Notification channels](docs/integrations/channels.md) and [Notificat
 
 ### Docker Compose
 
-Docker Compose is the fastest way to run a small self-hosted installation. The repository Compose file uses the published IncidentRelay image and starts the web service, scheduler, Telegram worker and Slack Socket Mode worker.
+Docker Compose is the fastest way to run a small self-hosted installation. The repository Compose file uses the published Beacon image and starts the web service, scheduler, Telegram worker and Slack Socket Mode worker.
 
 ```bash
 cd docker
@@ -199,13 +199,13 @@ Read more: [Docker installation](docs/getting-started/docker.md).
 The Helm chart is published as an OCI artifact in GHCR:
 
 ```bash
-helm install incidentrelay \
-  oci://ghcr.io/roxy-wi/incidentrelay-charts/incidentrelay \
+helm install beacon \
+  oci://ghcr.io/glm-labs/beacon-charts/beacon \
   --version 2.2.0 \
   --set-string config.main.secret_key="$(openssl rand -hex 32)"
 ```
 
-The chart defaults to the `ghcr.io/roxy-wi/incidentrelay:2.2` application image. Configuration can be rendered from `config.*` values or supplied through `existingConfigSecret`.
+The chart defaults to the `ghcr.io/glm-labs/beacon:2.2` application image. Configuration can be rendered from `config.*` values or supplied through `existingConfigSecret`.
 
 Read more: [Kubernetes installation](docs/getting-started/kubernetes.md).
 
@@ -214,10 +214,10 @@ Read more: [Kubernetes installation](docs/getting-started/kubernetes.md).
 ```bash
 sudo dnf install -y curl
 sudo curl -fsSL \
-  https://repo.incidentrelay.io/incidentrelay.repo \
-  -o /etc/yum.repos.d/incidentrelay.repo
+  https://repo.beacon.io/beacon.repo \
+  -o /etc/yum.repos.d/beacon.repo
 sudo dnf makecache
-sudo dnf install -y incidentrelay
+sudo dnf install -y beacon
 ```
 
 Read more: [RPM installation](docs/getting-started/rpm-installation.md).
@@ -235,10 +235,10 @@ Read more: [Systemd installation](docs/getting-started/systemd.md).
 A full installation can run these processes:
 
 ```text
-incidentrelay.service                  # HTTP API, UI and incoming webhooks
-incidentrelay-scheduler.service        # reminders, escalations and periodic jobs
-incidentrelay-telegram-worker.service  # optional Telegram callbacks / polling
-incidentrelay-slack-worker.service     # optional Slack Socket Mode interactions
+beacon.service                  # HTTP API, UI and incoming webhooks
+beacon-scheduler.service        # reminders, escalations and periodic jobs
+beacon-telegram-worker.service  # optional Telegram callbacks / polling
+beacon-slack-worker.service     # optional Slack Socket Mode interactions
 ```
 
 The scheduler should run as a dedicated process rather than once per web worker.
@@ -246,35 +246,35 @@ The scheduler should run as a dedicated process rather than once per web worker.
 Common RPM/systemd paths:
 
 ```text
-/var/www/incidentrelay
-/var/www/incidentrelay/venv
-/etc/incidentrelay/incidentrelay.conf
-/var/lib/incidentrelay
-/var/log/incidentrelay
-/usr/local/lib/incidentrelay/voice_providers
+/var/www/beacon
+/var/www/beacon/venv
+/etc/beacon/beacon.conf
+/var/lib/beacon
+/var/log/beacon
+/usr/local/lib/beacon/voice_providers
 ```
 
 ---
 
 ## Configuration
 
-IncidentRelay reads the configuration file path from:
+Beacon reads the configuration file path from:
 
 ```text
-INCIDENTRELAY_CONFIG_FILE
+BEACON_CONFIG_FILE
 ```
 
 Example:
 
 ```bash
-export INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf
+export BEACON_CONFIG_FILE=/etc/beacon/beacon.conf
 ```
 
 For production, set the public base URL used for links and provider callbacks:
 
 ```ini
 [server]
-public_base_url = https://incidentrelay.example.com
+public_base_url = https://beacon.example.com
 ```
 
 SQLite is suitable for a small single-node installation:
@@ -282,7 +282,7 @@ SQLite is suitable for a small single-node installation:
 ```ini
 [database]
 type = sqlite
-name = /var/lib/incidentrelay/incidentrelay.db
+name = /var/lib/beacon/beacon.db
 
 [sqlite]
 wal = true
@@ -296,8 +296,8 @@ PostgreSQL is recommended for larger installations and multi-worker deployments:
 type = postgresql
 host = 127.0.0.1
 port = 5432
-name = incidentrelay
-user = incidentrelay
+name = beacon
+user = beacon
 password = change-me
 ```
 
@@ -310,17 +310,17 @@ Important operational settings include retention, outbound HTTP network policy a
 For RPM/systemd installations, run migrations and create the first administrator:
 
 ```bash
-sudo -u incidentrelay \
-  INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf \
-  /var/www/incidentrelay/venv/bin/python \
-  /var/www/incidentrelay/manage.py migrate
+sudo -u beacon \
+  BEACON_CONFIG_FILE=/etc/beacon/beacon.conf \
+  /var/www/beacon/venv/bin/python \
+  /var/www/beacon/manage.py migrate
 ```
 
 ```bash
-sudo -u incidentrelay \
-  INCIDENTRELAY_CONFIG_FILE=/etc/incidentrelay/incidentrelay.conf \
-  /var/www/incidentrelay/venv/bin/python \
-  /var/www/incidentrelay/manage.py create-admin \
+sudo -u beacon \
+  BEACON_CONFIG_FILE=/etc/beacon/beacon.conf \
+  /var/www/beacon/venv/bin/python \
+  /var/www/beacon/manage.py create-admin \
   --username admin \
   --password 'change-me-123' \
   --email admin@example.com
@@ -330,7 +330,7 @@ For Docker Compose, the web container can run migrations automatically. Create t
 
 ```bash
 cd docker
-docker compose exec incidentrelay \
+docker compose exec beacon \
   python manage.py create-admin \
   --username admin \
   --password 'change-me-123' \
@@ -460,4 +460,4 @@ See [Demo data](docs/administration/demo-data.md), [Schema check](docs/administr
 
 ## License
 
-IncidentRelay is licensed under the [MIT License](LICENSE).
+Beacon is licensed under the [MIT License](LICENSE).

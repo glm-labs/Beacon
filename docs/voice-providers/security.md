@@ -14,17 +14,17 @@ Only install providers from trusted sources.
 Recommended permissions:
 
 ```bash
-sudo mkdir -p /usr/local/lib/incidentrelay/voice_providers
-sudo chown root:root /usr/local/lib/incidentrelay/voice_providers
-sudo chmod 755 /usr/local/lib/incidentrelay/voice_providers
+sudo mkdir -p /usr/local/lib/beacon/voice_providers
+sudo chown root:root /usr/local/lib/beacon/voice_providers
+sudo chmod 755 /usr/local/lib/beacon/voice_providers
 ```
 
 The providers directory must not be writable by:
 
 - the web server user;
-- the IncidentRelay application user;
+- the Beacon application user;
 - untrusted users;
-- the IncidentRelay UI.
+- the Beacon UI.
 
 ## Secrets
 
@@ -44,7 +44,7 @@ Good:
 }
 ```
 
-Then configure the environment variable for the IncidentRelay service:
+Then configure the environment variable for the Beacon service:
 
 ```bash
 export VOICE_API_TOKEN="secret-token"
@@ -142,7 +142,7 @@ def parse_callback(self, payload, headers=None, raw_body=None, query_args=None):
 
 ```text
 - The providers directory must not be writable by the web server user.
-- The providers directory must not be writable from the IncidentRelay UI.
+- The providers directory must not be writable from the Beacon UI.
 - Provider files should be reviewed before installation.
 - Secrets should be passed through environment variables.
 - Provider logs must not contain API tokens, passwords or full phone numbers.

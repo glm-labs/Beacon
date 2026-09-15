@@ -1,6 +1,6 @@
 ---
 title: Начало работы
-description: Методы установки и первые шаги настройки IncidentRelay.
+description: Методы установки и первые шаги настройки Beacon.
 ---
 
 # Начало работы
@@ -12,7 +12,7 @@ description: Методы установки и первые шаги настр
 | Метод | Когда использовать | Руководство |
 |---|---|---|
 | Docker Compose | Вам нужен самый быстрый старт или развёртывание на основе контейнеров | [Установка через Docker](docker.md) |
-| Kubernetes с Helm | У вас уже работает кластер, и вы хотите управлять IncidentRelay так же | [Установка в Kubernetes](kubernetes.md) |
+| Kubernetes с Helm | У вас уже работает кластер, и вы хотите управлять Beacon так же | [Установка в Kubernetes](kubernetes.md) |
 | RPM-пакет | Вы используете RHEL, Rocky Linux, AlmaLinux или CentOS Stream | [Установка через RPM](rpm-installation.md) |
 | Ручная установка с systemd | Вы хотите запускать из исходного кода или самостоятельно управлять окружением Python | [Ручная установка с systemd](systemd.md) |
 
@@ -46,7 +46,7 @@ scheduler service  -> reminders, escalations, periodic jobs
 Файл конфигурации выбирается через:
 
 ```text
-INCIDENTRELAY_CONFIG_FILE
+BEACON_CONFIG_FILE
 ```
 
 Используйте точное имя, указанное выше. Старое имя `ONCALL_CONFIG_FILE` использовать не следует.
@@ -54,8 +54,8 @@ INCIDENTRELAY_CONFIG_FILE
 Рекомендуемые пути для неконтейнерных инсталляций:
 
 ```text
-/etc/incidentrelay/incidentrelay.conf
-/var/lib/incidentrelay
-/var/log/incidentrelay
-/usr/local/lib/incidentrelay/voice_providers
+/etc/beacon/beacon.conf
+/var/lib/beacon
+/var/log/beacon
+/usr/local/lib/beacon/voice_providers
 ```

@@ -1,7 +1,7 @@
 {
   "id": "/?source=pwa",
-  "name": "IncidentRelay",
-  "short_name": "IncidentRelay",
+  "name": "Beacon",
+  "short_name": "Beacon",
   "description": "Self-hosted on-call scheduling, alert routing and incident notifications.",
   "lang": "en",
   "dir": "ltr",
@@ -86,14 +86,14 @@
         "sizes": "1280x720",
         "type": "image/png",
         "form_factor": "wide",
-        "label": "IncidentRelay alerts dashboard"
+        "label": "Beacon alerts dashboard"
       },
       {
         "src": "/static/images/pwa/screenshots/mobile-alerts.png",
         "sizes": "390x844",
         "type": "image/png",
         "form_factor": "narrow",
-        "label": "IncidentRelay mobile alerts"
+        "label": "Beacon mobile alerts"
       }
     ]
 }

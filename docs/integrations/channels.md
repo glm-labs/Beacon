@@ -1,6 +1,6 @@
 ---
 title: Notification channels
-description: Common behavior for IncidentRelay outgoing notification channels
+description: Common behavior for Beacon outgoing notification channels
 ---
 
 # Notification channels
@@ -11,7 +11,7 @@ A channel is an outgoing notification target. Channels do not receive alerts dir
 Incoming alert -> Route -> Notification channels
 ```
 
-A route can have one or more channels. When an alert is created or updated, IncidentRelay checks every channel attached to the matched route.
+A route can have one or more channels. When an alert is created or updated, Beacon checks every channel attached to the matched route.
 
 !!! note "Browser push is profile-level"
     Browser push is not a channel type. Users enable browser/PWA push in Profile, and alerts are sent to active browser push devices of the assigned user.
@@ -20,7 +20,7 @@ A route can have one or more channels. When an alert is created or updated, Inci
 
 ## Delivery checks
 
-For each channel IncidentRelay checks:
+For each channel Beacon checks:
 
 ```text
 1. Is the channel enabled?
@@ -68,7 +68,7 @@ low
 info
 ```
 
-IncidentRelay normalizes common incoming severity aliases before comparing them with the filter.
+Beacon normalizes common incoming severity aliases before comparing them with the filter.
 
 | Incoming value | Normalized value |
 |---|---|
@@ -135,4 +135,4 @@ Browser push test sends to the current profile user. Real alert push sends to th
 
 ### Logs show `notification sent`, but the user did not receive it
 
-`notification sent` means IncidentRelay handed the message to the external provider or SMTP relay without an exception. It does not guarantee final mailbox, chat or phone delivery. Check the downstream provider logs as well.
+`notification sent` means Beacon handed the message to the external provider or SMTP relay without an exception. It does not guarantee final mailbox, chat or phone delivery. Check the downstream provider logs as well.
