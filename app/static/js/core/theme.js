@@ -39,7 +39,7 @@
         if (element) {
             element.setAttribute(
                 "content",
-                colorScheme === "dark" ? "#0f172a" : "#0b5cff"
+                colorScheme === "dark" ? "#0a1018" : "#f2f6f9"
             );
         }
     }
@@ -49,10 +49,10 @@
             return;
         }
 
-        window.Chart.defaults.color = themeToken("--md-text-soft", "#334155");
+        window.Chart.defaults.color = themeToken("--md-text-soft", "#33474f");
         window.Chart.defaults.borderColor = themeToken(
             "--md-chart-grid",
-            "rgba(100, 116, 139, 0.18)"
+            "rgba(90, 112, 122, 0.18)"
         );
     }
 

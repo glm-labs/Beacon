@@ -1,61 +1,74 @@
 :root {
-  /* "Signal" palette: a deliberate teal accent (ties into the Signal Ping
-   * logo's rings) instead of the Tailwind blue-600 default this used to be,
-   * with amber reserved for the beacon-light/alert accent. Every pair below
-   * was checked against WCAG contrast math, not eyeballed -- see the git
-   * history for this file for the actual numbers. Two things this fixed
-   * that the old palette got wrong: border/surface separation was 1.7:1
-   * (need >=3:1 for a UI boundary to register as a boundary at all), and
-   * white button text on --md-primary/--md-success/--md-warning was as low
-   * as 1.7:1 in dark mode -- every status color below is deliberately
-   * darkened just enough that its own white-text buttons stay readable
-   * (>=~4.3:1) while the color itself is still a clearly visible tinted
-   * text/icon color against the page background (>=~4:1).
+  /* "Navy & Cyan" palette: true neutral (blue-gray, not tinted) surfaces so
+   * every other color reads as itself instead of getting washed toward one
+   * hue, with cyan reserved strictly for brand/primary/links -- it does not
+   * moonlight as the "everything" color the way the previous teal pass let
+   * it. Status colors (danger/warning/success/info) are unchanged from the
+   * prior pass and stay distinct real red/amber/green/blue, independent of
+   * whichever hue is the brand accent. Every pair below was checked against
+   * WCAG contrast math, not eyeballed -- see the git history for this file
+   * for the actual numbers.
+   *
+   * -rgb companion tokens exist so effects (focus rings, shadows, soft
+   * fills) can do rgba(var(--md-primary-rgb), 0.2) and stay in sync with
+   * the palette automatically, instead of hardcoding a color that silently
+   * goes stale the next time the palette changes -- that's exactly what
+   * happened to this file before (a handful of shadows/borders were still
+   * literal Tailwind blue-600/red-600/amber-600/green-600/sky-600 from the
+   * original fork, untouched by the first palette pass because they were
+   * never tokens in the first place).
    */
-  --md-bg: #f3faf9;
+  --md-bg: #f2f6f9;
   --md-surface: #ffffff;
-  --md-surface-soft: #e9f3f1;
-  --md-surface-hover: #dff0ee;
+  --md-surface-soft: #e7eef3;
+  --md-surface-hover: #dbe6ed;
   --md-surface-glass: rgba(255, 255, 255, 0.88);
   --md-surface-card: rgba(255, 255, 255, 0.96);
   --md-input-bg: #ffffff;
-  --md-disabled-bg: #eef5f4;
+  --md-disabled-bg: #eef2f6;
 
-  --md-sidebar-bg: #0b1a19;
-  --md-sidebar-bg-2: #0f2120;
-  --md-sidebar-border: rgba(207, 226, 223, 0.12);
-  --md-sidebar-text: #cfe2df;
-  --md-sidebar-muted: #93aaa6;
-  --md-sidebar-active: rgba(13, 127, 132, 0.28);
+  --md-sidebar-bg: #070c12;
+  --md-sidebar-bg-2: #0d1620;
+  --md-sidebar-border: rgba(180, 200, 214, 0.14);
+  --md-sidebar-text: #cddce6;
+  --md-sidebar-muted: #8a9aac;
+  --md-sidebar-active: rgba(10, 111, 130, 0.28);
 
-  --md-border: #6f958f;
-  --md-border-strong: #5f8580;
+  --md-border: #6b8290;
+  --md-border-strong: #56707d;
 
-  --md-text: #122423;
-  --md-text-soft: #33504c;
-  --md-muted: #557370;
-  --md-placeholder: #6c8985;
+  --md-text: #101820;
+  --md-text-soft: #33474f;
+  --md-muted: #55707a;
+  --md-placeholder: #5d7883;
   --md-on-accent: #ffffff;
 
-  --md-primary: #0d7f84;
-  --md-primary-hover: #0a656a;
-  --md-primary-soft: #d9f0ee;
+  --md-primary: #0d6e80;
+  --md-primary-hover: #094f5c;
+  --md-primary-soft: #d8eef3;
+  --md-primary-rgb: 13, 110, 128;
 
   --md-danger: #c53a32;
   --md-danger-soft: #fbe4e2;
   --md-danger-border: #f3c3bf;
+  --md-danger-rgb: 197, 58, 50;
 
   --md-warning: #a1650a;
   --md-warning-soft: #f8ecd9;
   --md-warning-border: #edd2a4;
+  --md-warning-rgb: 161, 101, 10;
 
   --md-success: #158a52;
   --md-success-soft: #dff3e8;
   --md-success-border: #b9e4cd;
+  --md-success-rgb: 21, 138, 82;
 
   --md-info: #2f5fd6;
   --md-info-soft: #dce8fb;
   --md-info-border: #b7cdf5;
+  --md-info-rgb: 47, 95, 214;
+
+  --md-muted-rgb: 85, 112, 122;
 
   /* Shared operational/impact state palette used by overview, services and graphs. */
   --md-operational: #158a52;
@@ -83,14 +96,17 @@
   --md-on-surface: var(--md-text);
   --md-error: var(--md-danger);
   --md-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --md-code-bg: #0e1f1e;
-  --md-code-text: #d7ece9;
+  --md-code-bg: #0a141f;
+  --md-code-text: #d7e6ec;
   --md-chip-overlay: rgba(255, 255, 255, 0.72);
   --md-sidebar-overlay: rgba(255, 255, 255, 0.08);
   --md-sidebar-overlay-hover: rgba(255, 255, 255, 0.14);
   --md-subtle-overlay: rgba(16, 24, 40, 0.08);
-  --md-brand-gradient: linear-gradient(135deg, #0f9994, #052e2c);
-  --md-chart-grid: rgba(94, 122, 117, 0.18);
+  --md-brand-gradient: linear-gradient(135deg, #0e8ea3, #041826);
+  --md-chart-grid: rgba(90, 112, 122, 0.18);
+  --md-focus-ring: rgba(var(--md-primary-rgb), 0.14);
+  --md-focus-ring-strong: rgba(var(--md-primary-rgb), 0.45);
+  --md-primary-shadow: rgba(var(--md-primary-rgb), 0.22);
 }
 
 /* Base */
@@ -131,7 +147,7 @@ body.md-theme {
 
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 34rem),
+    radial-gradient(circle at top left, rgba(var(--md-primary-rgb), 0.08), transparent 34rem),
     var(--md-bg);
   color: var(--md-text);
   font-family:
@@ -781,7 +797,7 @@ body.md-theme input:focus,
 body.md-theme select:focus,
 body.md-theme textarea:focus {
   border-color: var(--md-primary);
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 4px var(--md-focus-ring);
 }
 
 body.md-theme .form-body {
@@ -924,7 +940,7 @@ body.md-theme .btn[disabled] {
 body.md-theme .btn-primary {
   background: var(--md-primary);
   color: var(--md-on-accent);
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+  box-shadow: 0 8px 18px var(--md-primary-shadow);
 }
 
 body.md-theme .btn-primary:hover {
@@ -935,7 +951,7 @@ body.md-theme .btn-primary:hover {
 body.md-theme .btn-danger {
   background: var(--md-danger-soft);
   color: var(--md-danger);
-  border-color: rgba(220, 38, 38, 0.18);
+  border-color: rgba(var(--md-danger-rgb), 0.18);
 }
 
 body.md-theme .btn-danger:hover {
@@ -947,7 +963,7 @@ body.md-theme .btn-danger:hover {
 body.md-theme .btn-warning {
   background: var(--md-warning-soft);
   color: var(--md-warning);
-  border-color: rgba(217, 119, 6, 0.18);
+  border-color: rgba(var(--md-warning-rgb), 0.18);
 }
 
 body.md-theme .btn-warning:hover {
@@ -963,7 +979,7 @@ body.md-theme .alert-resolve-btn,
 body.md-theme [data-action="resolve"] {
   background: var(--md-success-soft);
   color: var(--md-success);
-  border-color: rgba(22, 163, 74, 0.22);
+  border-color: rgba(var(--md-success-rgb), 0.22);
 }
 
 body.md-theme .btn-success:hover,
@@ -974,13 +990,13 @@ body.md-theme [data-action="resolve"]:hover {
   background: var(--md-success);
   color: var(--md-on-accent);
   border-color: var(--md-success);
-  box-shadow: 0 8px 18px rgba(22, 163, 74, 0.22);
+  box-shadow: 0 8px 18px rgba(var(--md-success-rgb), 0.22);
 }
 
 body.md-theme .btn-info {
   background: var(--md-info-soft);
   color: var(--md-info);
-  border-color: rgba(2, 132, 199, 0.18);
+  border-color: rgba(var(--md-info-rgb), 0.18);
 }
 
 body.md-theme .btn-info:hover {
@@ -1253,7 +1269,7 @@ body.md-theme .row-disabled td {
   color: var(--md-muted);
   background-image: linear-gradient(
     90deg,
-    rgba(100, 116, 139, 0.06),
+    rgba(var(--md-muted-rgb), 0.06),
     transparent 180px
   );
 }
@@ -1262,7 +1278,7 @@ body.md-theme .row-firing td,
 body.md-theme .alerts-row-firing td {
   background-image: linear-gradient(
     90deg,
-    rgba(220, 38, 38, 0.06),
+    rgba(var(--md-danger-rgb), 0.06),
     transparent 180px
   );
 }
@@ -1271,7 +1287,7 @@ body.md-theme .row-acknowledged td,
 body.md-theme .alerts-row-acknowledged td {
   background-image: linear-gradient(
     90deg,
-    rgba(217, 119, 6, 0.06),
+    rgba(var(--md-warning-rgb), 0.06),
     transparent 180px
   );
 }
@@ -1280,7 +1296,7 @@ body.md-theme .row-resolved td,
 body.md-theme .alerts-row-resolved td {
   background-image: linear-gradient(
     90deg,
-    rgba(22, 163, 74, 0.06),
+    rgba(var(--md-success-rgb), 0.06),
     transparent 180px
   );
 }
@@ -1289,29 +1305,29 @@ body.md-theme .row-silenced td,
 body.md-theme .alerts-row-silenced td {
   background-image: linear-gradient(
     90deg,
-    rgba(100, 116, 139, 0.06),
+    rgba(var(--md-muted-rgb), 0.06),
     transparent 180px
   );
 }
 
 body.md-theme .row-firing:hover td,
 body.md-theme .alerts-row-firing:hover td {
-  background-color: rgba(220, 38, 38, 0.04);
+  background-color: rgba(var(--md-danger-rgb), 0.04);
 }
 
 body.md-theme .row-acknowledged:hover td,
 body.md-theme .alerts-row-acknowledged:hover td {
-  background-color: rgba(217, 119, 6, 0.04);
+  background-color: rgba(var(--md-warning-rgb), 0.04);
 }
 
 body.md-theme .row-resolved:hover td,
 body.md-theme .alerts-row-resolved:hover td {
-  background-color: rgba(22, 163, 74, 0.04);
+  background-color: rgba(var(--md-success-rgb), 0.04);
 }
 
 body.md-theme .row-silenced:hover td,
 body.md-theme .alerts-row-silenced:hover td {
-  background-color: rgba(100, 116, 139, 0.04);
+  background-color: rgba(var(--md-muted-rgb), 0.04);
 }
 
 /* Alert components */
@@ -1351,25 +1367,25 @@ body.md-theme .overview-list-dot {
   flex: 0 0 9px;
   border-radius: 999px;
   background: var(--md-muted);
-  box-shadow: 0 0 0 4px rgba(100, 116, 139, 0.12);
+  box-shadow: 0 0 0 4px rgba(var(--md-muted-rgb), 0.12);
 }
 
 body.md-theme .dot-firing,
 body.md-theme .overview-dot-firing {
   background: var(--md-danger);
-  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+  box-shadow: 0 0 0 4px rgba(var(--md-danger-rgb), 0.12);
 }
 
 body.md-theme .dot-acknowledged,
 body.md-theme .overview-dot-acknowledged {
   background: var(--md-warning);
-  box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.13);
+  box-shadow: 0 0 0 4px rgba(var(--md-warning-rgb), 0.13);
 }
 
 body.md-theme .dot-resolved,
 body.md-theme .overview-dot-resolved {
   background: var(--md-success);
-  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.12);
+  box-shadow: 0 0 0 4px rgba(var(--md-success-rgb), 0.12);
 }
 
 body.md-theme .dot-silenced,
@@ -2053,7 +2069,7 @@ body.md-theme .json-editor-textarea {
 }
 
 body.md-theme .json-editor-textarea:focus {
-  box-shadow: inset 0 0 0 2px rgba(96, 165, 250, 0.45);
+  box-shadow: inset 0 0 0 2px var(--md-focus-ring-strong);
 }
 
 body.md-theme .matcher-editor-actions {
@@ -3267,25 +3283,25 @@ body.md-theme .ui-status-badge {
 body.md-theme .ui-status-badge-success {
     background: var(--md-success-soft);
     color: var(--md-success);
-    border-color: rgba(22, 163, 74, 0.22);
+    border-color: rgba(var(--md-success-rgb), 0.22);
 }
 
 body.md-theme .ui-status-badge-warning {
     background: var(--md-warning-soft);
     color: var(--md-warning);
-    border-color: rgba(217, 119, 6, 0.22);
+    border-color: rgba(var(--md-warning-rgb), 0.22);
 }
 
 body.md-theme .ui-status-badge-danger {
     background: var(--md-danger-soft);
     color: var(--md-danger);
-    border-color: rgba(220, 38, 38, 0.22);
+    border-color: rgba(var(--md-danger-rgb), 0.22);
 }
 
 body.md-theme .ui-status-badge-info {
     background: var(--md-info-soft);
     color: var(--md-info);
-    border-color: rgba(2, 132, 199, 0.22);
+    border-color: rgba(var(--md-info-rgb), 0.22);
 }
 
 body.md-theme .ui-status-badge-muted {

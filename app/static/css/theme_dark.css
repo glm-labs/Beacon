@@ -8,52 +8,60 @@
 html[data-color-scheme="dark"] {
     color-scheme: dark;
 
-    /* Same "Signal" palette as the light theme in material.css -- see the
-     * comment on :root there for the contrast rules this was built to. */
-    --md-bg: #0a1414;
-    --md-surface: #102020;
-    --md-surface-soft: #16302f;
-    --md-surface-hover: #1c3a38;
-    --md-surface-glass: rgba(16, 32, 32, 0.88);
-    --md-surface-card: rgba(16, 32, 32, 0.96);
-    --md-input-bg: #0d1a1a;
-    --md-disabled-bg: #16302f;
+    /* Same "Navy & Cyan" palette as the light theme in material.css -- see
+     * the comment on :root there for the rationale and contrast rules this
+     * was built to. */
+    --md-bg: #0a1018;
+    --md-surface: #101a26;
+    --md-surface-soft: #182636;
+    --md-surface-hover: #20303f;
+    --md-surface-glass: rgba(16, 26, 38, 0.88);
+    --md-surface-card: rgba(16, 26, 38, 0.96);
+    --md-input-bg: #0d1620;
+    --md-disabled-bg: #182636;
 
-    --md-sidebar-bg: #050c0c;
-    --md-sidebar-bg-2: #0a1616;
-    --md-sidebar-border: rgba(147, 170, 166, 0.18);
-    --md-sidebar-text: #cfe2df;
-    --md-sidebar-muted: #93aaa6;
-    --md-sidebar-active: rgba(12, 131, 128, 0.28);
+    --md-sidebar-bg: #070c12;
+    --md-sidebar-bg-2: #0a121b;
+    --md-sidebar-border: rgba(162, 183, 196, 0.18);
+    --md-sidebar-text: #cdd9e3;
+    --md-sidebar-muted: #8a9aac;
+    --md-sidebar-active: rgba(10, 127, 160, 0.28);
 
-    --md-border: #4a726c;
-    --md-border-strong: #5e938e;
+    --md-border: #5c6c7e;
+    --md-border-strong: #6e8093;
 
-    --md-text: #eaf3f1;
-    --md-text-soft: #c4d6d3;
-    --md-muted: #93aaa6;
-    --md-placeholder: #7c928e;
+    --md-text: #e6edf5;
+    --md-text-soft: #c2cedb;
+    --md-muted: #8a9aac;
+    --md-placeholder: #8497a8;
     --md-on-accent: #ffffff;
 
-    --md-primary: #0c8380;
-    --md-primary-hover: #1fa6a3;
-    --md-primary-soft: rgba(12, 131, 128, 0.2);
+    --md-primary: #0a7fa0;
+    --md-primary-hover: #086b82;
+    --md-primary-soft: rgba(10, 127, 160, 0.2);
+    --md-primary-rgb: 10, 127, 160;
 
     --md-danger: #c8433c;
     --md-danger-soft: rgba(200, 67, 60, 0.16);
     --md-danger-border: rgba(200, 67, 60, 0.4);
+    --md-danger-rgb: 200, 67, 60;
 
     --md-warning: #a8690a;
     --md-warning-soft: rgba(168, 105, 10, 0.18);
     --md-warning-border: rgba(168, 105, 10, 0.4);
+    --md-warning-rgb: 168, 105, 10;
 
     --md-success: #1a8f53;
     --md-success-soft: rgba(26, 143, 83, 0.18);
     --md-success-border: rgba(26, 143, 83, 0.4);
+    --md-success-rgb: 26, 143, 83;
 
     --md-info: #3f6fd6;
     --md-info-soft: rgba(63, 111, 214, 0.18);
     --md-info-border: rgba(63, 111, 214, 0.4);
+    --md-info-rgb: 63, 111, 214;
+
+    --md-muted-rgb: 138, 154, 172;
 
     --md-operational: #1a8f53;
     --md-degraded: #a8690a;
@@ -65,13 +73,16 @@ html[data-color-scheme="dark"] {
     --md-shadow-md: 0 10px 30px rgba(0, 0, 0, 0.34);
     --md-shadow-lg: 0 22px 58px rgba(0, 0, 0, 0.46);
 
-    --md-code-bg: #050c0c;
-    --md-code-text: #d7ece9;
-    --md-chip-overlay: rgba(10, 20, 20, 0.72);
+    --md-code-bg: #070f18;
+    --md-code-text: #d7e6ec;
+    --md-chip-overlay: rgba(10, 16, 24, 0.72);
     --md-sidebar-overlay: rgba(255, 255, 255, 0.08);
     --md-sidebar-overlay-hover: rgba(255, 255, 255, 0.14);
     --md-subtle-overlay: rgba(255, 255, 255, 0.08);
-    --md-chart-grid: rgba(147, 170, 166, 0.22);
+    --md-chart-grid: rgba(138, 154, 172, 0.22);
+    --md-focus-ring: rgba(var(--md-primary-rgb), 0.18);
+    --md-focus-ring-strong: rgba(var(--md-primary-rgb), 0.45);
+    --md-primary-shadow: rgba(var(--md-primary-rgb), 0.22);
 }
 
 /* Third-party Select2 ships light colors after material.css. */
@@ -126,6 +137,6 @@ html[data-color-scheme="dark"] body.md-theme .ts-dropdown .active {
 }
 
 html[data-color-scheme="dark"] body.md-theme ::selection {
-    background: rgba(96, 165, 250, 0.35);
+    background: rgba(var(--md-primary-rgb), 0.35);
     color: var(--md-on-accent);
 }

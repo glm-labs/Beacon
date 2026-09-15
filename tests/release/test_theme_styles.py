@@ -84,11 +84,11 @@ def test_page_styles_do_not_define_their_own_color_scheme_overrides():
 def test_dark_theme_is_token_layer_not_page_override_catalog():
     source = (CSS_ROOT / "theme_dark.css").read_text(encoding="utf-8")
 
-    assert "--md-surface: #102020" in source
-    assert "--md-text: #eaf3f1" in source
-    assert "--md-input-bg: #0d1a1a" in source
+    assert "--md-surface: #101a26" in source
+    assert "--md-text: #e6edf5" in source
+    assert "--md-input-bg: #0d1620" in source
     assert "--md-operational: #1a8f53" in source
-    assert "--md-chart-grid: rgba(147, 170, 166, 0.22)" in source
+    assert "--md-chart-grid: rgba(138, 154, 172, 0.22)" in source
 
     # Vendor controls need compatibility overrides because their bundled CSS
     # uses hard-coded colors. First-party page components should not live here.
