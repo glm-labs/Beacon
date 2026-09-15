@@ -91,9 +91,9 @@ def test_dark_theme_uses_shared_material_tokens():
     assert "--surface: var(--md-surface)" in material_css
     assert "--text: var(--md-text)" in material_css
     assert "--card-background: var(--md-surface)" in material_css
-    assert "--md-surface: #111827" in dark_css
-    assert "--md-input-bg: #0f172a" in dark_css
-    assert "--md-code-bg: #020617" in dark_css
+    assert "--md-surface: #102020" in dark_css
+    assert "--md-input-bg: #0d1a1a" in dark_css
+    assert "--md-code-bg: #050c0c" in dark_css
 
     # First-party page components consume shared tokens instead of being
     # re-declared one-by-one in the dark stylesheet.

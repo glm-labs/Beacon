@@ -1,55 +1,68 @@
 :root {
-  --md-bg: #f8fafc;
+  /* "Signal" palette: a deliberate teal accent (ties into the Signal Ping
+   * logo's rings) instead of the Tailwind blue-600 default this used to be,
+   * with amber reserved for the beacon-light/alert accent. Every pair below
+   * was checked against WCAG contrast math, not eyeballed -- see the git
+   * history for this file for the actual numbers. Two things this fixed
+   * that the old palette got wrong: border/surface separation was 1.7:1
+   * (need >=3:1 for a UI boundary to register as a boundary at all), and
+   * white button text on --md-primary/--md-success/--md-warning was as low
+   * as 1.7:1 in dark mode -- every status color below is deliberately
+   * darkened just enough that its own white-text buttons stay readable
+   * (>=~4.3:1) while the color itself is still a clearly visible tinted
+   * text/icon color against the page background (>=~4:1).
+   */
+  --md-bg: #f3faf9;
   --md-surface: #ffffff;
-  --md-surface-soft: #f1f5f9;
-  --md-surface-hover: #eef4ff;
+  --md-surface-soft: #e9f3f1;
+  --md-surface-hover: #dff0ee;
   --md-surface-glass: rgba(255, 255, 255, 0.88);
   --md-surface-card: rgba(255, 255, 255, 0.96);
   --md-input-bg: #ffffff;
-  --md-disabled-bg: #f1f5f9;
+  --md-disabled-bg: #eef5f4;
 
-  --md-sidebar-bg: #0f172a;
-  --md-sidebar-bg-2: #111827;
-  --md-sidebar-border: rgba(255, 255, 255, 0.1);
-  --md-sidebar-text: #cbd5e1;
-  --md-sidebar-muted: #94a3b8;
-  --md-sidebar-active: rgba(37, 99, 235, 0.24);
+  --md-sidebar-bg: #0b1a19;
+  --md-sidebar-bg-2: #0f2120;
+  --md-sidebar-border: rgba(207, 226, 223, 0.12);
+  --md-sidebar-text: #cfe2df;
+  --md-sidebar-muted: #93aaa6;
+  --md-sidebar-active: rgba(13, 127, 132, 0.28);
 
-  --md-border: #dbe3ef;
-  --md-border-strong: #cbd5e1;
+  --md-border: #6f958f;
+  --md-border-strong: #5f8580;
 
-  --md-text: #0f172a;
-  --md-text-soft: #334155;
-  --md-muted: #64748b;
-  --md-placeholder: #94a3b8;
+  --md-text: #122423;
+  --md-text-soft: #33504c;
+  --md-muted: #557370;
+  --md-placeholder: #6c8985;
   --md-on-accent: #ffffff;
 
-  --md-primary: #2563eb;
-  --md-primary-hover: #1d4ed8;
-  --md-primary-soft: #dbeafe;
+  --md-primary: #0d7f84;
+  --md-primary-hover: #0a656a;
+  --md-primary-soft: #d9f0ee;
 
-  --md-danger: #dc2626;
-  --md-danger-soft: #fee2e2;
-  --md-danger-border: #fecaca;
+  --md-danger: #c53a32;
+  --md-danger-soft: #fbe4e2;
+  --md-danger-border: #f3c3bf;
 
-  --md-warning: #d97706;
-  --md-warning-soft: #fef3c7;
-  --md-warning-border: #fde68a;
+  --md-warning: #a1650a;
+  --md-warning-soft: #f8ecd9;
+  --md-warning-border: #edd2a4;
 
-  --md-success: #16a34a;
-  --md-success-soft: #dcfce7;
-  --md-success-border: #bbf7d0;
+  --md-success: #158a52;
+  --md-success-soft: #dff3e8;
+  --md-success-border: #b9e4cd;
 
-  --md-info: #0284c7;
-  --md-info-soft: #e0f2fe;
-  --md-info-border: #bae6fd;
+  --md-info: #2f5fd6;
+  --md-info-soft: #dce8fb;
+  --md-info-border: #b7cdf5;
 
   /* Shared operational/impact state palette used by overview, services and graphs. */
-  --md-operational: #16a34a;
-  --md-degraded: #f59e0b;
-  --md-partial-outage: #f97316;
-  --md-major-outage: #dc2626;
-  --md-maintenance: #7c3aed;
+  --md-operational: #158a52;
+  --md-degraded: #a1650a;
+  --md-partial-outage: #c0561d;
+  --md-major-outage: #c53a32;
+  --md-maintenance: #7350c9;
 
   --md-radius-sm: 10px;
   --md-radius-md: 14px;
@@ -70,14 +83,14 @@
   --md-on-surface: var(--md-text);
   --md-error: var(--md-danger);
   --md-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --md-code-bg: #0f172a;
-  --md-code-text: #e5e7eb;
+  --md-code-bg: #0e1f1e;
+  --md-code-text: #d7ece9;
   --md-chip-overlay: rgba(255, 255, 255, 0.72);
   --md-sidebar-overlay: rgba(255, 255, 255, 0.08);
   --md-sidebar-overlay-hover: rgba(255, 255, 255, 0.14);
   --md-subtle-overlay: rgba(16, 24, 40, 0.08);
-  --md-brand-gradient: linear-gradient(135deg, #0b6cff, #001f4d);
-  --md-chart-grid: rgba(100, 116, 139, 0.18);
+  --md-brand-gradient: linear-gradient(135deg, #0f9994, #052e2c);
+  --md-chart-grid: rgba(94, 122, 117, 0.18);
 }
 
 /* Base */
