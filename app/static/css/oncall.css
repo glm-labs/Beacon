@@ -1077,6 +1077,12 @@ body.has-app-sticky-x-scroll {
     overflow-x: auto;
 }
 
+/* Top-level tab bars sit in the page stack, which has no gap of its own:
+   match the 20px a .card carries so the panel below does not touch them. */
+.page-stack > .page-tabs {
+    margin-bottom: 20px;
+}
+
 .page-tab {
     display: inline-flex;
     align-items: center;
