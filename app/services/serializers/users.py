@@ -30,6 +30,7 @@ def serialize_user(user, groups=None):
         "telegram_user_id": user.telegram_user_id,
         "slack_user_id": user.slack_user_id,
         "mattermost_user_id": user.mattermost_user_id,
+        "pushover_user_key": getattr(user, "pushover_user_key", None),
         "active": user.active,
         "is_admin": user.is_admin,
         "active_group_id": user.active_group.id if user.active_group else None,

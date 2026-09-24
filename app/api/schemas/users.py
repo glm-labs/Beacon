@@ -46,6 +46,10 @@ class UserFieldsSchema(ApiModel):
         default=None,
         max_length=CONTACT_ID_MAX_LENGTH,
     )
+    pushover_user_key: str | None = Field(
+        default=None,
+        max_length=CONTACT_ID_MAX_LENGTH,
+    )
 
     @field_validator("phone")
     @classmethod

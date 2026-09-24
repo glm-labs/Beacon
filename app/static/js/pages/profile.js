@@ -220,6 +220,7 @@ function loadProfile() {
         $("#profile-telegram").val(profile.telegram_user_id || "");
         $("#profile-slack").val(profile.slack_user_id || "");
         $("#profile-mattermost").val(profile.mattermost_user_id || "");
+        $("#profile-pushover").val(profile.pushover_user_key || "");
         $("#profile-notify-shift-start-email").prop(
             "checked",
             profile.notify_oncall_shift_start_email !== false
@@ -272,6 +273,7 @@ function saveProfile() {
             telegram_user_id: $("#profile-telegram").val() || null,
             slack_user_id: $("#profile-slack").val() || null,
             mattermost_user_id: $("#profile-mattermost").val() || null,
+            pushover_user_key: $("#profile-pushover").val() || null,
             notify_oncall_shift_start_email: $("#profile-notify-shift-start-email").is(":checked"),
             notify_oncall_shift_end_email: $("#profile-notify-shift-end-email").is(":checked"),
             notify_oncall_shift_start_mattermost: $("#profile-notify-shift-start-mattermost").is(":checked")

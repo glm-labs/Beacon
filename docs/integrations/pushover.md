@@ -60,7 +60,9 @@ Policies](../usage/notification-policies.md).
 ## Personal notification rule
 
 A user's own Pushover user key lives on their profile (`pushover_user_key`),
-set from **Profile → Notification settings**. A personal Pushover rule
+set from **Profile → Profile → Contact IDs**, next to the Telegram, Slack and
+Mattermost user IDs. An admin can set it for someone else from **Admin →
+Users**. A personal Pushover rule
 always uses the app-wide `[pushover] app_token` — there's no per-rule
 app_token field, since a personal rule has nowhere to put one.
 

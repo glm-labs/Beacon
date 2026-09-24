@@ -130,6 +130,16 @@ PROFILE_SCHEMA = {
             ),
             "example": "9x8y7z6abc",
         },
+        "pushover_user_key": {
+            "type": "string",
+            "nullable": True,
+            "description": (
+                "Personal Pushover user key. Used as the target of a "
+                "personal Pushover notification rule and to attribute a "
+                "1-tap acknowledge to an Beacon user."
+            ),
+            "example": "uQiZ1s2t3u4v5w6x7y8z9a0b1c",
+        },
         "active": {
             "type": "boolean",
             "readOnly": True,
@@ -224,6 +234,11 @@ PROFILE_UPDATE_SCHEMA = {
             "type": "string",
             "nullable": True,
             "example": "9x8y7z6abc",
+        },
+        "pushover_user_key": {
+            "type": "string",
+            "nullable": True,
+            "example": "uQiZ1s2t3u4v5w6x7y8z9a0b1c",
         },
     },
 }

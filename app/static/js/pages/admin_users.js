@@ -275,6 +275,11 @@ function renderAdminUserMessengers(user) {
             .addClass("details-meta")
             .text(i18n.t("users.row.mattermost", {id: user.mattermost_user_id || "-"}))
     );
+    box.append(
+        $("<div>")
+            .addClass("details-meta")
+            .text(i18n.t("users.row.pushover", {id: user.pushover_user_key || "-"}))
+    );
 
     return box;
 }
@@ -553,6 +558,7 @@ function collectAdminUserPayload() {
         telegram_user_id: $("#admin-user-telegram").val().trim() || null,
         slack_user_id: $("#admin-user-slack").val().trim() || null,
         mattermost_user_id: $("#admin-user-mattermost").val().trim() || null,
+        pushover_user_key: $("#admin-user-pushover").val().trim() || null,
         password: $("#admin-user-password").val() || null,
         is_admin: $("#admin-user-is-admin").is(":checked"),
         active: $("#admin-user-active").is(":checked"),
@@ -630,6 +636,7 @@ function fillAdminUserForm(user) {
     $("#admin-user-telegram").val(user.telegram_user_id || "");
     $("#admin-user-slack").val(user.slack_user_id || "");
     $("#admin-user-mattermost").val(user.mattermost_user_id || "");
+    $("#admin-user-pushover").val(user.pushover_user_key || "");
     $("#admin-user-password").val("");
     $("#admin-user-is-admin").prop("checked", !!user.is_admin);
     $("#admin-user-active").prop("checked", !!user.active);
@@ -713,6 +720,7 @@ function setAdminUserActive(user, active) {
                 telegram_user_id: user.telegram_user_id || null,
                 slack_user_id: user.slack_user_id || null,
                 mattermost_user_id: user.mattermost_user_id || null,
+                pushover_user_key: user.pushover_user_key || null,
                 password: null,
                 is_admin: !!user.is_admin,
                 active: active,
@@ -737,6 +745,7 @@ function resetAdminUserForm() {
     $("#admin-user-telegram").val("");
     $("#admin-user-slack").val("");
     $("#admin-user-mattermost").val("");
+    $("#admin-user-pushover").val("");
     $("#admin-user-password").val("");
     $("#admin-user-is-admin").prop("checked", false);
     $("#admin-user-active").prop("checked", true).prop("disabled", false);

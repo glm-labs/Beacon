@@ -292,6 +292,7 @@ def update_user(user_id, data):
         "telegram_user_id",
         "slack_user_id",
         "mattermost_user_id",
+        "pushover_user_key",
         "notify_oncall_shift_start_email",
         "notify_oncall_shift_end_email",
         "notify_oncall_shift_start_mattermost",
