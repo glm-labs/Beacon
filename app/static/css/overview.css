@@ -32,8 +32,14 @@ body.md-theme .dashboard-alerts-table td {
 }
 
 body.md-theme .dashboard-alerts-table .overview-alert-title-cell {
-  min-width: 260px;
+  min-width: 220px;
   white-space: normal;
+}
+
+body.md-theme .overview-alert-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
 }
 
 body.md-theme .overview-id-link {
@@ -43,6 +49,7 @@ body.md-theme .overview-id-link {
   cursor: pointer;
   font-weight: 850;
   padding: 0;
+  flex: 0 0 auto;
 }
 
 body.md-theme .overview-id-link:hover {

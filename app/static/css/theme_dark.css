@@ -17,6 +17,7 @@ html[data-color-scheme="dark"] {
     --md-surface-hover: #20303f;
     --md-surface-glass: rgba(16, 26, 38, 0.88);
     --md-surface-card: rgba(16, 26, 38, 0.96);
+    --md-table-head-bg: #182636;
     --md-input-bg: #0d1620;
     --md-disabled-bg: #182636;
 

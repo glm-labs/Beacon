@@ -24,6 +24,7 @@
   --md-surface-hover: #dbe6ed;
   --md-surface-glass: rgba(255, 255, 255, 0.88);
   --md-surface-card: rgba(255, 255, 255, 0.96);
+  --md-table-head-bg: #f6f7f8;
   --md-input-bg: #ffffff;
   --md-disabled-bg: #eef2f6;
 
@@ -347,6 +348,11 @@ body.md-theme .menu-link:hover {
 body.md-theme .menu-link.active {
   background: var(--md-sidebar-active);
   color: var(--md-on-accent);
+}
+
+body.md-theme .menu-link:focus-visible {
+  outline: 2px solid var(--md-primary);
+  outline-offset: 2px;
 }
 
 body.md-theme .menu-icon {
@@ -1053,7 +1059,7 @@ body.md-theme .data-table {
 
 body.md-theme .data-table th {
   padding: 10px;
-  background: var(--md-surface-soft);
+  background: var(--md-table-head-bg);
   color: var(--md-muted);
   border-bottom: 1px solid var(--md-border);
   font-size: 12px;
@@ -1267,47 +1273,27 @@ body.md-theme .inline-status {
 
 body.md-theme .row-disabled td {
   color: var(--md-muted);
-  background-image: linear-gradient(
-    90deg,
-    rgba(var(--md-muted-rgb), 0.06),
-    transparent 180px
-  );
+  background-color: rgba(var(--md-muted-rgb), 0.06);
 }
 
 body.md-theme .row-firing td,
 body.md-theme .alerts-row-firing td {
-  background-image: linear-gradient(
-    90deg,
-    rgba(var(--md-danger-rgb), 0.06),
-    transparent 180px
-  );
+  background-color: rgba(var(--md-danger-rgb), 0.06);
 }
 
 body.md-theme .row-acknowledged td,
 body.md-theme .alerts-row-acknowledged td {
-  background-image: linear-gradient(
-    90deg,
-    rgba(var(--md-warning-rgb), 0.06),
-    transparent 180px
-  );
+  background-color: rgba(var(--md-warning-rgb), 0.06);
 }
 
 body.md-theme .row-resolved td,
 body.md-theme .alerts-row-resolved td {
-  background-image: linear-gradient(
-    90deg,
-    rgba(var(--md-success-rgb), 0.06),
-    transparent 180px
-  );
+  background-color: rgba(var(--md-success-rgb), 0.06);
 }
 
 body.md-theme .row-silenced td,
 body.md-theme .alerts-row-silenced td {
-  background-image: linear-gradient(
-    90deg,
-    rgba(var(--md-muted-rgb), 0.06),
-    transparent 180px
-  );
+  background-color: rgba(var(--md-muted-rgb), 0.06);
 }
 
 body.md-theme .row-firing:hover td,

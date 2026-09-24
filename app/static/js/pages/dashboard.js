@@ -141,7 +141,7 @@ function renderDashboardAlertsTable(alerts) {
         tbody.append(
             $("<tr>").append(
                 $("<td>")
-                    .attr("colspan", "9")
+                    .attr("colspan", "8")
                     .addClass("empty-table-cell")
                     .text(i18n.t("overview.empty.no_active_incidents"))
             )
@@ -157,24 +157,27 @@ function renderDashboardAlertsTable(alerts) {
 function renderDashboardAlertRow(alert) {
     const row = $("<tr>");
 
-    row.append(
-        $("<td>").append(
-            $("<button>")
-                .attr("type", "button")
-                .attr("title", i18n.t("overview.alert.show_details"))
-                .addClass("overview-id-link")
-                .text("#" + alert.id)
-                .on("click", function () {
-                    if (typeof showAlertDetails === "function") {
-                        showAlertDetails(alert.id);
-                    }
-                })
-        )
-    );
+    const showDetails = function () {
+        if (typeof showAlertDetails === "function") {
+            showAlertDetails(alert.id);
+        }
+    };
+
     row.append(
         $("<td>")
             .addClass("overview-alert-title-cell")
-            .append($("<div>").addClass("overview-alert-title").text(alert.title || "-"))
+            .append(
+                $("<div>").addClass("overview-alert-title-row")
+                    .append(
+                        $("<button>")
+                            .attr("type", "button")
+                            .attr("title", i18n.t("overview.alert.show_details"))
+                            .addClass("overview-id-link")
+                            .text("#" + alert.id)
+                            .on("click", showDetails)
+                    )
+                    .append($("<div>").addClass("overview-alert-title").text(alert.title || "-"))
+            )
             .append($("<div>").addClass("overview-alert-meta").text((alert.source || alert.route_name || i18n.t("overview.alert.fallback")) + " · " + dashboardEscalationText(alert)))
     );
     row.append(
@@ -202,7 +205,11 @@ function renderDashboardAlertRow(alert) {
     );
     row.append($("<td>").text(alert.team_name || alert.team_slug || "-"));
     row.append($("<td>").addClass("overview-duration-cell").text(alertDuration(alert)));
-    row.append($("<td>").text(formatDateTimeMinutes(dashboardDateValue(alert))));
+    row.append(
+        $("<td>")
+            .attr("title", formatDateTimeMinutes(dashboardDateValue(alert)))
+            .text(formatBrowserDate(dashboardDateValue(alert), "timeMinutes"))
+    );
 
     const actionsCell = $("<td>").addClass("actions-cell");
     const actions = $("<div>").addClass("table-actions");
