@@ -1,5 +1,5 @@
 .calendar-header {
-    padding: 16px 18px;
+    padding: 10px 16px;
 }
 
 .calendar-header-actions {
@@ -14,11 +14,11 @@
 .calendar-toolbar {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 18px;
-    border-top: 1px solid var(--border);
+    gap: 8px;
+    padding: 10px 16px;
+    border-top: 0;
     border-bottom: 1px solid var(--border);
-    background: var(--md-surface-soft);
+    background: var(--md-surface);
 }
 
 .calendar-search {
@@ -29,7 +29,7 @@
 
 .calendar-search .input {
     width: 100%;
-    padding-left: 34px;
+    padding-left: 32px;
 }
 
 .calendar-search-icon {
@@ -57,7 +57,7 @@
 }
 
 .calendar-body {
-    padding: 14px;
+    padding: 16px;
 }
 
 .calendar-legend {
@@ -75,7 +75,7 @@
     margin-right: 10px;
     color: var(--md-muted);
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .calendar-legend-color {
@@ -88,7 +88,7 @@
 .calendar-week-grid,
 .calendar-month-grid {
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: var(--md-radius-md);
     overflow-x: auto;
     background: var(--md-surface);
 }
@@ -100,9 +100,9 @@
 }
 
 .calendar-week-header {
-    background: var(--md-surface-soft);
+    background: var(--md-table-head-bg);
     border-bottom: 1px solid var(--border);
-    font-weight: 800;
+    font-weight: 500;
     color: var(--md-text-soft);
 }
 
@@ -124,17 +124,17 @@
     min-height: 72px;
     padding: 13px 12px;
     border-right: 1px solid var(--md-border);
-    background: var(--md-surface-soft);
+    background: var(--md-table-head-bg);
 }
 
 .calendar-team-link {
     color: var(--md-text);
-    font-weight: 800;
+    font-weight: 500;
     text-decoration: none;
 }
 
 .calendar-team-link:hover {
-    color: var(--primary);
+    color: var(--md-primary-ink);
     text-decoration: underline;
 }
 
@@ -171,7 +171,7 @@
     padding: 12px;
     border-right: 1px solid var(--border);
     color: var(--md-text-soft);
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .calendar-month-weekday:last-child {
@@ -187,7 +187,7 @@
     margin-bottom: 7px;
     color: var(--md-text-soft);
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .calendar-assignment {
@@ -201,7 +201,7 @@
     overflow: hidden;
     border: 1px solid transparent;
     border-left: 4px solid var(--calendar-user-color, var(--primary));
-    /*border-radius: 10px;*/
+    /*border-radius: var(--md-radius-sm);*/
     background: var(--calendar-user-bg, var(--md-surface-soft));
     color: var(--md-text);
     font-size: 12px;
@@ -231,7 +231,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .calendar-assignment-badge {
@@ -245,7 +245,7 @@
     background: var(--md-subtle-overlay);
     color: var(--md-text-soft);
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.2;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -360,7 +360,7 @@
     transform: translateX(-1px);
     color: var(--md-muted);
     font-size: 9px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1;
 }
 
@@ -393,14 +393,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .calendar-assignment-timeline .calendar-assignment-time {
     flex: 0 0 auto;
     color: var(--md-muted);
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .calendar-assignment-timeline .calendar-assignment-badge {
@@ -410,7 +410,7 @@
     background: var(--md-subtle-overlay);
     color: var(--md-text-soft);
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .calendar-assignment-override.calendar-assignment-timeline {
@@ -426,7 +426,7 @@
     align-items: center;
     justify-content: center;
     color: var(--md-muted);
-    font-weight: 700;
+    font-weight: 600;
 }
 .calendar-day-timeline-month .calendar-no-duty-timeline {
     inset: 4px 6px;
@@ -444,7 +444,7 @@
 
 .calendar-assignment-timeline-month .calendar-assignment-user {
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 600;
 }
 .calendar-month-rotation-wrapper {
     display: flex;
@@ -456,7 +456,7 @@
 .calendar-month-rotation-title {
     color: var(--muted);
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 600;
     line-height: 1.1;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -465,4 +465,14 @@
 
 .calendar-month-rotation-wrapper .calendar-day-timeline-month {
     margin-top: 0;
+}
+.rotation-calendar-block + .rotation-calendar-block {
+    margin-top: 20px;
+}
+
+.rotation-calendar-header h3 {
+    margin: 0 0 8px;
+    color: var(--md-text);
+    font-size: 13.5px;
+    font-weight: 600;
 }

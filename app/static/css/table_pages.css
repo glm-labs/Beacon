@@ -6,37 +6,38 @@
 
 .table-card {
     margin-bottom: 0;
-    border-radius: 16px;
+    border-radius: var(--md-radius-lg);
     overflow: hidden;
 }
 
 .table-card-header {
-    padding: 16px 18px;
+    padding: 10px 16px;
 }
 
 .table-toolbar {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 18px;
+    gap: 8px;
+    padding: 10px 16px;
     border-bottom: 1px solid var(--border);
-    background: var(--md-surface-soft);
+    background: var(--md-surface);
+    flex-wrap: wrap;
 }
 
 .table-search {
     position: relative;
     flex: 1;
-    min-width: 260px;
+    min-width: 220px;
 }
 
 .table-search .input {
     width: 100%;
-    padding-left: 34px;
+    padding-left: 32px;
 }
 
 .table-search-icon {
     position: absolute;
-    left: 12px;
+    left: 11px;
     top: 50%;
     color: var(--muted);
     transform: translateY(-50%);
@@ -44,14 +45,14 @@
 }
 
 .table-filter-select {
-    min-width: 160px;
+    min-width: 150px;
 }
 
 .table-active-filters {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px 18px;
+    gap: 6px;
+    padding: 8px 16px;
     border-bottom: 1px solid var(--border);
     background: var(--md-surface);
 }
@@ -65,7 +66,7 @@
     color: var(--md-text-soft);
     background: var(--md-surface-soft);
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .table-wrapper.has-table-pagination,
@@ -86,14 +87,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 12px;
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
     margin: 0;
-    padding: 14px 18px;
+    padding: 8px 16px;
     border: 1px solid var(--border);
-    border-radius: 0 0 16px 16px;
+    border-radius: 0 0 var(--md-radius-lg) var(--md-radius-lg);
     background: var(--md-surface);
 }
 
@@ -140,9 +141,9 @@
 .table-pagination-center {
     flex: 0 0 auto;
     justify-content: center;
-    color: var(--md-text-soft);
+    color: var(--md-muted);
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 400;
     text-align: center;
     white-space: nowrap;
 }
@@ -158,7 +159,7 @@
 }
 
 .table-page-size {
-    width: 90px;
+    width: 72px;
 }
 
 .table-actions {
@@ -179,40 +180,40 @@
 .empty-table-cell {
     text-align: center;
     color: var(--md-muted);
-    padding: 18px;
+    padding: 28px 16px;
 }
 
 .table-title {
     color: var(--md-text);
-    font-weight: 800;
+    font-weight: 500;
 }
 
 .table-subtitle {
-    margin-top: 3px;
+    margin-top: 2px;
     color: var(--muted);
     font-size: 12px;
 }
 
 .table-meta-pill {
     display: inline-flex;
-    margin-top: 7px;
+    margin-top: 6px;
     padding: 3px 7px;
     border-radius: 999px;
     color: var(--md-text-soft);
     background: var(--md-surface-soft);
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .ui-pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 24px;
-    padding: 4px 9px;
+    min-height: 22px;
+    padding: 2px 8px;
     border-radius: 999px;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 500;
     white-space: nowrap;
 }
 
@@ -243,7 +244,7 @@
 
 .ui-pill-info,
 .ui-pill-informational {
-    color: var(--md-primary);
+    color: var(--md-primary-ink);
     background: var(--md-primary-soft);
 }
 
@@ -254,10 +255,10 @@
 }
 
 .status-dot {
-    width: 9px;
-    height: 9px;
+    width: 8px;
+    height: 8px;
     border-radius: 999px;
-    flex: 0 0 9px;
+    flex: 0 0 8px;
     background: var(--md-muted);
 }
 
@@ -265,19 +266,16 @@
 .status-dot-danger,
 .status-dot-critical {
     background: var(--danger);
-    box-shadow: 0 0 0 5px rgba(217, 83, 79, 0.12);
 }
 
 .status-dot-acknowledged,
 .status-dot-warning {
     background: var(--warning);
-    box-shadow: 0 0 0 5px rgba(240, 173, 78, 0.12);
 }
 
 .status-dot-resolved,
 .status-dot-success {
     background: var(--success);
-    box-shadow: 0 0 0 5px rgba(92, 184, 92, 0.12);
 }
 
 .status-dot-muted,

@@ -1,20 +1,20 @@
 /* Dashboard */
 
 body.md-theme .dashboard-page {
-  gap: 20px;
+  gap: 16px;
 }
 
 body.md-theme .dashboard-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 390px;
-  gap: 20px;
+  gap: 16px;
   align-items: start;
 }
 
 body.md-theme .dashboard-side-column {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 body.md-theme .dashboard-active-card {
@@ -32,7 +32,7 @@ body.md-theme .dashboard-alerts-table td {
 }
 
 body.md-theme .dashboard-alerts-table .overview-alert-title-cell {
-  min-width: 220px;
+  min-width: 260px;
   white-space: normal;
 }
 
@@ -45,9 +45,9 @@ body.md-theme .overview-alert-title-row {
 body.md-theme .overview-id-link {
   border: 0;
   background: transparent;
-  color: var(--md-primary);
+  color: var(--md-primary-ink);
   cursor: pointer;
-  font-weight: 850;
+  font-weight: 500;
   padding: 0;
   flex: 0 0 auto;
 }
@@ -58,18 +58,18 @@ body.md-theme .overview-id-link:hover {
 
 body.md-theme .overview-alert-title {
   color: var(--md-text);
-  font-weight: 850;
+  font-weight: 500;
 }
 
 body.md-theme .overview-alert-meta {
-  margin-top: 4px;
+  margin-top: 2px;
   color: var(--md-muted);
   font-size: 12px;
 }
 
 body.md-theme .overview-duration-cell {
   color: var(--md-text-soft);
-  font-weight: 750;
+  font-weight: 400;
 }
 
 body.md-theme .actions-cell {
@@ -84,37 +84,37 @@ body.md-theme .table-actions {
 
 body.md-theme .dashboard-status-body {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 20px 22px 22px;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
 }
 
 body.md-theme .dashboard-status-icon {
-  width: 42px;
-  height: 42px;
-  flex: 0 0 42px;
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: var(--md-primary-soft);
-  color: var(--md-primary);
-  font-size: 20px;
+  background: var(--md-primary);
+  color: var(--md-primary-ink);
+  font-size: 0;
   line-height: 1;
 }
 
 body.md-theme .dashboard-status-text {
   color: var(--md-text);
-  font-size: 15px;
-  font-weight: 750;
-  line-height: 1.45;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 body.md-theme .dashboard-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 16px 18px 18px;
+  gap: 0;
+  padding: 4px 8px 8px;
 }
 
 body.md-theme .overview-dot-firing {
@@ -134,29 +134,30 @@ body.md-theme .overview-dot-silenced {
 }
 
 body.md-theme .overview-team-count {
-  min-width: 30px;
-  height: 30px;
+  min-width: 24px;
+  height: 22px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
   background: var(--md-surface-soft);
   color: var(--md-text);
-  font-size: 13px;
-  font-weight: 900;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0 7px;
 }
 
 body.md-theme .dashboard-bottom-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  gap: 16px;
 }
 
 body.md-theme .dashboard-bars {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 20px 22px 22px;
+  gap: 12px;
+  padding: 14px 16px 16px;
 }
 
 body.md-theme .overview-bar-row {
@@ -171,11 +172,11 @@ body.md-theme .overview-bar-meta {
   gap: 12px;
   color: var(--md-text-soft);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 500;
 }
 
 body.md-theme .overview-bar-track {
-  height: 10px;
+  height: 6px;
   overflow: hidden;
   border-radius: 999px;
   background: var(--md-surface-soft);
@@ -189,7 +190,7 @@ body.md-theme .overview-bar-fill {
 
 body.md-theme .overview-empty,
 body.md-theme .empty-table-cell {
-  padding: 18px;
+  padding: 28px 16px;
   color: var(--md-muted);
   text-align: center;
 }
@@ -217,7 +218,7 @@ body.md-theme .empty-table-cell {
 }
 
 .dashboard-impact-title {
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .dashboard-impact-root {
@@ -238,7 +239,7 @@ body.md-theme .empty-table-cell {
 .dashboard-impact-more {
     justify-content: center;
     color: var(--muted);
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .overview-dot-major-outage {
@@ -259,4 +260,29 @@ body.md-theme .empty-table-cell {
 
 .overview-dot-unknown {
     background: var(--md-muted) !important;
+}
+
+body.md-theme .overview-list-title {
+    color: var(--md-text);
+    font-size: 13.5px;
+    font-weight: 500;
+}
+
+body.md-theme .overview-list-time {
+    color: var(--md-muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+body.md-theme .dashboard-alerts-table th,
+body.md-theme .dashboard-alerts-table td {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+/* The overview side column carries lists, not a details panel: give it more room. */
+@media (min-width: 1301px) {
+    #view-dashboard .page-layout-grid {
+        grid-template-columns: minmax(0, 1fr) 360px;
+    }
 }

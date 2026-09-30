@@ -7,7 +7,7 @@
 
 .rotations-form-card {
     margin-bottom: 0;
-    border-radius: 16px;
+    border-radius: var(--md-radius-lg);
     overflow: hidden;
 }
 
@@ -24,10 +24,10 @@
 }
 
 .rotations-form-card summary {
-    padding: 16px 18px;
+    padding: 12px 16px;
     color: var(--md-text);
-    font-size: 18px;
-    font-weight: 800;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
     border-bottom: 1px solid var(--border);
 }
@@ -67,9 +67,9 @@
 
 .rotation-layer-card {
     border: 1px solid var(--border);
-    border-radius: 18px;
+    border-radius: var(--md-radius-lg);
     background: var(--md-surface);
-    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.04);
+    box-shadow: none;
     overflow: hidden;
 }
 
@@ -82,15 +82,16 @@
 }
 
 .rotation-layer-number {
-    width: 34px;
-    height: 34px;
+    width: 26px;
+    height: 26px;
     border-radius: 999px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     background: var(--md-primary-soft);
-    color: var(--md-primary);
-    font-weight: 800;
+    color: var(--md-primary-ink);
+    font-weight: 600;
+    font-size: 12px;
 }
 
 .rotation-layer-title {
@@ -99,8 +100,9 @@
 
 .rotation-layer-title strong {
     display: block;
-    font-size: 16px;
+    font-size: 14px;
     color: var(--text);
+    font-weight: 600;
 }
 
 .rotation-layer-title small {
@@ -121,7 +123,7 @@
 
 .rotation-layer-summary-item {
     padding: 12px;
-    border-radius: 14px;
+    border-radius: var(--md-radius-md);
     background: var(--md-surface-soft);
     border: 1px solid var(--md-border);
 }
@@ -130,10 +132,10 @@
     display: block;
     margin-bottom: 4px;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 500;
     color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
+    text-transform: none;
+    letter-spacing: 0;
 }
 
 .rotation-layer-summary-item strong {
@@ -161,7 +163,7 @@
 .layer-editor-section h4 {
     margin: 0 0 10px;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 600;
     color: var(--text);
 }
 
@@ -198,9 +200,9 @@
     padding: 5px 9px;
     border-radius: 999px;
     background: var(--md-primary-soft);
-    color: var(--md-primary);
+    color: var(--md-primary-ink);
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .layer-preset-buttons {
@@ -242,7 +244,7 @@
     margin: 0;
     color: var(--text);
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.25;
 }
 
@@ -345,7 +347,7 @@
 .rotation-layer-editor .layer-member-add-grid .app-field > label {
     margin: 0;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.25;
 }
 
@@ -363,7 +365,7 @@
     align-items: center;
     padding: 12px;
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: var(--md-radius-md);
     background: var(--md-surface);
 }
 

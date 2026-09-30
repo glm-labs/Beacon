@@ -1,7 +1,7 @@
 .teams-card,
 .teams-details-card {
     margin-bottom: 0;
-    border-radius: 16px;
+    border-radius: var(--md-radius-lg);
     overflow: hidden;
 }
 

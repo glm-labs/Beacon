@@ -1,5 +1,5 @@
 .alerts-table .alert-title-cell {
-    min-width: 360px;
+    min-width: 280px;
 }
 
 .alerts-table .actions-cell {
@@ -24,7 +24,7 @@
 
 .alerts-card {
     margin-bottom: 0;
-    border-radius: 16px;
+    border-radius: var(--md-radius-lg);
     overflow: hidden;
 }
 
@@ -40,7 +40,7 @@
     gap: 7px;
     color: var(--md-text-soft);
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 500;
     cursor: pointer;
 }
 
@@ -71,7 +71,7 @@
 /*    color: var(--md-text-soft);*/
 /*    background: var(--md-surface-soft);*/
 /*    font-size: 12px;*/
-/*    font-weight: 700;*/
+/*    font-weight: 600;*/
 /*}*/
 
 .alerts-inbox-table th {
@@ -89,9 +89,9 @@
 .alerts-id-link {
     border: 0;
     background: transparent;
-    color: var(--primary);
+    color: var(--md-primary-ink);
     cursor: pointer;
-    font-weight: 800;
+    font-weight: 500;
     padding: 0;
 }
 
@@ -101,19 +101,7 @@
 
 .alerts-team {
     color: var(--md-text);
-    font-weight: 800;
-}
-
-.alerts-row-firing {
-    background: linear-gradient(90deg, rgba(254, 228, 226, 0.38), transparent 22%);
-}
-
-.alerts-row-acknowledged {
-    background: linear-gradient(90deg, rgba(254, 240, 199, 0.36), transparent 22%);
-}
-
-.alerts-row-resolved {
-    background: linear-gradient(90deg, rgba(209, 250, 223, 0.28), transparent 22%);
+    font-weight: 500;
 }
 
 .alerts-row-silenced {
@@ -127,7 +115,7 @@
     margin: 0;
     color: var(--md-text-soft);
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 500;
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
@@ -144,11 +132,11 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    padding: 1rem;
+    padding: 14px 16px;
     margin-bottom: 1rem;
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    background: var(--surface-elevated);
+    border-radius: var(--md-radius-lg);
+    background: var(--md-table-head-bg);
 }
 
 .alert-primary-header {
@@ -171,23 +159,23 @@
 }
 
 .alert-primary-title {
-    font-size: 1.125rem;
-    font-weight: 700;
+    font-size: 15px;
+    font-weight: 600;
     color: var(--md-text);
 }
 
-.alert-primary-message {
+/* A human-readable message, not a payload: opt out of the shared dark <pre> surface. */
+body.md-theme .alert-primary-message {
     margin: 0;
-    padding: 0.875rem;
+    padding: 10px 12px;
+    border: 1px solid var(--md-border);
     border-radius: var(--md-radius-md);
-    background: var(--md-surface);
+    background-color: var(--md-surface);
     color: var(--md-text);
-    /*border: 1px solid var(--border);*/
-    /*border-radius: 16px;*/
-    /*background: var(--md-surface-soft);*/
     white-space: pre-wrap;
     word-break: break-word;
     font-family: inherit;
+    font-size: 13.5px;
     line-height: 1.45;
 }
 
@@ -201,12 +189,13 @@
     display: inline-flex;
     align-items: center;
     max-width: 100%;
-    padding: 0.25rem 0.55rem;
-    border-radius: 999px;
-    background: var(--md-surface-soft);
+    padding: 2px 7px;
+    border-radius: var(--md-radius-sm);
+    background: var(--md-surface-hover);
     color: var(--md-text-soft);
-    font-size: 0.8125rem;
+    font-size: 11.5px;
     white-space: nowrap;
+    font-family: var(--md-font-mono);
 }
 
 .alert-primary-context {
@@ -286,7 +275,7 @@
 
 .alert-child-item {
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: var(--md-radius-md);
     padding: 0.75rem;
     margin-bottom: 0.75rem;
     background: var(--surface-color);
@@ -409,10 +398,85 @@ body.md-theme .alert-comment-edit-body {
 .alert-correlation-badges {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
-    margin-top: 0.35rem;
+    gap: 4px;
+    margin-top: 6px;
 }
 
 .alert-correlation-badges:empty {
     display: none;
+}
+
+/* Inbox column sizing: fixed-content columns shrink to fit so the alert
+   title gets the slack instead of the table scrolling sideways. */
+body.md-theme .alerts-inbox-table th,
+body.md-theme .alerts-inbox-table td {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+body.md-theme .alerts-inbox-table td:nth-child(1),
+body.md-theme .alerts-inbox-table td:nth-child(4),
+body.md-theme .alerts-inbox-table td:nth-child(5) {
+    width: 1%;
+    white-space: nowrap;
+}
+
+/* Status can stack several badges (state, shelved, maintenance): let it wrap. */
+body.md-theme .alerts-inbox-table td:nth-child(2) {
+    width: 1%;
+}
+
+body.md-theme .alerts-inbox-table td:nth-child(6) {
+    min-width: 140px;
+}
+
+body.md-theme .alerts-inbox-table td:nth-child(8),
+body.md-theme .alerts-inbox-table td:nth-child(9) {
+    width: 1%;
+    color: var(--md-muted);
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* group_key subtitles are long machine strings: one line, full value in the details view. */
+body.md-theme .alert-title-cell .table-subtitle {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+body.md-theme .table-age {
+    margin-top: 4px;
+    color: var(--md-muted);
+    font-size: 12px;
+}
+
+body.md-theme .alerts-escalation-cell {
+    align-items: flex-start;
+    min-width: 110px;
+}
+
+body.md-theme .alert-title-cell .alert-correlation-badges {
+    display: inline-flex;
+    margin-right: 2px;
+    vertical-align: top;
+}
+
+body.md-theme .alert-title-cell .alert-correlation-badges:empty {
+    display: none;
+}
+
+/* The badge row wrapper carries a badge class in the markup; render it as a plain row. */
+body.md-theme .alert-primary-header > .badge-success {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
 }
