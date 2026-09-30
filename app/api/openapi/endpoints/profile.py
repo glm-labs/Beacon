@@ -1,5 +1,6 @@
 from app.api.schemas.roles import TEAM_ROLE_VALUES
 from app.api.openapi.common import response, path_param, json_body
+from app.i18n import SUPPORTED_LOCALES
 from app.services.api_token_scopes import PROFILE_TOKEN_SCOPE_OPTIONS
 
 
@@ -96,7 +97,7 @@ PROFILE_SCHEMA = {
         "locale": {
             "type": "string",
             "nullable": True,
-            "enum": ["en", "de", "fr", "ru", "zh"],
+            "enum": list(SUPPORTED_LOCALES),
             "description": "Preferred interface language.",
             "example": "ru",
         },
@@ -212,7 +213,7 @@ PROFILE_UPDATE_SCHEMA = {
         "locale": {
             "type": "string",
             "nullable": True,
-            "enum": ["en", "de", "fr", "ru"],
+            "enum": list(SUPPORTED_LOCALES),
             "example": "ru",
         },
         "theme": {
