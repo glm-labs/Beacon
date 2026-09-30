@@ -1,3 +1,4 @@
+from app.modules.sso.contact_claims import CONTACT_CLAIM_SETTINGS
 from app.modules.sso.saml_security import get_saml_security
 from app.services.serializers.common import serialize_utc_datetime
 
@@ -17,6 +18,10 @@ def serialize_sso_provider(provider):
         "display_name_claim": provider.display_name_claim,
         "groups_claim": provider.groups_claim,
         "phone_claim": provider.phone_claim,
+        **{
+            setting: getattr(provider, setting, None)
+            for setting in CONTACT_CLAIM_SETTINGS
+        },
 
         "allowed_domains": provider.allowed_domains or [],
 

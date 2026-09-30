@@ -9,6 +9,10 @@ from app.api.schemas.roles import (
     TEAM_ROLE_VALUES,
     TEAM_VIEWER_ROLE,
 )
+from app.modules.sso.contact_claims import (
+    CONTACT_CLAIM_MAX_LENGTH,
+    CONTACT_CLAIM_SETTINGS,
+)
 from app.modules.sso.saml_security import SsoExtraConfig
 
 SSO_MAPPING_ROLES = {
@@ -39,6 +43,10 @@ class SsoProviderBaseSchema(ApiModel):
     display_name_claim: str = Field(default="name", min_length=1, max_length=128)
     groups_claim: str = Field(default="groups", min_length=1, max_length=128)
     phone_claim: str = Field(default="mobile", min_length=1, max_length=20)
+    telegram_user_id_claim: str | None = Field(default=None, max_length=CONTACT_CLAIM_MAX_LENGTH)
+    slack_user_id_claim: str | None = Field(default=None, max_length=CONTACT_CLAIM_MAX_LENGTH)
+    mattermost_user_id_claim: str | None = Field(default=None, max_length=CONTACT_CLAIM_MAX_LENGTH)
+    pushover_user_key_claim: str | None = Field(default=None, max_length=CONTACT_CLAIM_MAX_LENGTH)
 
     allowed_domains: list[str] | None = None
 
@@ -80,6 +88,13 @@ class SsoProviderBaseSchema(ApiModel):
 
     extra_config: SsoExtraConfig | None = None
 
+    @field_validator(*CONTACT_CLAIM_SETTINGS)
+    @classmethod
+    def blank_contact_claim_means_unset(cls, value):
+        """A blank claim name switches the mapping off."""
+        value = (value or "").strip()
+        return value or None
+
     @field_validator("allowed_domains")
     @classmethod
     def normalize_allowed_domains(cls, value):
@@ -115,6 +130,10 @@ class SsoProviderUpdateSchema(ApiModel):
     display_name_claim: str | None = Field(default=None, min_length=1, max_length=128)
     groups_claim: str | None = Field(default=None, min_length=1, max_length=128)
     phone_claim: str | None = Field(default=None, min_length=1, max_length=20)
+    telegram_user_id_claim: str | None = Field(default=None, max_length=CONTACT_CLAIM_MAX_LENGTH)
+    slack_user_id_claim: str | None = Field(default=None, max_length=CONTACT_CLAIM_MAX_LENGTH)
+    mattermost_user_id_claim: str | None = Field(default=None, max_length=CONTACT_CLAIM_MAX_LENGTH)
+    pushover_user_key_claim: str | None = Field(default=None, max_length=CONTACT_CLAIM_MAX_LENGTH)
 
     allowed_domains: list[str] | None = None
 
@@ -151,6 +170,13 @@ class SsoProviderUpdateSchema(ApiModel):
     saml_name_id_format: str | None = Field(default=None, max_length=512)
 
     extra_config: SsoExtraConfig | None = None
+
+    @field_validator(*CONTACT_CLAIM_SETTINGS)
+    @classmethod
+    def blank_contact_claim_means_unset(cls, value):
+        """A blank claim name switches the mapping off."""
+        value = (value or "").strip()
+        return value or None
 
     @field_validator("allowed_domains")
     @classmethod

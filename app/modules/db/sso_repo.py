@@ -1,5 +1,6 @@
 
 from app.modules.db.models import Group, SsoGroupMapping, SsoIdentity, SsoProvider, Team
+from app.modules.sso.contact_claims import CONTACT_CLAIM_SETTINGS
 from app.modules.sso.crypto import encrypt_secret
 from app.modules.sso.saml_security import normalize_sso_extra_config
 from app.modules.common import utc_now
@@ -16,6 +17,7 @@ PROVIDER_FIELDS = [
     "display_name_claim",
     "groups_claim",
     "phone_claim",
+    *CONTACT_CLAIM_SETTINGS,
     "allowed_domains",
     "auto_create_users",
     "auto_link_by_email",

@@ -9,7 +9,8 @@ from app.login import create_access_token, normalize_auth_redirect_target
 from app.modules.db import groups_repo, teams_repo, users_repo
 from app.modules.db.models import SsoGroupMapping, SsoIdentity, User, UserGroup
 from app.settings import Config
-from app.api.schemas.limits import normalize_phone
+from app.api.schemas.limits import CONTACT_ID_MAX_LENGTH, normalize_phone
+from app.modules.sso.contact_claims import CONTACT_CLAIM_SETTINGS
 from app.modules.common import utc_now
 
 
@@ -380,6 +381,17 @@ def _fill_missing_user_fields(user, provider, claims):
         except ValueError:
             phone = None
         update_data["phone"] = phone
+
+    for setting, user_field in CONTACT_CLAIM_SETTINGS.items():
+        claim_name = getattr(provider, setting, None)
+        if not claim_name or getattr(user, user_field, None):
+            continue
+
+        value = _claim_to_string(extract_claim(claims, claim_name))
+        # An over-long value is not an id this field can hold; skip it
+        # rather than store a truncated one that matches nobody.
+        if value and len(value) <= CONTACT_ID_MAX_LENGTH:
+            update_data[user_field] = value
 
     if update_data:
         user = users_repo.update_user(user.id, update_data)

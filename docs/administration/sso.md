@@ -138,6 +138,12 @@ mobile
 | `Display name claim` | User display name.                                                 |
 | `Groups claim` | List of external groups assigned to the user.                      |
 | `Phone claim` | User phone number.                                                 |
+| `Telegram / Slack / Mattermost user ID claim` | Optional. Fills the matching contact ID on the user's profile. |
+| `Pushover user key claim` | Optional. Fills the user's Pushover key, so personal Pushover rules and 1-tap acknowledge are attributed to them. |
+
+Contact claims are read at every login but only fill a profile field that is still empty, the same rule the phone claim follows: a value a user or admin typed in is never overwritten by the identity provider. Leave a contact claim blank to not read that field at all.
+
+With Keycloak, add the value as a user attribute (for example `pushover_key`), expose it with a *User Attribute* protocol mapper on the client, and put the mapper's token claim name in the matching field here.
 
 ---
 

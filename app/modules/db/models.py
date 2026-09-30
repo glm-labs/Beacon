@@ -2444,6 +2444,11 @@ class SsoProvider(SoftDeleteModel):
     display_name_claim = CharField(default="name")
     groups_claim = CharField(default="groups")
     phone_claim = CharField(default="mobile")
+    # Optional claim names for contact fields; see app/modules/sso/contact_claims.py.
+    telegram_user_id_claim = CharField(null=True)
+    slack_user_id_claim = CharField(null=True)
+    mattermost_user_id_claim = CharField(null=True)
+    pushover_user_key_claim = CharField(null=True)
 
     allowed_domains = JSONTextField(null=True)
 

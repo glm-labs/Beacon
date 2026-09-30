@@ -505,6 +505,9 @@ function openExistingSsoProviderModal(provider) {
   $("#sso-display-name-claim").val(provider.display_name_claim || "name");
   $("#sso-groups-claim").val(provider.groups_claim || "groups");
   $("#sso-phone-claim").val(provider.phone_claim || "mobile");
+  $("[data-contact-claim]").each(function () {
+    $(this).val(provider[$(this).data("contactClaim")] || "");
+  });
   $("#sso-allowed-domains").val((provider.allowed_domains || []).join(", "));
 
   $("#sso-auto-create-users").prop("checked", !!provider.auto_create_users);
@@ -561,6 +564,7 @@ function resetSsoProviderForm() {
   $("#sso-display-name-claim").val("name");
   $("#sso-groups-claim").val("groups");
   $("#sso-phone-claim").val("mobile");
+  $("[data-contact-claim]").val("");
   $("#sso-allowed-domains").val("");
 
   $("#sso-auto-create-users").prop("checked", false);
@@ -620,6 +624,7 @@ function collectSsoProviderPayload() {
     display_name_claim: $("#sso-display-name-claim").val().trim() || "name",
     groups_claim: $("#sso-groups-claim").val().trim() || "groups",
     phone_claim: $("#sso-phone-claim").val().trim() || "mobile",
+    ...ssoContactClaimValues(),
 
     allowed_domains: domains.length ? domains : null,
 
@@ -985,4 +990,18 @@ function renderSsoSummary(providers) {
   $("#sso-summary-disabled").text(providers.length - enabled);
   $("#sso-summary-oidc").text(oidc);
   $("#sso-summary-saml").text(saml);
+}
+
+function ssoContactClaimValues() {
+  /*
+   * Contact claim names keyed by provider setting. Blank means "do not read
+   * this field from the identity provider", sent as null so it clears.
+   */
+  const values = {};
+
+  $("[data-contact-claim]").each(function () {
+    values[$(this).data("contactClaim")] = $(this).val().trim() || null;
+  });
+
+  return values;
 }

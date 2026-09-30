@@ -1066,3 +1066,110 @@ def test_sso_json_loader_does_not_expose_network_exception(monkeypatch):
     assert error.message == "Could not load OIDC metadata"
     assert error.status_code == 502
     assert "internal-idp-secret-detail" not in str(error)
+
+
+def test_complete_sso_login_fills_contact_fields_from_configured_claims():
+    provider = make_oidc_provider(
+        slug="contact-claims",
+        auto_create_users=True,
+        pushover_user_key_claim="pushover_key",
+        telegram_user_id_claim="contacts.telegram",
+    )
+
+    user = complete_sso_login(
+        provider,
+        {
+            "sub": "contact-user-1",
+            "email": "contact-user@example.com",
+            "email_verified": True,
+            "preferred_username": "contact-user",
+            "pushover_key": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG",
+            "contacts": {"telegram": 900123},
+            # No claim name is configured for Slack, so this is ignored.
+            "slack_user_id": "U0IGNORED",
+        },
+    )
+
+    assert user.pushover_user_key == "uQiRzpo4DXghDmr9QzzfQu27cmVRsG"
+    assert user.telegram_user_id == "900123"
+    assert user.slack_user_id is None
+
+
+def test_complete_sso_login_keeps_contact_fields_already_set():
+    provider = make_oidc_provider(
+        slug="contact-claims-keep",
+        auto_create_users=True,
+        pushover_user_key_claim="pushover_key",
+    )
+    claims = {
+        "sub": "contact-user-2",
+        "email": "contact-keep@example.com",
+        "email_verified": True,
+        "preferred_username": "contact-keep",
+        "pushover_key": "first-key",
+    }
+
+    user = complete_sso_login(provider, claims)
+    assert user.pushover_user_key == "first-key"
+
+    user = complete_sso_login(provider, {**claims, "pushover_key": "second-key"})
+    assert user.pushover_user_key == "first-key"
+
+
+def test_complete_sso_login_skips_contact_claim_too_long_for_the_field():
+    provider = make_oidc_provider(
+        slug="contact-claims-long",
+        auto_create_users=True,
+        pushover_user_key_claim="pushover_key",
+    )
+
+    user = complete_sso_login(
+        provider,
+        {
+            "sub": "contact-user-3",
+            "email": "contact-long@example.com",
+            "email_verified": True,
+            "preferred_username": "contact-long",
+            "pushover_key": "x" * 200,
+        },
+    )
+
+    assert user.pushover_user_key is None
+
+
+def test_admin_can_set_and_clear_sso_contact_claims(app):
+    admin = make_admin()
+
+    with app.test_request_context(
+        "/api/admin/sso/providers",
+        method="POST",
+        json=provider_payload(
+            slug="contact-claims-api",
+            pushover_user_key_claim="  pushover_key  ",
+            slack_user_id_claim="",
+        ),
+    ):
+        from flask import request
+
+        request.current_user = admin
+        response, status = create_provider()
+
+    created = response.get_json()
+    assert status == 201
+    assert created["pushover_user_key_claim"] == "pushover_key"
+    assert created["slack_user_id_claim"] is None
+    assert created["telegram_user_id_claim"] is None
+
+    with app.test_request_context(
+        f"/api/admin/sso/providers/{created['id']}",
+        method="PUT",
+        json={"pushover_user_key_claim": None},
+    ):
+        from flask import request
+
+        request.current_user = admin
+        response = update_provider(created["id"])
+
+    updated = response[0].get_json() if isinstance(response, tuple) else response.get_json()
+    assert updated["pushover_user_key_claim"] is None
+    assert SsoProvider.get_by_id(created["id"]).pushover_user_key_claim is None

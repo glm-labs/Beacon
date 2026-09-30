@@ -1,4 +1,8 @@
 from app.api.openapi.common import json_body, path_param, response
+from app.modules.sso.contact_claims import (
+    CONTACT_CLAIM_MAX_LENGTH,
+    CONTACT_CLAIM_SETTINGS,
+)
 from app.api.schemas.roles import GROUP_ROLE_VALUES, GROUP_VIEWER_ROLE, TEAM_ROLE_VALUES, TEAM_VIEWER_ROLE
 
 
@@ -60,6 +64,19 @@ SSO_PROVIDER_SCHEMA = {
         "username_claim": {"type": "string", "default": "preferred_username", "example": "preferred_username"},
         "display_name_claim": {"type": "string", "default": "name", "example": "name"},
         "groups_claim": {"type": "string", "default": "groups", "example": "groups"},
+        "phone_claim": {"type": "string", "default": "mobile", "example": "mobile"},
+        **{
+            setting: {
+                "type": "string",
+                "nullable": True,
+                "maxLength": CONTACT_CLAIM_MAX_LENGTH,
+                "description": (
+                    f"Claim that fills the user's {user_field} when it is "
+                    "empty. Leave unset to not read it from the provider."
+                ),
+            }
+            for setting, user_field in CONTACT_CLAIM_SETTINGS.items()
+        },
 
         "allowed_domains": {
             "type": "array",

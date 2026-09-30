@@ -168,6 +168,27 @@
                 </label>
 
               <label>
+                <span>{{ _('sso.claims.telegram_user_id') }}</span>
+                <input id="sso-telegram-user-id-claim" type="text" data-contact-claim="telegram_user_id_claim">
+              </label>
+
+              <label>
+                <span>{{ _('sso.claims.slack_user_id') }}</span>
+                <input id="sso-slack-user-id-claim" type="text" data-contact-claim="slack_user_id_claim">
+              </label>
+
+              <label>
+                <span>{{ _('sso.claims.mattermost_user_id') }}</span>
+                <input id="sso-mattermost-user-id-claim" type="text" data-contact-claim="mattermost_user_id_claim">
+              </label>
+
+              <label>
+                <span>{{ _('sso.claims.pushover_user_key') }}</span>
+                <input id="sso-pushover-user-key-claim" type="text" data-contact-claim="pushover_user_key_claim">
+                <small class="help-text">{{ _('sso.claims.contact_hint') }}</small>
+              </label>
+
+              <label>
                 <span>{{ _('sso.claims.groups') }}</span>
                 <input id="sso-groups-claim" type="text" value="groups">
               </label>
