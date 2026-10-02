@@ -5,9 +5,11 @@ from app.api.schemas.alerts import (
     AlertDetailQuerySchema,
     AlertEventListQuerySchema,
     AlertListQuerySchema,
+    AlertSnoozeSchema,
 )
 from app.modules.db import alerts_repo, notifications_repo
 from app.services.alerts.actions import acknowledge_alert, resolve_alert
+from app.services.alerts.snooze import SnoozeError, snooze_alert, wake_alert
 from app.services.audit import write_audit
 from app.services.rbac import get_allowed_team_ids, require_team_read, require_team_respond
 from app.services.serializers.alerts import (
@@ -33,6 +35,7 @@ from app.services.incidents.responders import (
 from app.services.validation import (
     make_error_response,
     safe_exception_response,
+    validate_body,
     validate_query,
 )
 
@@ -129,6 +132,7 @@ def list_alerts():
         sort=payload.sort,
         order=payload.order,
         include_merged=payload.include_merged,
+        snoozed=payload.snoozed,
     )
 
     return jsonify({
@@ -240,6 +244,70 @@ def resolve_alert_view(alert_id):
             current_user=_request_user(),
         )
     )
+
+
+@alerts_bp.route("/<int:alert_id>/snooze", methods=["POST"])
+def snooze_alert_view(alert_id):
+    """Hold a firing alert group quiet for a number of minutes."""
+    group_before, error = _require_alert_group_respond(alert_id)
+    if error:
+        return error
+
+    payload, error = validate_body(AlertSnoozeSchema)
+    if error:
+        return error
+
+    user_id = getattr(_request_user(), "id", None)
+
+    try:
+        group = snooze_alert(
+            alert_id,
+            minutes=payload.minutes,
+            user_id=user_id,
+            reason=payload.reason,
+        )
+    except SnoozeError as exc:
+        return make_error_response(error=exc.code, message=exc.message, status_code=409)
+
+    write_audit(
+        "alert_group.snooze",
+        object_type="alert_group",
+        object_id=group.id,
+        team_id=group_before.team.id if group_before.team else None,
+        user_id=user_id,
+        data={"minutes": payload.minutes, "reason": payload.reason},
+    )
+
+    return jsonify(serialize_alert_group(group, current_user=_request_user()))
+
+
+@alerts_bp.route("/<int:alert_id>/snooze", methods=["DELETE"])
+def wake_alert_view(alert_id):
+    """End a snooze early; the group pages again right away."""
+    group_before, error = _require_alert_group_respond(alert_id)
+    if error:
+        return error
+
+    user_id = getattr(_request_user(), "id", None)
+
+    try:
+        group = wake_alert(alert_id, user_id=user_id)
+    except SnoozeError as exc:
+        return make_error_response(error=exc.code, message=exc.message, status_code=409)
+
+    if group is None:
+        group = alerts_repo.get_alert_group(alert_id)
+    else:
+        write_audit(
+            "alert_group.wake",
+            object_type="alert_group",
+            object_id=group.id,
+            team_id=group_before.team.id if group_before.team else None,
+            user_id=user_id,
+            data={},
+        )
+
+    return jsonify(serialize_alert_group(group, current_user=_request_user()))
 
 
 @alerts_bp.route("/<int:alert_id>/events", methods=["GET"])

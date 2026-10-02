@@ -3,6 +3,18 @@ from typing import Any
 from pydantic import Field, field_validator
 
 from app.api.schemas.base import ApiModel
+from app.services.alerts.snooze import (
+    SNOOZE_MAX_MINUTES,
+    SNOOZE_MIN_MINUTES,
+    SNOOZE_REASON_MAX_LENGTH,
+)
+
+
+class AlertSnoozeSchema(ApiModel):
+    """Snooze a firing alert group."""
+
+    minutes: int = Field(ge=SNOOZE_MIN_MINUTES, le=SNOOZE_MAX_MINUTES)
+    reason: str | None = Field(default=None, max_length=SNOOZE_REASON_MAX_LENGTH)
 
 
 class AlertEventListQuerySchema(ApiModel):
@@ -33,6 +45,8 @@ class AlertListQuerySchema(ApiModel):
     service_criticality: str | None = Field(default=None, min_length=1, max_length=120)
     search: str | None = Field(default=None, max_length=300)
     assigned_to_me: bool = False
+    # True: only groups with a running snooze; False: hide them; unset: both.
+    snoozed: bool | None = None
     page: int = Field(default=1, ge=1)
     page_size: int = Field(default=25, ge=1, le=100)
     sort: str = Field(

@@ -206,6 +206,31 @@
     </div>
 
     <div class="app-modal-footer">
+      <div id="modal-alert-snooze" class="alert-snooze-control">
+        <input
+          id="modal-alert-snooze-reason"
+          class="input"
+          type="text"
+          maxlength="500"
+          placeholder="{{ _('alert_details.snooze.reason_placeholder') }}"
+          aria-label="{{ _('alert_details.snooze.reason') }}"
+        >
+        <select id="modal-alert-snooze-minutes" class="input" aria-label="{{ _('alert_details.snooze.duration') }}">
+          <option value="30">{{ _('alert_details.snooze.minutes_30') }}</option>
+          <option value="60" selected>{{ _('alert_details.snooze.hours_1') }}</option>
+          <option value="240">{{ _('alert_details.snooze.hours_4') }}</option>
+          <option value="480">{{ _('alert_details.snooze.hours_8') }}</option>
+          <option value="1440">{{ _('alert_details.snooze.days_1') }}</option>
+        </select>
+        <button id="modal-alert-snooze-button" type="button" class="btn btn-small">
+          {{ _('alert_details.actions.snooze') }}
+        </button>
+      </div>
+
+      <button id="modal-alert-wake" type="button" class="btn btn-small">
+        {{ _('alert_details.actions.wake') }}
+      </button>
+
       <button id="modal-alert-ack" type="button" class="btn btn-warning btn-small">
         {{ _('alert_details.actions.acknowledge') }}
       </button>

@@ -25,7 +25,7 @@ It is designed for SRE, DevOps, platform, infrastructure and operations teams th
 ### Incident management
 
 - alert groups with child alerts, deduplication and grouping;
-- acknowledge and resolve workflows;
+- acknowledge, resolve and snooze workflows;
 - incident priorities and priority policies;
 - responders, stakeholders and comments;
 - reminders and escalation policies;

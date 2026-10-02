@@ -480,3 +480,37 @@ body.md-theme .alert-primary-header > .badge-success {
     border-radius: 0;
     background: transparent;
 }
+
+/* Snooze controls sit at the start of the alert modal footer. */
+body.md-theme .alert-snooze-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: auto;
+}
+
+body.md-theme .alert-snooze-control #modal-alert-snooze-reason {
+    width: 200px;
+}
+
+body.md-theme .alert-snooze-control #modal-alert-snooze-minutes {
+    width: auto;
+    min-height: 28px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+body.md-theme .alert-snooze-badge {
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 760px) {
+    body.md-theme .alert-snooze-control {
+        flex-wrap: wrap;
+        margin-right: 0;
+    }
+
+    body.md-theme .alert-snooze-control #modal-alert-snooze-reason {
+        width: 100%;
+    }
+}

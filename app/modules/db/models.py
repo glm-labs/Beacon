@@ -1832,6 +1832,18 @@ class AlertGroup(BaseModel):
     merged_at = DateTimeField(null=True)
     merge_reason = TextField(null=True)
 
+    # Snooze: a firing group is held quiet until snoozed_until. See
+    # app/services/alerts/snooze.py.
+    snoozed_until = DateTimeField(null=True, index=True)
+    snoozed_at = DateTimeField(null=True)
+    snoozed_by = ForeignKeyField(
+        User,
+        null=True,
+        backref="snoozed_alert_groups",
+        on_delete="SET NULL",
+    )
+    snooze_reason = TextField(null=True)
+
     created_at = DateTimeField(default=utc_now)
     updated_at = DateTimeField(default=utc_now)
 

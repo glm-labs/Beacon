@@ -67,6 +67,21 @@ def serialize_correlation_alert_group_ref(group):
     }
 
 
+def _serialize_snooze(group):
+    """Snooze fields for an alert group; ``snoozed`` is True only while it runs."""
+    from app.services.alerts.snooze import is_snoozed
+
+    snoozed_by = getattr(group, "snoozed_by", None) if group.snoozed_by_id else None
+    return {
+        "snoozed": is_snoozed(group),
+        "snoozed_until": serialize_utc_datetime(getattr(group, "snoozed_until", None)),
+        "snoozed_at": serialize_utc_datetime(getattr(group, "snoozed_at", None)),
+        "snoozed_by": snoozed_by.username if snoozed_by else None,
+        "snoozed_by_details": serialize_user_short(snoozed_by),
+        "snooze_reason": getattr(group, "snooze_reason", None),
+    }
+
+
 def serialize_alert_group_correlation(correlation, current_group_id=None):
     """Serialize one saved alert group correlation."""
     root_group = correlation.root_group
@@ -586,6 +601,7 @@ def serialize_alert_group(
         "team_escalation_enabled": group.team.escalation_enabled if group.team else None,
         "maintenance_window_id": group.maintenance_window_id,
         "maintenance_suppressed": group.maintenance_suppressed,
+        **_serialize_snooze(group),
         "orchestration_suppressed": bool(
             getattr(group, "orchestration_suppressed", False)
         ),

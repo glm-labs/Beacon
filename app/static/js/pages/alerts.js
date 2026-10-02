@@ -412,6 +412,10 @@ function buildAlertsStateParams(options) {
         params.set("assigned_to_me", "1");
     }
 
+    if ($("#snoozed-only-filter").is(":checked")) {
+        params.set("snoozed", "1");
+    }
+
     params.set("page", String(alertsCurrentPage || 1));
     params.set("page_size", String(alertsPageSize || 25));
     params.set("sort", alertsSortState.column || "activity");
@@ -684,6 +688,19 @@ function makeAlertBadge(text, cssClass) {
     return makeUiPill(text, cssClass);
 }
 
+function makeAlertSnoozeBadge(alert) {
+    const until = formatDateTimeMinutes(alert.snoozed_until);
+    const title = [
+        i18n.t("alerts.snooze.until", {time: until}),
+        alert.snoozed_by ? i18n.t("alerts.snooze.by", {user: alert.snoozed_by}) : "",
+        alert.snooze_reason || "",
+    ].filter(Boolean).join("\n");
+
+    return makeAlertBadge(i18n.t("alerts.snooze.badge", {time: until}), "badge-muted")
+        .addClass("alert-snooze-badge")
+        .attr("title", title);
+}
+
 function alertCorrelationSummary(alert) {
     return alert && alert.correlation_summary
         ? alert.correlation_summary
@@ -893,6 +910,7 @@ function renderActiveAlertFilters() {
     const priorities = getTableFilterValues("#priority-filter");
     const serviceIds = getTableFilterValues("#alerts-service-filter");
     const assignedToMe = $("#assigned-to-me-filter").is(":checked");
+    const snoozedOnly = $("#snoozed-only-filter").is(":checked");
 
     if (search) {
         chips.push({label: i18n.t("alerts.filters.search"), value: search});
@@ -945,6 +963,12 @@ function renderActiveAlertFilters() {
         chips.push({
             label: i18n.t("alerts.filters.assignee"),
             value: i18n.t("alerts.filters.me")
+        });
+    }
+    if (snoozedOnly) {
+        chips.push({
+            label: i18n.t("alerts.filters.snooze"),
+            value: i18n.t("alerts.filters.snoozed_only")
         });
     }
 
@@ -1059,6 +1083,7 @@ function renderAlertPageRow(alert) {
             [
                 $("<span>").addClass("status-dot dot-" + normalizeAlertValue(alert.status)),
                 makeAlertBadge(statusLabel(alert.status), statusBadgeClass(alert.status)),
+                ...(alert.snoozed ? [makeAlertSnoozeBadge(alert)] : []),
             ],
             alert
         )
@@ -1557,9 +1582,14 @@ function showAlertDetails(alertId) {
         if (!currentDetailsAlertCanRespond || normalizeAlertValue(alert.status) === "resolved") {
             modal.find("#modal-alert-ack").hide();
             modal.find("#modal-alert-resolve").hide();
+            modal.find("#modal-alert-snooze, #modal-alert-wake").hide();
         } else {
-            modal.find("#modal-alert-ack").toggle(normalizeAlertValue(alert.status) === "firing");
+            const firing = normalizeAlertValue(alert.status) === "firing";
+
+            modal.find("#modal-alert-ack").toggle(firing);
             modal.find("#modal-alert-resolve").show();
+            modal.find("#modal-alert-snooze").toggle(firing && !alert.snoozed);
+            modal.find("#modal-alert-wake").toggle(firing && !!alert.snoozed);
         }
 
         openAlertDetailsModal();
@@ -1812,6 +1842,7 @@ function renderAlertPrimaryDetails(alert, modal) {
     const primaryBadges = $("<div>")
     .addClass("badge-success")
     .append(makeAlertBadge(statusLabel(alert.status), statusBadgeClass(alert.status)))
+    .append(alert.snoozed ? makeAlertSnoozeBadge(alert) : $())
     .append(makeAlertBadge(severityLabel(alert.severity), severityBadgeClass(alert.severity)))
     .append($("<span>").addClass("pill badge-muted").text("#" + alert.id));
 
@@ -2806,6 +2837,11 @@ function applyAlertsQueryParams() {
         isAlertBoolQueryParamEnabled(params, "assigned_to_me")
     );
 
+    $("#snoozed-only-filter").prop(
+        "checked",
+        isAlertBoolQueryParamEnabled(params, "snoozed")
+    );
+
     alertsCurrentPage = parseInt(params.get("page") || "1", 10) || 1;
     alertsPageSize = parseInt(params.get("page_size") || "25", 10) || 25;
 
@@ -2821,11 +2857,11 @@ $(document).on("click", "#reload-alerts", function () {
 $(document)
     .off(
         "change.tableFilters",
-        "#status-filter, #severity-filter, #priority-filter, #alerts-service-filter, #assigned-to-me-filter"
+        "#status-filter, #severity-filter, #priority-filter, #alerts-service-filter, #assigned-to-me-filter, #snoozed-only-filter"
     )
     .on(
         "change.tableFilters",
-        "#status-filter, #severity-filter, #priority-filter, #alerts-service-filter, #assigned-to-me-filter",
+        "#status-filter, #severity-filter, #priority-filter, #alerts-service-filter, #assigned-to-me-filter, #snoozed-only-filter",
         function () {
             if (
                 typeof isTableFilterSilent === "function"
@@ -2950,6 +2986,42 @@ $(document).on("click", "#modal-alert-ack", function () {
     }
 
     apiPost("/api/alerts/" + currentDetailsAlertId + "/ack", {}, function () {
+        showAlertDetails(currentDetailsAlertId);
+        loadAlerts();
+    });
+});
+$(document).on("click", "#modal-alert-snooze-button", function () {
+    if (!currentDetailsAlertId) {
+        return;
+    }
+    if (!currentDetailsAlertCanRespond) {
+        showAppError(i18n.t("alert_details.permissions.snooze"));
+        return;
+    }
+
+    const minutes = parseInt($("#modal-alert-snooze-minutes").val(), 10) || 60;
+    const reason = String($("#modal-alert-snooze-reason").val() || "").trim();
+
+    apiPost(
+        "/api/alerts/" + currentDetailsAlertId + "/snooze",
+        {minutes: minutes, reason: reason || null},
+        function () {
+            $("#modal-alert-snooze-reason").val("");
+            showAlertDetails(currentDetailsAlertId);
+            loadAlerts();
+        }
+    );
+});
+$(document).on("click", "#modal-alert-wake", function () {
+    if (!currentDetailsAlertId) {
+        return;
+    }
+    if (!currentDetailsAlertCanRespond) {
+        showAppError(i18n.t("alert_details.permissions.snooze"));
+        return;
+    }
+
+    apiDelete("/api/alerts/" + currentDetailsAlertId + "/snooze", function () {
         showAlertDetails(currentDetailsAlertId);
         loadAlerts();
     });
@@ -3257,6 +3329,7 @@ function openAlertDetailsForTrace(traceId) {
 
             modal.find("#modal-alert-ack").hide();
             modal.find("#modal-alert-resolve").hide();
+            modal.find("#modal-alert-snooze, #modal-alert-wake").hide();
 
             renderAlertExplainSummary(trace);
             renderAlertExplainSteps(trace.steps || []);

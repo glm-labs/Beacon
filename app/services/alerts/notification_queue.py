@@ -10,6 +10,7 @@ from app.services.alerts.maintenance_state import (
     resume_notification_lifecycle,
 )
 from app.modules.common import utc_now
+from app.services.alerts.snooze import is_snoozed
 
 logger = logging.getLogger("oncall.alerts")
 
@@ -33,7 +34,7 @@ def schedule_group_notification(group, reason="notification", now=None):
 
     resume_notification_lifecycle(group, now=now)
 
-    if group.status != "firing":
+    if group.status != "firing" or is_snoozed(group, now=now):
         alerts_repo.clear_alert_group_notification(group)
         return group
 
@@ -91,7 +92,7 @@ def process_due_alert_group_notifications(limit=100):
 
             resume_notification_lifecycle(group, now=now)
 
-            if group.status != "firing":
+            if group.status != "firing" or is_snoozed(group, now=now):
                 alerts_repo.clear_alert_group_notification(group)
                 skipped += 1
                 continue

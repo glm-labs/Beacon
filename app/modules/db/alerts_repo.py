@@ -124,6 +124,7 @@ def build_alert_groups_query(
     search=None,
     assigned_to_user_id=None,
     include_merged=False,
+    snoozed=None,
 ):
     """Build the base alert groups query with filters."""
 
@@ -153,6 +154,14 @@ def build_alert_groups_query(
 
     if assigned_to_user_id:
         query = query.where(AlertGroup.assignee == assigned_to_user_id)
+
+    if snoozed is not None:
+        running = (
+            (AlertGroup.status == "firing")
+            & (AlertGroup.snoozed_until.is_null(False))
+            & (AlertGroup.snoozed_until > utc_now())
+        )
+        query = query.where(running if snoozed else ~running)
 
     query = apply_field_values_filter(
         query,
@@ -371,6 +380,7 @@ def paginate_alert_groups(
     sort="activity",
     order="desc",
     include_merged=False,
+    snoozed=None,
 ):
     """Return alert groups with backend pagination, filtering and sorting."""
 
@@ -393,6 +403,7 @@ def paginate_alert_groups(
         search=search,
         assigned_to_user_id=assigned_to_user_id,
         include_merged=include_merged,
+        snoozed=snoozed,
     )
 
     if query is None:
@@ -620,10 +631,92 @@ def recalculate_alert_group(group):
     if previous_status != group.status:
         group.previous_status = previous_status
 
+    if group.status != "firing":
+        _drop_snooze(group)
+
     group.updated_at = now
     group.save()
 
     return group
+
+
+def _drop_snooze(group):
+    """Blank the snooze columns on an in-memory group (caller saves)."""
+    group.snoozed_until = None
+    group.snoozed_at = None
+    group.snoozed_by = None
+    group.snooze_reason = None
+
+
+def set_alert_group_snooze(group, *, until, user_id=None, reason=None, now=None):
+    """Snooze a group and drop everything it had queued to send."""
+    now = now or utc_now()
+
+    group.snoozed_until = until
+    group.snoozed_at = now
+    group.snoozed_by = user_id
+    group.snooze_reason = reason
+    group.notification_pending = False
+    group.notification_due_at = None
+    group.notification_reason = None
+    group.next_escalation_at = None
+    group.updated_at = now
+    group.save()
+    return group
+
+
+def clear_alert_group_snooze(
+    group,
+    *,
+    now=None,
+    next_escalation_at=None,
+    restart_reminders=False,
+):
+    """End a snooze. Returns False when another worker already ended it."""
+    now = now or utc_now()
+    values = {
+        "snoozed_until": None,
+        "snoozed_at": None,
+        "snoozed_by": None,
+        "snooze_reason": None,
+        "updated_at": now,
+    }
+
+    if restart_reminders:
+        values["reminder_count"] = 0
+        values["next_escalation_at"] = next_escalation_at
+
+    updated = (
+        AlertGroup.update(**values)
+        .where(
+            (AlertGroup.id == group.id)
+            & (AlertGroup.snoozed_until.is_null(False))
+        )
+        .execute()
+    )
+
+    if not updated:
+        return False
+
+    for field, value in values.items():
+        setattr(group, field, value)
+
+    return True
+
+
+def list_expired_snoozed_alert_groups(now=None, limit=200):
+    """Return groups whose snooze deadline has passed."""
+    now = now or utc_now()
+    return list(
+        AlertGroup
+        .select()
+        .where(
+            (AlertGroup.snoozed_until.is_null(False))
+            & (AlertGroup.snoozed_until <= now)
+        )
+        .order_by(AlertGroup.snoozed_until)
+        .limit(limit)
+    )
 
 
 def acknowledge_alert_group(group_id, user_id=None):
@@ -634,6 +727,7 @@ def acknowledge_alert_group(group_id, user_id=None):
     group.status = "acknowledged"
     group.acknowledged_by = user_id
     group.acknowledged_at = utc_now()
+    _drop_snooze(group)
     group.save()
     return group
 
@@ -657,6 +751,7 @@ def resolve_alert_group(group_id, user_id=None):
     group.status = "resolved"
     group.resolved_by = user_id
     group.resolved_at = now
+    _drop_snooze(group)
     group.firing_count = 0
     group.acknowledged_count = 0
     group.resolved_count = Alert.select().where(Alert.group == group.id).count()
@@ -773,6 +868,7 @@ def merge_alert_groups(target_group_id, source_group_ids, user_id=None, reason=N
         source.merged_at = now
         source.merge_reason = reason
         source.updated_at = now
+        _drop_snooze(source)
         source.save()
 
         AlertGroupMerge.create(

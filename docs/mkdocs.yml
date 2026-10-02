@@ -48,6 +48,7 @@ nav:
       - Notification Center: incidents/notification-center.md
       - Incident Stakeholders: incidents/stakeholders.md
       - Alert Comments: usage/alert-comments.md
+      - Snoozing Alerts: usage/snooze.md
       - Silences: usage/silences.md
       - Maintenance Windows: concepts/maintenance-windows.md
   - Services:

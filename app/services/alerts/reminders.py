@@ -11,6 +11,7 @@ from app.services.alerts.maintenance_state import (
     resume_notification_lifecycle,
 )
 from app.services.alerts.notification_queue import schedule_group_notification
+from app.services.alerts import snooze
 from app.services.notifications.delivery import has_matching_notification_channel, notify_alert
 from app.modules.common import utc_now
 
@@ -59,6 +60,14 @@ def send_unacked_reminders():
         group = alerts_repo.get_alert_group(selected_group.id)
 
         if group.status != "firing" or group.merged_into_id:
+            continue
+
+        if snooze.is_snoozed(group, now=now):
+            continue
+
+        # A snooze that has run out wakes the group, which schedules a fresh
+        # notification; that notification is this cycle's work for the group.
+        if snooze.wake_if_due(group, now=now):
             continue
 
         if is_notification_lifecycle_suppressed(group, now=now):

@@ -1,4 +1,9 @@
 from app.api.openapi.common import response, path_param, json_body, query_param
+from app.services.alerts.snooze import (
+    SNOOZE_MAX_MINUTES,
+    SNOOZE_MIN_MINUTES,
+    SNOOZE_REASON_MAX_LENGTH,
+)
 from app.api.openapi.endpoints.business_services import BUSINESS_SERVICE_IMPACT_SCHEMA
 
 
@@ -507,6 +512,18 @@ def alert_group_schema(include_details=False):
             "Time when this alert group was resolved in UTC.",
             nullable=True,
         ),
+        "snoozed": {
+            "type": "boolean",
+            "description": "True while a snooze is running on this firing group.",
+        },
+        "snoozed_until": date_time_property(
+            "When the snooze ends and the group pages again, in UTC.",
+            nullable=True,
+        ),
+        "snoozed_at": date_time_property("When the snooze started, in UTC.", nullable=True),
+        "snoozed_by": {"type": "string", "nullable": True},
+        "snoozed_by_details": user_short_schema(),
+        "snooze_reason": {"type": "string", "nullable": True},
         "first_seen_at": date_time_property(
             "First time any child alert in this group was seen in UTC.",
         ),
@@ -803,6 +820,12 @@ def paths():
                         {"type": "string", "enum": ["0", "1"], "default": "0"},
                     ),
                     query_param(
+                        "snoozed",
+                        "1 returns only groups with a running snooze, 0 hides them. "
+                        "Omit to return both.",
+                        {"type": "string", "enum": ["0", "1"]},
+                    ),
+                    query_param(
                         "sort",
                         "Sort field.",
                         {
@@ -1011,6 +1034,69 @@ def paths():
                     "404": response("Alert group not found."),
                 },
             }
+        },
+        "/api/alerts/{alert_id}/snooze": {
+            "post": {
+                "tags": ["alerts"],
+                "summary": "Snooze alert group",
+                "description": (
+                    "Holds a firing alert group quiet for the given number of minutes. "
+                    "The group stays firing and unowned, but sends no notifications, "
+                    "reminders or escalations until the snooze ends. Snoozing again "
+                    "moves the deadline. Acknowledging, resolving or merging the group "
+                    "ends the snooze."
+                ),
+                "operationId": "snoozeAlertGroup",
+                "security": bearer_security(),
+                "parameters": [path_param("alert_id", "Alert group id.")],
+                "requestBody": json_body(
+                    "Snooze length and optional reason.",
+                    {
+                        "type": "object",
+                        "required": ["minutes"],
+                        "properties": {
+                            "minutes": {
+                                "type": "integer",
+                                "minimum": SNOOZE_MIN_MINUTES,
+                                "maximum": SNOOZE_MAX_MINUTES,
+                                "example": 60,
+                            },
+                            "reason": {
+                                "type": "string",
+                                "nullable": True,
+                                "maxLength": SNOOZE_REASON_MAX_LENGTH,
+                                "example": "Known issue, vendor fix due at 14:00",
+                            },
+                        },
+                    },
+                ),
+                "responses": {
+                    "200": response("Alert group snoozed.", alert_group_schema()),
+                    "400": response("Validation error."),
+                    "401": response("Authentication required."),
+                    "403": response("Access denied."),
+                    "404": response("Alert group not found."),
+                    "409": response("The alert group is not firing."),
+                },
+            },
+            "delete": {
+                "tags": ["alerts"],
+                "summary": "End alert group snooze",
+                "description": (
+                    "Ends a snooze early. The group is notified again and its "
+                    "escalation clock restarts from the current step."
+                ),
+                "operationId": "wakeAlertGroup",
+                "security": bearer_security(),
+                "parameters": [path_param("alert_id", "Alert group id.")],
+                "responses": {
+                    "200": response("Snooze ended.", alert_group_schema()),
+                    "401": response("Authentication required."),
+                    "403": response("Access denied."),
+                    "404": response("Alert group not found."),
+                    "409": response("The alert group is not snoozed."),
+                },
+            },
         },
         "/api/alerts/{alert_id}/resolve": {
             "post": {
