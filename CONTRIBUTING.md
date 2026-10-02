@@ -10,7 +10,8 @@ When changing backend logic:
 
 ## Upstream code
 
-Beacon is MIT licensed and forked from IncidentRelay before it moved to the
-Elastic License 2.0. Never copy or adapt code, tests, docs or translations
-from IncidentRelay after the fork point; [NOTICE.md](NOTICE.md) has the
-details.
+Beacon is licensed under the Elastic License 2.0 and was forked from
+IncidentRelay's last MIT-licensed commit. Never copy or adapt code, tests,
+docs or translations from IncidentRelay after that fork point;
+[NOTICE.md](NOTICE.md) has the details. Contributions are accepted under
+the Elastic License 2.0.

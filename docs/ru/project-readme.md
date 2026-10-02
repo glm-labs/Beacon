@@ -182,4 +182,4 @@ OpenAPI JSON:
 
 ## Лицензия
 
-MIT
+Elastic License 2.0. См. `LICENSE` и `NOTICE.md` в репозитории.

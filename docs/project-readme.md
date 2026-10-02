@@ -182,4 +182,4 @@ Service API endpoints are available under:
 
 ## License
 
-MIT
+Elastic License 2.0. See `LICENSE` and `NOTICE.md` in the repository.
