@@ -161,9 +161,27 @@ inside separate PostgreSQL/multi-node pods.
 {{ range $section, $options := $config -}}
 [{{ $section }}]
 {{ range $key, $value := $options -}}
-{{ $key }} = {{ $value }}
+{{ $key }} = {{ include "beacon.iniValue" $value }}
 {{ end }}
 {{ end -}}
+{{- end }}
+
+{{/*
+Render one INI value.
+
+Helm unmarshals every YAML number into a float64, and Go prints a float64
+of a million or more in scientific notation. The default
+`outbound_http_max_response_bytes: 1048576` would therefore reach the pod
+as `1.048576e+06`, which settings.get_int() cannot parse, so the web pod
+crashes on startup. Whole numbers are written as integers here, so any
+value can be written plainly in values.yaml.
+*/}}
+{{- define "beacon.iniValue" -}}
+{{- if and (kindIs "float64" .) (eq . (floor .)) -}}
+{{- int64 . -}}
+{{- else -}}
+{{- . -}}
+{{- end -}}
 {{- end }}
 
 
