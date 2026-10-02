@@ -1,5 +1,13 @@
 # Notice
 
+Copyright (c) 2026 LMG OPTIMIZE BV (BE0785858168) and Ginfra
+(BE 1024.165.491), except for the IncidentRelay code described below.
+
+LMG OPTIMIZE BV and Ginfra are the licensor of Beacon under the
+[Elastic License 2.0](LICENSE) (ELv2). For rights beyond ELv2, such as
+offering Beacon as a hosted or managed service, contact them for a separate
+commercial license.
+
 Beacon is licensed under the [Elastic License 2.0](LICENSE) (ELv2). In
 short: you may use, run, modify and redistribute it, including inside a
 company, but you may not offer it to third parties as a hosted or managed

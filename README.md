@@ -460,4 +460,4 @@ See [Demo data](docs/administration/demo-data.md), [Schema check](docs/administr
 
 ## License
 
-Beacon is licensed under the [Elastic License 2.0](LICENSE): free to use, run and modify, including inside a company, but not to offer to others as a hosted or managed service. It began as a fork of IncidentRelay's last MIT-licensed commit, whose original notice is kept in [licenses/](licenses/IncidentRelay-MIT.txt); see [NOTICE.md](NOTICE.md).
+Copyright (c) 2026 LMG OPTIMIZE BV and Ginfra. Beacon is licensed under the [Elastic License 2.0](LICENSE): free to use, run and modify, including inside a company, but not to offer to others as a hosted or managed service. It began as a fork of IncidentRelay's last MIT-licensed commit, whose original notice is kept in [licenses/](licenses/IncidentRelay-MIT.txt); see [NOTICE.md](NOTICE.md).
