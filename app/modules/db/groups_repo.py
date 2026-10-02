@@ -6,17 +6,14 @@ from app.api.schemas.roles import (
     GROUP_VIEWER_ROLE,
 )
 from app.modules.db.models import (
-    AlertRoute,
     ApiToken,
     Group,
     NotificationChannel,
     Rotation,
     RotationLayer,
     RotationLayerMember,
-    RotationLayerRestriction,
     RotationMember,
     RotationOverride,
-    Silence,
     Team,
     TeamUser,
     User,
@@ -186,7 +183,6 @@ def soft_delete_group(group_id):
         BusinessService,
         EventOrchestration,
         MaintenanceWindow,
-        NotificationChannel,
         OrchestrationWebhookAction,
         ServiceStandard,
     )

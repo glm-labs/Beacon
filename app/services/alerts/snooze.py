@@ -17,7 +17,6 @@ from datetime import timedelta
 
 from app.modules.common import utc_now
 from app.modules.db import alerts_repo
-from app.modules.db.models import AlertGroup
 from app.services import escalation_policies as escalation_policy_service
 from app.services.notifications.rules import cancel_pending_group_deliveries
 

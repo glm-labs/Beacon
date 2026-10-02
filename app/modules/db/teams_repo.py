@@ -3,14 +3,12 @@ from app.api.schemas.roles import TEAM_VIEWER_ROLE
 from app.db import database_proxy
 from app.modules.db.models import (
     AlertRoute,
-    AlertRouteChannel,
     NotificationChannel,
     Rotation,
     RotationMember,
     RotationOverride,
     RotationLayer,
     RotationLayerMember,
-    RotationLayerRestriction,
     Silence,
     Team,
     TeamUser,
@@ -221,12 +219,10 @@ def soft_delete_team(team_id: int):
         Heartbeat,
         MaintenanceWindow,
         MatcherPreset,
-        NotificationChannel,
         NotificationPolicy,
         PriorityPolicy,
         Rotation,
         Service,
-        Silence,
     )
     from app.modules.db.soft_delete_hardening import (
         deactivate_sso_mappings,
