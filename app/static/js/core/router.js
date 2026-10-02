@@ -147,11 +147,20 @@ function updateAuthUi() {
     }
 
     if (currentUser) {
-        $("#topbar-username").text(currentUser.display_name || currentUser.username);
+        const name = currentUser.display_name || currentUser.username;
+        $("#topbar-username").text(name);
+        $(".topbar-user-avatar").text(userInitial(name));
         fillActiveGroupSelect();
     }
 
     applyRbacUiState();
+}
+
+function userInitial(name) {
+    // Array.from keeps a name that starts with an emoji or another
+    // surrogate pair in one piece.
+    const first = Array.from(String(name || "").trim())[0];
+    return first ? first.toUpperCase() : "?";
 }
 
 const TEAM_SCOPED_ROUTE_PATHS = {
