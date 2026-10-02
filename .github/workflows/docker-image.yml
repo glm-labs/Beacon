@@ -59,6 +59,15 @@ jobs:
             > /tmp/beacon.yaml
           test -s /tmp/beacon.yaml
 
+      # Helm reads YAML numbers as float64 and Go prints large ones as
+      # 1.048576e+06, which the app's get_int() cannot parse.
+      - name: No scientific notation in rendered config
+        run: |
+          if grep -nE ' = -?[0-9]+(\.[0-9]+)?[eE][+-]?[0-9]+$' /tmp/beacon.yaml; then
+            echo "beacon.conf contains a number in scientific notation" >&2
+            exit 1
+          fi
+
   build-and-push:
     name: Build and push Docker image
     needs: helm-check
