@@ -7,3 +7,10 @@ When changing backend logic:
 - update existing tests for changed behavior;
 - do not remove failing tests unless the tested behavior was intentionally removed;
 - if a backend change does not need tests, explain why in the pull request.
+
+## Upstream code
+
+Beacon is MIT licensed and forked from IncidentRelay before it moved to the
+Elastic License 2.0. Never copy or adapt code, tests, docs or translations
+from IncidentRelay after the fork point; [NOTICE.md](NOTICE.md) has the
+details.
