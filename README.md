@@ -16,6 +16,7 @@ It is designed for SRE, DevOps, platform, infrastructure and operations teams th
 
 - route-based intake tokens and source-specific webhook endpoints;
 - native integrations for Alertmanager, AWS SNS / CloudWatch, Azure Monitor, Datadog, Grafana, LibreNMS, Nagios, New Relic, RMON, Sentry, Uptime Kuma and Zabbix;
+- Zabbix acknowledge writeback: an alert acknowledged in Beacon is acknowledged on the Zabbix event too, so Zabbix's own escalation stops;
 - generic webhook intake with PagerDuty Events API v2-compatible trigger, acknowledge and resolve events;
 - Global and Service Event Orchestration;
 - orchestration Builder and JSON editor, validation, simulation, shadow mode, replay, immutable published versions and rollback;
@@ -51,15 +52,16 @@ It is designed for SRE, DevOps, platform, infrastructure and operations teams th
 - rotations, rotation layers, restrictions and temporary overrides;
 - on-call calendar, ICS feeds and CalDAV access;
 - route channels and service Notification Policies;
-- Mattermost, Slack, Telegram, Discord, Microsoft Teams, email and generic webhook delivery;
-- interactive ACK / Resolve actions for supported chat providers;
+- Pushover, Mattermost, Slack, Telegram, Discord, Microsoft Teams, email and generic webhook delivery;
+- interactive ACK / Resolve actions for supported chat providers, and 1-tap acknowledge from Pushover emergency notifications;
 - profile-level browser/PWA push notifications;
-- personal notification rules for browser push, email and voice-call follow-up;
+- personal notification rules for browser push, Pushover, email and voice-call follow-up;
 - pluggable self-hosted voice providers.
 
 ### Access and administration
 
-- OIDC and SAML 2.0 SSO with mapping rules;
+- OIDC and SAML 2.0 SSO (for example Keycloak) with group mapping rules, and claims that fill users' phone, Telegram, Slack, Mattermost and Pushover IDs;
+- config-as-code for channels and routes (`config/`), applied through the API from CI;
 - personal API tokens with scopes;
 - Swagger/OpenAPI documentation;
 - configurable retention for resolved alerts and diagnostic/orchestration history;
@@ -152,6 +154,7 @@ Incoming integrations use route intake credentials. The generated endpoint/help 
 
 | Channel | Notes |
 |---|---|
+| Pushover | Priority mapping per severity; critical alerts page as emergency with a 1-tap Acknowledge |
 | Mattermost | Incoming webhook or Bot API; Bot API supports interactive actions and message updates |
 | Slack | Incoming webhook or Bot API; interactive actions can use HTTP callbacks or Socket Mode worker |
 | Telegram | Bot notifications with optional action buttons |
@@ -160,7 +163,7 @@ Incoming integrations use route intake credentials. The generated endpoint/help 
 | Email | Delivered through global SMTP configuration |
 | Webhook | Generic outbound webhook |
 
-Browser/PWA push is profile-level rather than a shared channel. Personal notification rules can deliver through browser push, email or voice call to the assigned user's profile contacts.
+Browser/PWA push is profile-level rather than a shared channel. Personal notification rules can deliver through browser push, Pushover, email or voice call to the assigned user's profile contacts.
 
 Read more: [Notification channels](docs/integrations/channels.md) and [Notification Policies](docs/services/notification-policies.md).
 
@@ -432,6 +435,8 @@ Read more: [API documentation](docs/api/index.md) and [Profile/API tokens](docs/
 | Notification Policies | [Notification Policies](docs/services/notification-policies.md) |
 | Maintenance windows | [Maintenance Windows](docs/concepts/maintenance-windows.md) |
 | On-call calendar | [Calendar](docs/usage/calendar.md) |
+| Snoozing alerts | [Snooze](docs/usage/snooze.md) |
+| Pushover | [Pushover channel](docs/integrations/pushover.md) |
 | Browser/PWA push | [Browser Push](docs/usage/browser-push.md) |
 | SSO | [OIDC and SAML](docs/administration/sso.md) |
 | Data retention | [Data retention](docs/administration/data-retention.md) |
