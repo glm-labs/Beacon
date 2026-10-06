@@ -225,8 +225,8 @@ fingerprint
 | Severity Zabbix | Severity Beacon |
 |---|---|
 | `Disaster` | `critical` |
-| `High` | `critical` |
-| `Average` | `warning` |
+| `High` | `high` |
+| `Average` | `medium` |
 | `Warning` | `warning` |
 | `Information` | `info` |
 | `Not classified` | `info` |

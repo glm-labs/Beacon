@@ -225,8 +225,8 @@ Zabbix severity values are normalized for Beacon routing and filtering:
 | Zabbix severity | Beacon severity |
 |---|---|
 | `Disaster` | `critical` |
-| `High` | `critical` |
-| `Average` | `warning` |
+| `High` | `high` |
+| `Average` | `medium` |
 | `Warning` | `warning` |
 | `Information` | `info` |
 | `Not classified` | `info` |

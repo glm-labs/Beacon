@@ -1,6 +1,7 @@
 import json
 from urllib.parse import quote
 
+from app.services.severity import normalize_severity
 from app.services.integrations.normalizers.common import normalize_event_link, first_non_empty, first_event_link, \
     add_event_link_label, make_dedup_key
 
@@ -36,21 +37,19 @@ def normalize_zabbix_status(value):
 
 
 def normalize_zabbix_severity(value):
-    """Map common Zabbix severities to Beacon severities."""
-    severity = str(value or "").strip().lower()
+    """Map a Zabbix severity onto Beacon's own severity scale.
 
-    mapping = {
-        "disaster": "critical",
-        "high": "critical",
-        "average": "warning",
-        "warning": "warning",
-        "information": "info",
-        "info": "info",
-        "not classified": "info",
-        "not_classified": "info",
-    }
+    Zabbix has six levels and Beacon has six, so each keeps its rank:
+    Disaster -> critical, High -> high, Average -> medium, Warning ->
+    warning, Information and Not classified -> info. This is the same
+    alias table every other part of the app uses (app/services/severity.py).
 
-    return mapping.get(severity, severity or "info")
+    High used to collapse into critical, and critical is what notifiers
+    treat as the top level: a Pushover channel sends it as an emergency
+    page that repeats until acknowledged. Every High trigger paged like a
+    Disaster, and channel filters could not tell the two apart.
+    """
+    return normalize_severity(value) or "info"
 
 
 def normalize_zabbix_event_tag_value(value):
