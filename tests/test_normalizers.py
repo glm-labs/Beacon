@@ -1,3 +1,4 @@
+import pytest
 from app.services.integrations.normalizers.webhook import normalize_webhook
 from app.services.integrations.normalizers.zabbix import normalize_zabbix
 from app.services.integrations.normalizers.alertmanager import normalize_alertmanager
@@ -71,7 +72,7 @@ def test_normalize_zabbix_payload():
     assert alerts[0]["source"] == "zabbix"
     assert alerts[0]["team_slug"] == "infra"
     assert alerts[0]["status"] == "firing"
-    assert alerts[0]["severity"] == "critical"
+    assert alerts[0]["severity"] == "high"
     assert alerts[0]["labels"]["zabbix_severity"] == "High"
     assert alerts[0]["title"] == "CPU load is high"
     assert alerts[0]["message"] == "Load average is high"
@@ -163,7 +164,7 @@ def test_normalize_zabbix_uses_event_name_as_title():
 
     assert alert["title"] == "Free disk space is less than 10%"
     assert alert["message"] == "/var: 91% used"
-    assert alert["severity"] == "critical"
+    assert alert["severity"] == "high"
     assert alert["status"] == "firing"
     assert alert["external_id"] == "12345"
     assert alert["team_slug"] == "infra"
@@ -183,7 +184,7 @@ def test_normalize_zabbix_uses_trigger_name_when_event_name_is_missing():
     alerts = normalize_zabbix(payload)
 
     assert alerts[0]["title"] == "CPU load is too high"
-    assert alerts[0]["severity"] == "warning"
+    assert alerts[0]["severity"] == "medium"
     assert alerts[0]["labels"]["host"] == "app01"
 
 
@@ -262,11 +263,11 @@ def test_normalize_zabbix_maps_severity_and_keeps_original_value():
 
     alert = alerts[0]
 
-    assert alert["severity"] == "critical"
+    assert alert["severity"] == "high"
     assert alert["labels"]["zabbix_severity"] == "High"
 
 
-def test_normalize_zabbix_maps_average_to_warning():
+def test_normalize_zabbix_maps_average_to_medium():
     payload = {
         "event_id": "12345",
         "event_name": "CPU load is high",
@@ -276,8 +277,34 @@ def test_normalize_zabbix_maps_average_to_warning():
 
     alerts = normalize_zabbix(payload)
 
-    assert alerts[0]["severity"] == "warning"
+    assert alerts[0]["severity"] == "medium"
     assert alerts[0]["labels"]["zabbix_severity"] == "Average"
+
+
+@pytest.mark.parametrize(
+    ("zabbix_severity", "expected"),
+    [
+        ("Disaster", "critical"),
+        ("High", "high"),
+        ("Average", "medium"),
+        ("Warning", "warning"),
+        ("Information", "info"),
+        ("Not classified", "info"),
+        ("", "info"),
+    ],
+)
+def test_normalize_zabbix_keeps_each_severity_level_distinct(zabbix_severity, expected):
+    """Six Zabbix levels map onto six Beacon levels; High is not a Disaster."""
+    payload = {
+        "event_id": "12345",
+        "event_name": "Disk is filling up",
+        "event_status": "PROBLEM",
+        "event_severity": zabbix_severity,
+    }
+
+    alerts = normalize_zabbix(payload)
+
+    assert alerts[0]["severity"] == expected
 
 
 def test_normalize_zabbix_adds_event_link_to_labels():
