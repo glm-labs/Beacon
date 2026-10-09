@@ -6,6 +6,7 @@ from app.modules.db import heartbeats_repo, routes_repo, services_repo, teams_re
 from app.services.heartbeats.service import (
     generate_heartbeat_token,
     initialize_heartbeat_schedule,
+    restart_heartbeat_clock,
     pause_heartbeat,
     sync_heartbeat_static_instances,
     process_overdue_heartbeats,
@@ -232,6 +233,8 @@ def update_heartbeat(heartbeat_id):
     if error:
         return error
 
+    was_enabled = item.enabled
+
     existing = heartbeats_repo.get_heartbeat_by_slug(payload.team_id, payload.slug, include_deleted=True)
     if existing and existing.id != item.id and not existing.deleted:
         return make_error_response(
@@ -249,6 +252,9 @@ def update_heartbeat(heartbeat_id):
         sync_heartbeat_static_instances(item, payload.expected_instances or [])
     else:
         initialize_heartbeat_schedule(item)
+    if item.enabled and not was_enabled:
+        # Switched on: give the producer one full interval from now.
+        restart_heartbeat_clock(item)
     item = heartbeats_repo.get_heartbeat(item.id)
     return jsonify(serialize_heartbeat(item))
 

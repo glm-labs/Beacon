@@ -120,8 +120,13 @@ def _scheduled_next_due_local(heartbeat, latest_due_local, now_local):
     return candidate
 
 
-def compute_next_expected_at(heartbeat, now=None):
-    """Return the next expected ping deadline before grace is applied."""
+def compute_next_expected_at(heartbeat, now=None, anchor=None):
+    """Return the next expected ping deadline before grace is applied.
+
+    `anchor` overrides the instant the interval counts from. Without it the
+    clock runs from the last ping, or from creation for a heartbeat that was
+    never pinged; restart_heartbeat_clock() passes `now`.
+    """
     now = as_utc_naive_seconds(now or utc_now_seconds())
 
     if heartbeat.mode == "scheduled":
@@ -132,7 +137,7 @@ def compute_next_expected_at(heartbeat, now=None):
         return _local_to_naive_utc(next_due)
 
     interval = int(heartbeat.expected_interval_seconds or DEFAULT_INTERVAL_SECONDS)
-    anchor = heartbeat.last_seen_at or heartbeat.created_at or now
+    anchor = anchor or heartbeat.last_seen_at or heartbeat.created_at or now
     return as_utc_naive_seconds(anchor) + timedelta(seconds=interval)
 
 
@@ -175,6 +180,29 @@ def initialize_heartbeat_schedule(heartbeat, now=None):
         return heartbeat
 
     heartbeat.next_expected_at = compute_next_expected_at(heartbeat, now=now)
+    heartbeat.save(only=[Heartbeat.next_expected_at])
+    return heartbeat
+
+
+def restart_heartbeat_clock(heartbeat, now=None):
+    """Start the expected-ping clock at `now`.
+
+    For a heartbeat that was disabled or paused: its next deadline must not
+    count the time it was off. Anchored on the last ping, a heartbeat
+    switched on after a quiet day, or one never pinged since it was
+    created disabled, would be overdue the moment it is enabled and page
+    for a producer that has not had one interval yet.
+    """
+    now = as_utc_naive_seconds(now or utc_now_seconds())
+
+    if heartbeat_tracks_instances(heartbeat):
+        for instance in heartbeats_repo.list_heartbeat_instances(heartbeat.id, enabled_only=True):
+            instance.next_expected_at = compute_instance_next_expected_at(heartbeat, instance, now=now, anchor=now)
+            instance.save()
+        refresh_heartbeat_instance_rollup(heartbeat, now=now)
+        return heartbeat
+
+    heartbeat.next_expected_at = compute_next_expected_at(heartbeat, now=now, anchor=now)
     heartbeat.save(only=[Heartbeat.next_expected_at])
     return heartbeat
 
@@ -239,14 +267,14 @@ def extract_heartbeat_instance_key(heartbeat, payload):
     return None
 
 
-def compute_instance_next_expected_at(heartbeat, instance, now=None):
+def compute_instance_next_expected_at(heartbeat, instance, now=None, anchor=None):
     now = as_utc_naive_seconds(now or utc_now_seconds())
 
     if heartbeat.mode == "scheduled":
         return compute_next_expected_at(heartbeat, now=now)
 
     interval = int(heartbeat.expected_interval_seconds or DEFAULT_INTERVAL_SECONDS)
-    anchor = instance.last_seen_at or instance.created_at or now
+    anchor = anchor or instance.last_seen_at or instance.created_at or now
     return as_utc_naive_seconds(anchor) + timedelta(seconds=interval)
 
 
@@ -1065,13 +1093,14 @@ def resume_heartbeat(heartbeat, now=None):
     if heartbeat_tracks_instances(heartbeat):
         for instance in heartbeats_repo.list_heartbeat_instances(heartbeat.id, enabled_only=True):
             instance.status = "ok" if instance.last_seen_at else "new"
-            instance.next_expected_at = compute_instance_next_expected_at(heartbeat, instance, now=now)
+            # The clock restarts at the resume, see restart_heartbeat_clock().
+            instance.next_expected_at = compute_instance_next_expected_at(heartbeat, instance, now=now, anchor=now)
             instance.updated_at = now
             instance.save()
         refresh_heartbeat_instance_rollup(heartbeat, now=now)
     else:
         heartbeat.status = "ok" if heartbeat.last_seen_at else "new"
-        heartbeat.next_expected_at = compute_next_expected_at(heartbeat, now=now)
+        heartbeat.next_expected_at = compute_next_expected_at(heartbeat, now=now, anchor=now)
         heartbeat.updated_at = now
         heartbeat.save()
 
