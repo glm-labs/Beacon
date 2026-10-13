@@ -27,6 +27,7 @@ Mattermost button click would use.
 from app.modules.db.models import NotificationChannel
 from app.notifiers.base import BaseNotifier
 from app.notifiers.pushover.actions import build_pushover_action_signature
+from app.notifiers.pushover.sounds import normalize_sound_map
 from app.services.alerts.priority import format_alert_title_with_priority
 from app.services.links import build_alert_web_url
 from app.services.outbound_http import safe_request
@@ -94,6 +95,10 @@ class PushoverNotifier(BaseNotifier):
             "priority": priority,
         }
 
+        sound = self._sound_for(config, alert, event_type)
+        if sound:
+            payload["sound"] = sound
+
         alert_url = build_alert_web_url(alert)
         if alert_url:
             payload["url"] = alert_url
@@ -151,6 +156,19 @@ class PushoverNotifier(BaseNotifier):
             priority = 0
 
         return max(-2, min(2, priority))
+
+    def _sound_for(self, config, alert, event_type):
+        """Return the sound for this alert, or None for the device default.
+
+        Acknowledged and resolved updates go out quietly, so they get none.
+        """
+        if event_type in {"resolved", "acknowledged"}:
+            return None
+
+        sounds = normalize_sound_map(Config.PUSHOVER_SOUNDS)
+        sounds.update(normalize_sound_map(config.get("sound_map")))
+
+        return sounds.get(normalize_severity(getattr(alert, "severity", None)))
 
     def _retry_seconds(self, config):
         try:
