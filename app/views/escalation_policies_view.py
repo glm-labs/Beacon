@@ -43,6 +43,16 @@ def _validate_rule_target_values(policy, target_type, target_id):
                 team_id=policy.team.id,
             )
 
+    if target_type == "team":
+        if int(target_id) != int(policy.team.id):
+            return make_error_response(
+                "team_mismatch",
+                "A team rule can only target the policy team",
+                400,
+                target_team_id=target_id,
+                team_id=policy.team.id,
+            )
+
     return None
 
 
@@ -64,6 +74,8 @@ def _validate_rule_update_target(policy, rule, payload):
         target_id = rule.target_rotation.id
     elif target_type == "user" and rule.target_user:
         target_id = rule.target_user.id
+    elif target_type == "team":
+        target_id = policy.team.id
     else:
         return make_error_response(
             "rule_target_required",

@@ -24,7 +24,7 @@ class VoiceCallNotifier(BaseNotifier):
         if event_type != "test" and alert.status != "firing":
             return self._skip("alert_not_firing", channel, alert, event_type)
 
-        phone = self._get_phone(alert)
+        phone = config.get("recipient_phone") or self._get_phone(alert)
         if not phone:
             raise RuntimeError("voice_call phone is missing: set phone on the assigned user")
 

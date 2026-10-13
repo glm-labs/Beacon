@@ -94,6 +94,7 @@
   "escalations.rules.target_type": "目标类型",
   "escalations.rules.rotation": "轮班",
   "escalations.rules.user": "用户",
+  "escalations.rules.team": "整个团队",
   "escalations.rules.no_rotations": "没有已启用的轮班",
   "escalations.rules.select_user": "请选择用户...",
   "escalations.rules.no_users": "没有已启用的用户",

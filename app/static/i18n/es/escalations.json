@@ -94,6 +94,7 @@
   "escalations.rules.target_type": "Tipo de destino",
   "escalations.rules.rotation": "Rotación",
   "escalations.rules.user": "Usuario",
+  "escalations.rules.team": "Todo el equipo",
   "escalations.rules.no_rotations": "No hay rotaciones activas",
   "escalations.rules.select_user": "Seleccionar usuario...",
   "escalations.rules.no_users": "No hay usuarios activos",

@@ -13,9 +13,13 @@ class EmailNotifier(BaseNotifier):
     name = "email"
 
     def send(self, channel, alert, text, event_type="notification"):
-        """Send an email notification to the assigned user's profile email."""
+        """Send an email notification to the assigned user's profile email.
+
+        A personal notification rule sets recipient_email to its own user's
+        address, so a team rule reaches each member, not the assignee.
+        """
         config = channel.config or {}
-        recipient = self._recipient_email(alert)
+        recipient = self._recipient_email(alert, config)
 
         smtp_host = Config.SMTP_HOST
         smtp_port = int(Config.SMTP_PORT)
@@ -67,12 +71,18 @@ class EmailNotifier(BaseNotifier):
 
         return {
             "provider": self.name,
-            "provider_payload": {"recipient_source": "assignee.email"},
+            "provider_payload": {
+                "recipient_source": (
+                    "rule_user.email" if config.get("recipient_email") else "assignee.email"
+                ),
+            },
         }
 
-    def _recipient_email(self, alert):
-        assignee = getattr(alert, "assignee", None)
-        email = getattr(assignee, "email", None) if assignee else None
+    def _recipient_email(self, alert, config=None):
+        email = (config or {}).get("recipient_email")
+        if not email:
+            assignee = getattr(alert, "assignee", None)
+            email = getattr(assignee, "email", None) if assignee else None
         email = str(email or "").strip()
         if not email:
             raise RuntimeError("email test recipient is missing: set email in your profile")

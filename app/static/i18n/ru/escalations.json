@@ -94,6 +94,7 @@
   "escalations.rules.target_type": "Тип цели",
   "escalations.rules.rotation": "Ротация",
   "escalations.rules.user": "Пользователь",
+  "escalations.rules.team": "Вся команда",
   "escalations.rules.no_rotations": "Нет активных ротаций",
   "escalations.rules.select_user": "Выберите пользователя...",
   "escalations.rules.no_users": "Нет активных пользователей",

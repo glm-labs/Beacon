@@ -119,8 +119,8 @@ def test_has_deliverable_user_notification_uses_default_browser_push_without_cus
 
     monkeypatch.setattr(
         rules.browser_push,
-        "can_send_alert_push",
-        lambda pushed_group: pushed_group.id == alert_group.id,
+        "has_active_user_subscriptions",
+        lambda user_id: user_id == user.id,
     )
 
     assert rules.has_deliverable_user_notification(alert_group) is True
@@ -144,8 +144,8 @@ def test_has_deliverable_user_notification_uses_custom_rules_when_present(
 
     monkeypatch.setattr(
         rules.browser_push,
-        "can_send_alert_push",
-        lambda pushed_group: False,
+        "has_active_user_subscriptions",
+        lambda user_id: False,
     )
 
     assert rules.has_deliverable_user_notification(alert_group) is True
@@ -167,8 +167,8 @@ def test_enqueue_user_notifications_default_browser_push_sends_immediately(
 
     monkeypatch.setattr(
         rules.browser_push,
-        "can_send_alert_push",
-        lambda pushed_group: True,
+        "has_active_user_subscriptions",
+        lambda user_id: True,
     )
 
     def fake_send_alert_push_to_user(assignee, pushed_group, event_type="notification"):
