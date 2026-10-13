@@ -221,7 +221,7 @@ def maybe_escalate_alert_by_policy(group):
     group.updated_at = now
     group.save()
 
-    target = next_user.username if next_user else "no assignee"
+    target = escalation_policy_service.describe_rule_target(next_rule, next_user)
 
     alerts_repo.create_alert_event(
         group_id=group.id,

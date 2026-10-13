@@ -135,6 +135,18 @@ POST /api/escalation-policies/{policy_id}/rules
 }
 ```
 
+Запрос с целью «команда» (`target_id` равен `team_id` политики; оповещает сразу всех участников команды с ролью responder или manager):
+
+```json
+{
+  "position": 1,
+  "delay_seconds": 1800,
+  "target_type": "team",
+  "target_id": 3,
+  "enabled": true
+}
+```
+
 Правила вычисляются по `position` в порядке возрастания.
 
 ## Обновление правила
@@ -237,6 +249,7 @@ DELETE /api/escalation-policies/rules/{rule_id}
 |---:|---|---|
 | `400` | `rotation_team_mismatch` | Целевая ротация правила принадлежит другой команде |
 | `400` | `user_team_mismatch` | Целевой пользователь правила не является участником команды политики |
+| `400` | `team_mismatch` | Правило `team` указывает на другую команду, а не на команду политики |
 | `400` | `escalation_policy_team_mismatch` | Маршрут использует политику из другой команды |
 | `403` | `permission_denied` | У пользователя нет прав на запись |
 | `404` | `not_found` | Политика, правило или цель не найдены |

@@ -37,7 +37,19 @@ function getEscalationRuleTargetName(targetType, targetId) {
             : null;
     }
 
+    if (targetType === "team") {
+        const policy = getEscalationPolicyById(selectedEscalationPolicyRulesId);
+
+        return policy ? (policy.team_name || policy.team_slug) : null;
+    }
+
     return null;
+}
+
+function getSelectedEscalationPolicyTeamId() {
+    const policy = getEscalationPolicyById(selectedEscalationPolicyRulesId);
+
+    return policy ? Number(policy.team_id) : null;
 }
 
 function escalationPolicyStatusLabel(enabled) {
@@ -51,6 +63,10 @@ function escalationRuleTargetTypeLabel(targetType) {
 
     if (targetType === "user") {
         return i18n.t("escalations.rules.user");
+    }
+
+    if (targetType === "team") {
+        return i18n.t("escalations.rules.team");
     }
 
     return targetType || "-";
@@ -951,6 +967,7 @@ function ruleTargetTypeField(rule) {
                 .addClass("input")
                 .append($("<option>").val("rotation").text(i18n.t("escalations.rules.rotation")))
                 .append($("<option>").val("user").text(i18n.t("escalations.rules.user")))
+                .append($("<option>").val("team").text(i18n.t("escalations.rules.team")))
                 .val(rule.target_type || "rotation")
                 .on("change", function () {
                     updateEscalationRuleTargetTypeUi(rule.id);
@@ -1032,10 +1049,11 @@ function ruleUserTargetField(rule) {
 function updateEscalationRuleTargetTypeUi(ruleId) {
     const targetType = $("#" + ruleFieldId(ruleId, "target-type")).val() || "rotation";
     const useUser = targetType === "user";
+    const useRotation = targetType === "rotation";
 
-    $("#" + ruleFieldId(ruleId, "rotation-target-group")).toggleClass("is-hidden", useUser);
+    $("#" + ruleFieldId(ruleId, "rotation-target-group")).toggleClass("is-hidden", !useRotation);
     $("#" + ruleFieldId(ruleId, "user-target-group")).toggleClass("is-hidden", !useUser);
-    $("#" + ruleFieldId(ruleId, "target-rotation")).prop("disabled", useUser);
+    $("#" + ruleFieldId(ruleId, "target-rotation")).prop("disabled", !useRotation);
     setEnhancedSelectDisabled("#" + ruleFieldId(ruleId, "target-user"), !useUser);
 }
 
@@ -1102,9 +1120,14 @@ function addEscalationRuleCard() {
 
 function collectEscalationRulePayloadFromCard(ruleId) {
     const targetType = $("#" + ruleFieldId(ruleId, "target-type")).val() || "rotation";
-    const targetId = targetType === "user"
-        ? $("#" + ruleFieldId(ruleId, "target-user")).val()
-        : $("#" + ruleFieldId(ruleId, "target-rotation")).val();
+    let targetId = $("#" + ruleFieldId(ruleId, "target-rotation")).val();
+
+    if (targetType === "user") {
+        targetId = $("#" + ruleFieldId(ruleId, "target-user")).val();
+    } else if (targetType === "team") {
+        // A team rule pages the policy's own team; the API checks that.
+        targetId = getSelectedEscalationPolicyTeamId();
+    }
 
     return {
         position: Number($("#" + ruleFieldId(ruleId, "position")).val() || 1),

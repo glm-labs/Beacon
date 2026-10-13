@@ -52,8 +52,8 @@ def test_has_deliverable_user_notification_uses_default_browser_push_for_group(d
 
     monkeypatch.setattr(
         rules.browser_push,
-        "can_send_alert_push",
-        lambda group: group.id == alert_group.id,
+        "has_active_user_subscriptions",
+        lambda user_id: user_id == user.id,
     )
 
     assert rules.has_deliverable_user_notification(alert_group) is True

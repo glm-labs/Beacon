@@ -135,6 +135,18 @@ User target request:
 }
 ```
 
+Team target request (`target_id` is the policy's `team_id`; pages every responder and manager of that team at once):
+
+```json
+{
+  "position": 1,
+  "delay_seconds": 1800,
+  "target_type": "team",
+  "target_id": 3,
+  "enabled": true
+}
+```
+
 Rules are evaluated by `position` in ascending order.
 
 ## Update rule
@@ -237,6 +249,7 @@ Common errors:
 |---:|---|---|
 | `400` | `rotation_team_mismatch` | Rule target rotation belongs to another team |
 | `400` | `user_team_mismatch` | Rule target user is not a member of the policy team |
+| `400` | `team_mismatch` | A team rule targets another team than the policy team |
 | `400` | `escalation_policy_team_mismatch` | Route uses a policy from another team |
 | `403` | `permission_denied` | User does not have write permission |
 | `404` | `not_found` | Policy, rule or target not found |

@@ -219,7 +219,7 @@ def create_rule(
         data["target_rotation"] = target_id
     elif target_type == "user":
         data["target_user"] = target_id
-    else:
+    elif target_type != "team":
         raise ValueError("unsupported escalation rule target type")
 
     try:
@@ -248,7 +248,7 @@ def update_rule(rule_id, data):
             rule.target_rotation = target_id
         elif target_type == "user":
             rule.target_user = target_id
-        else:
+        elif target_type != "team":
             raise ValueError("unsupported escalation rule target type")
     elif target_id is not None:
         if rule.target_type == "rotation":
@@ -279,6 +279,27 @@ def rotation_belongs_to_team(rotation_id, team_id):
         )
         .exists()
     )
+
+
+def list_team_responder_users(team_id):
+    """Return active users with a responder or manager role in team."""
+    if not team_id:
+        return []
+
+    rows = (
+        TeamUser.select(TeamUser, User)
+        .join(User)
+        .where(
+            (TeamUser.team == team_id)
+            & (TeamUser.active == True)
+            & (TeamUser.role.in_(("responder", "manager")))
+            & (User.active == True)
+            & (User.deleted == False)
+        )
+        .order_by(TeamUser.id.asc())
+    )
+
+    return [row.user for row in rows]
 
 
 def user_belongs_to_team(user_id, team_id):

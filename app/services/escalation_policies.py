@@ -64,6 +64,32 @@ def resolve_rule_user(rule):
     return None
 
 
+def resolve_rule_users(rule):
+    """Resolve every active user that should receive the rule notification.
+
+    A team rule pages all responders and managers of the policy team at
+    once and assigns the alert to nobody; the acknowledgement records who
+    took it.
+    The other target types resolve to the single assignee.
+    """
+    if not rule or not rule.enabled:
+        return []
+
+    if rule.target_type == "team":
+        return escalation_policies_repo.list_team_responder_users(rule.policy.team_id)
+
+    user = resolve_rule_user(rule)
+    return [user] if user else []
+
+
+def describe_rule_target(rule, user=None):
+    """Return a short label for whom a rule pages, for alert events."""
+    if rule and rule.target_type == "team":
+        return f"team {rule.policy.team.name}"
+
+    return user.username if user else "no assignee"
+
+
 def get_next_rule_for_alert(alert):
     """
     Return next policy rule and repeat counter for the alert.
@@ -140,6 +166,9 @@ def serialize_rule(rule):
     elif rule.target_type == "user" and rule.target_user:
         target_id = rule.target_user.id
         target_name = rule.target_user.username
+    elif rule.target_type == "team":
+        target_id = rule.policy.team.id
+        target_name = rule.policy.team.name
 
     return {
         "id": rule.id,

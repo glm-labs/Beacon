@@ -2,7 +2,7 @@ from pydantic import Field, field_validator, model_validator
 
 from app.api.schemas.base import ApiModel
 
-ESCALATION_TARGET_TYPES = {"rotation", "user"}
+ESCALATION_TARGET_TYPES = {"rotation", "user", "team"}
 
 
 class EscalationPolicyCreateSchema(ApiModel):
@@ -37,7 +37,7 @@ class EscalationPolicyRuleSchema(ApiModel):
     @classmethod
     def validate_target_type(cls, value):
         if value not in ESCALATION_TARGET_TYPES:
-            raise ValueError("target_type must be one of: rotation, user")
+            raise ValueError("target_type must be one of: rotation, user, team")
         return value
 
 
@@ -54,7 +54,7 @@ class EscalationPolicyRuleUpdateSchema(ApiModel):
     @classmethod
     def validate_target_type(cls, value):
         if value is not None and value not in ESCALATION_TARGET_TYPES:
-            raise ValueError("target_type must be one of: rotation, user")
+            raise ValueError("target_type must be one of: rotation, user, team")
         return value
 
     @model_validator(mode="after")

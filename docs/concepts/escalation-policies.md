@@ -20,6 +20,27 @@ Supported target types:
 |---|---|
 | `rotation` | Assign the alert to the current on-call user from the selected rotation |
 | `user` | Assign the alert to a specific team user |
+| `team` | Page every responder and manager of the policy team at once |
+
+## Team target
+
+A `team` rule pages a group of people together instead of one person. Every active member of the policy team with the `responder` or `manager` role receives the alert through their own notification rules, at the same time. Viewers are not paged.
+
+The alert has no assignee while it is at a team rule; the acknowledgement records who took it. Assigning the alert to someone narrows the notifications to that person. Acknowledge or resolve stops the pages for everyone, including deliveries still waiting on a rule delay.
+
+A team rule can only target the policy's own team (`target_id` is the policy's `team_id`). To page a different group of people for a specific problem, route that problem to a route of that team, with a policy of that team.
+
+```text
+Policy: Datacenter down
+Rule 1:
+  Target: team SRE         -> all SRE responders paged at once
+  Delay: 1800 seconds
+Rule 2:
+  Target: Team lead user   -> nobody acknowledged within 30 minutes
+  Delay: 1800 seconds
+```
+
+Each person's own rules still decide how and when they are paged, so one person can take a medium alert after ten minutes while another takes it at once.
 
 Example:
 

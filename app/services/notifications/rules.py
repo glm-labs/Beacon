@@ -15,6 +15,7 @@ from app.notifiers.voice.notifier import VoiceCallNotifier
 from app.services.severity import normalize_severity, normalize_severity_list
 from app.modules.db import alerts_repo
 from app.modules.common import utc_now
+from app.services import escalation_policies as escalation_policy_service
 from app.services.alerts.maintenance_state import is_notification_lifecycle_suppressed
 
 
@@ -239,12 +240,41 @@ def has_custom_user_rules(user_id):
     )
 
 
-def list_matching_rules(group, event_type="notification"):
-    """Return enabled rules matching alert group severity and event type."""
+def notification_recipient_ids(group):
+    """Return the users whose own notification rules apply to a group.
+
+    That is the assignee. A group without one whose current policy rule
+    targets a team pages every responder of that team, until someone is
+    assigned or acknowledges it.
+    """
+
+    assignee_id = getattr(group, "assignee_id", None)
+
+    if assignee_id:
+        return [assignee_id]
+
+    rule = (
+        group.escalation_rule
+        if getattr(group, "escalation_rule_id", None)
+        else None
+    )
+
+    if rule is None or rule.target_type != "team":
+        return []
+
+    return [user.id for user in escalation_policy_service.resolve_rule_users(rule)]
+
+
+def list_matching_rules(group, event_type="notification", user_id=None):
+    """Return a user's enabled rules matching alert group severity and event type.
+
+    Without user_id this is the assignee's rules.
+    """
 
     group = _ensure_alert_group(group)
 
-    user_id = getattr(group, "assignee_id", None)
+    if user_id is None:
+        user_id = getattr(group, "assignee_id", None)
 
     if not user_id:
         return []
@@ -287,24 +317,29 @@ def rule_matches_group(rule, group, event_type):
     return True
 
 
-def has_deliverable_user_notification(group, event_type="notification"):
-    """Return True if alert group assignee can receive user-level notification."""
-
-    group = _ensure_alert_group(group)
-
-    user_id = getattr(group, "assignee_id", None)
-
-    if not user_id or _active_notification_user(user_id) is None:
+def _user_can_receive(group, user_id, event_type):
+    if _active_notification_user(user_id) is None:
         return False
 
     if not has_custom_user_rules(user_id):
-        return browser_push.can_send_alert_push(group)
+        return browser_push.has_active_user_subscriptions(user_id)
 
-    return bool(list_matching_rules(group, event_type=event_type))
+    return bool(list_matching_rules(group, event_type=event_type, user_id=user_id))
+
+
+def has_deliverable_user_notification(group, event_type="notification"):
+    """Return True if a recipient of the alert group can receive user-level notification."""
+
+    group = _ensure_alert_group(group)
+
+    return any(
+        _user_can_receive(group, user_id, event_type)
+        for user_id in notification_recipient_ids(group)
+    )
 
 
 def enqueue_user_notifications(group, event_type="notification"):
-    """Create/send user-level notifications for alert group assignee."""
+    """Create/send user-level notifications for the alert group's recipients."""
 
     group = _ensure_alert_group(group)
 
@@ -314,26 +349,27 @@ def enqueue_user_notifications(group, event_type="notification"):
     ):
         return 0
 
-    assignee = getattr(group, "assignee", None)
-    assignee_id = getattr(group, "assignee_id", None)
-
-    if not assignee_id:
-        return 0
-
-    assignee = _active_notification_user(assignee_id)
-    if assignee is None:
-        return 0
-
     now = utc_now()
+    sent_count = 0
 
+    for user_id in notification_recipient_ids(group):
+        user = _active_notification_user(user_id)
+
+        if user is not None:
+            sent_count += _enqueue_user_notifications_for(group, user, event_type, now)
+
+    return sent_count
+
+
+def _enqueue_user_notifications_for(group, user, event_type, now):
     # Default profile browser push when the user has no custom rules.
-    if not has_custom_user_rules(assignee.id):
+    if not has_custom_user_rules(user.id):
         if event_type not in DEFAULT_RULE_EVENT_TYPES:
             return 0
 
         delivery = create_delivery(
             group=group,
-            user=assignee,
+            user=user,
             rule=None,
             method=NOTIFICATION_METHOD_BROWSER_PUSH,
             event_type=event_type,
@@ -344,14 +380,14 @@ def enqueue_user_notifications(group, event_type="notification"):
 
     sent_count = 0
 
-    for rule in list_matching_rules(group, event_type=event_type):
+    for rule in list_matching_rules(group, event_type=event_type, user_id=user.id):
         scheduled_at = now + timedelta(
             seconds=max(int(rule.delay_seconds or 0), 0)
         )
 
         delivery = create_delivery(
             group=group,
-            user=assignee,
+            user=user,
             rule=rule,
             method=rule.method,
             event_type=event_type,
@@ -611,8 +647,14 @@ def send_direct_notifier_delivery(delivery, group):
 def build_direct_channel_config(delivery):
     config = {}
 
+    # A rule delivers to its own user, who is not the assignee when the
+    # alert is at a team rule.
     if delivery.method == NOTIFICATION_METHOD_VOICE_CALL:
         config["callback_url"] = build_voice_rule_callback_url(delivery)
+        config["recipient_phone"] = getattr(delivery.user, "phone", None)
+
+    if delivery.method == NOTIFICATION_METHOD_EMAIL:
+        config["recipient_email"] = getattr(delivery.user, "email", None)
 
     if delivery.method == NOTIFICATION_METHOD_PUSHOVER:
         config["target"] = getattr(delivery.user, "pushover_user_key", None)

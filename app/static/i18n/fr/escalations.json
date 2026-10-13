@@ -94,6 +94,7 @@
   "escalations.rules.target_type": "Type de cible",
   "escalations.rules.rotation": "Rotation",
   "escalations.rules.user": "Utilisateur",
+  "escalations.rules.team": "Toute l'équipe",
   "escalations.rules.no_rotations": "Aucune rotation active",
   "escalations.rules.select_user": "Sélectionner un utilisateur...",
   "escalations.rules.no_users": "Aucun utilisateur actif",
