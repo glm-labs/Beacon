@@ -10,6 +10,7 @@ from app.notifiers.types import (
     WEBHOOK_STYLE_CHANNELS,
 )
 from app.notifiers.email.email_templates import normalize_email_html_template
+from app.notifiers.pushover.sounds import normalize_sound_map
 from app.services.channel_config import (
     CHANNEL_SECRET_PLACEHOLDER,
     contains_channel_secret_placeholder,
@@ -223,6 +224,23 @@ class ChannelBaseSchema(ApiModel):
                     config["priority_map"] = normalized_priority_map
                 else:
                     config.pop("priority_map", None)
+
+            sound_map = config.get("sound_map")
+            if sound_map is not None:
+                if not isinstance(sound_map, dict):
+                    raise ValueError("pushover sound_map must be an object")
+
+                normalized_sound_map = normalize_sound_map(sound_map)
+                if len(normalized_sound_map) != len(sound_map):
+                    raise ValueError(
+                        "pushover sound_map values must be Pushover sound names "
+                        "(letters, digits, - and _)"
+                    )
+
+                if normalized_sound_map:
+                    config["sound_map"] = normalized_sound_map
+                else:
+                    config.pop("sound_map", None)
 
         if self.channel_type == "email":
             html_template = normalize_email_html_template(config.get("html_template"))

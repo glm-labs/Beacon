@@ -48,6 +48,10 @@ opening Beacon.
   must be Pushover priorities, `-2` to `2`. Only alerts that normalize to
   severity `critical` reach priority 2 by default; see
   `app/services/severity.py` for the full severity vocabulary.
+- `sound_map` — optional, a Pushover sound per severity for this
+  channel, for example `{"critical": "persistent"}`. Overrides the
+  app-wide `[pushover] sounds` (see [Sounds](#sounds)) for the severities
+  it names.
 - `callback_secret` — optional per-channel override of the app-wide
   `[pushover] action_secret` used to sign the acknowledge callback URL
   (see below). Only needed if you want a channel's callback signed with a
@@ -65,6 +69,32 @@ Mattermost user IDs. An admin can set it for someone else from **Admin →
 Users**. A personal Pushover rule
 always uses the app-wide `[pushover] app_token` — there's no per-rule
 app_token field, since a personal rule has nowhere to put one.
+
+## Sounds
+
+Without a `sound`, Pushover plays the receiving device's default sound,
+which is the same short chime for every priority. A page that has to wake
+someone can carry its own sound, set per severity:
+
+```ini
+[pushover]
+sounds = {"critical": "persistent", "high": "siren"}
+```
+
+- Applies to every Pushover send: shared channels and personal
+  notification rules alike. A channel's `sound_map` overrides it per
+  severity.
+- Values are Pushover sound names: a built-in one (`pushover`, `siren`,
+  `spacealarm`, the long `persistent`, `echo`, `alien`, `climb` and
+  `updown`, `vibrate`, `none`, ...) or a custom sound uploaded to the
+  receiving Pushover account. The full list for your application is at
+  `https://api.pushover.net/1/sounds.json?token=<app token>`.
+- A severity that is not listed plays the device default.
+- Acknowledged and resolved updates are sent at priority -1 and never
+  carry a sound.
+- On a critical (priority 2) alert the sound plays again on every `retry`.
+  On iOS it only breaks through Focus and silent mode when the user has
+  allowed Critical Alerts for the Pushover app.
 
 ## 1-tap acknowledge
 

@@ -280,6 +280,12 @@ class Config:
     # regardless of what's configured here.
     PUSHOVER_RETRY_SECONDS = settings.get_int("pushover", "retry_seconds", 60)
     PUSHOVER_EXPIRE_SECONDS = settings.get_int("pushover", "expire_seconds", 3600)
+    # Pushover sound per normalized severity, as a JSON object, e.g.
+    # {"critical": "persistent", "high": "siren"}. Applies to every
+    # Pushover send, shared channels and personal rules alike; a channel's
+    # own sound_map overrides it. A severity left out plays the receiving
+    # device's default sound.
+    PUSHOVER_SOUNDS = settings.get_json("pushover", "sounds", {}) or {}
 
     VOICE_PROVIDER = settings.get("voice", "provider", "stub")
     VOICE_CALLBACK_SECRET = settings.get("voice", "callback_secret", SECRET_KEY) or SECRET_KEY
