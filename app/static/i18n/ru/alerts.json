@@ -94,5 +94,6 @@
   "alerts.summary.reminders_hint": "Повторные уведомления",
   "alerts.summary.show_all": "Показать все алерты",
   "alerts.summary.total": "Всего алертов",
-  "alerts.summary.total_hint": "Текущая выборка"
+  "alerts.summary.total_hint": "Текущая выборка",
+  "alerts.table.open_source": "Открыть в {source} ↗"
 }

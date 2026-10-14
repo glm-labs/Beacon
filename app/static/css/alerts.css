@@ -455,6 +455,17 @@ body.md-theme .table-age {
     font-size: 12px;
 }
 
+body.md-theme .table-age .alert-source-link {
+    margin-left: 10px;
+    color: var(--md-primary-ink);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+body.md-theme .table-age .alert-source-link:hover {
+    text-decoration: underline;
+}
+
 body.md-theme .alerts-escalation-cell {
     align-items: flex-start;
     min-width: 110px;

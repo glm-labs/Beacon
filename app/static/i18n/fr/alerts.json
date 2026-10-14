@@ -94,5 +94,6 @@
   "alerts.summary.reminders_hint": "Notifications répétées",
   "alerts.summary.show_all": "Afficher toutes les alertes",
   "alerts.summary.total": "Total des alertes",
-  "alerts.summary.total_hint": "Sélection actuelle"
+  "alerts.summary.total_hint": "Sélection actuelle",
+  "alerts.table.open_source": "Ouvrir dans {source} ↗"
 }
