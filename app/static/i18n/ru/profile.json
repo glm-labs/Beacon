@@ -227,5 +227,6 @@
   "profile.oncall.no_next_primary": "В выбранном периоде будущих основных смен нет.",
   "profile.oncall.next_backup": "Следующие смены резерва эскалации",
   "profile.oncall.no_next_backup": "В выбранном периоде будущих смен резерва эскалации нет.",
-  "profile.push.device_placeholder": "Мой ноутбук, рабочий телефон..."
+  "profile.push.device_placeholder": "Мой ноутбук, рабочий телефон...",
+  "profile.rules.pushover": "Pushover"
 }

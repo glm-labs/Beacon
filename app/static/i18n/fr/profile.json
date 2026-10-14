@@ -227,5 +227,6 @@
   "profile.oncall.no_next_primary": "Aucune astreinte principale à venir dans la fenêtre sélectionnée.",
   "profile.oncall.next_backup": "Prochains relais d’escalade",
   "profile.oncall.no_next_backup": "Aucun relais d’escalade à venir dans la fenêtre sélectionnée.",
-  "profile.push.device_placeholder": "Mon ordinateur portable, mon téléphone professionnel..."
+  "profile.push.device_placeholder": "Mon ordinateur portable, mon téléphone professionnel...",
+  "profile.rules.pushover": "Pushover"
 }

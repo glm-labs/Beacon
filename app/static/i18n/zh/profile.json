@@ -227,5 +227,6 @@
   "profile.oncall.no_next_primary": "所选前瞻窗口内没有后续主值班班次。",
   "profile.oncall.next_backup": "后续升级后备班次",
   "profile.oncall.no_next_backup": "所选前瞻窗口内没有后续升级后备班次。",
-  "profile.push.device_placeholder": "我的笔记本、工作手机..."
+  "profile.push.device_placeholder": "我的笔记本、工作手机...",
+  "profile.rules.pushover": "Pushover"
 }
