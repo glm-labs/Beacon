@@ -163,6 +163,34 @@ def alert_notification_schema():
     }
 
 
+def alert_user_delivery_schema():
+    """Build personal notification delivery response schema."""
+
+    return {
+        "type": "object",
+        "properties": {
+            "id": {"type": "integer"},
+            "user": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "integer"},
+                    "username": {"type": "string"},
+                    "display_name": {"type": "string", "nullable": True},
+                },
+            },
+            "rule_id": {"type": "integer", "nullable": True},
+            "method": {"type": "string"},
+            "event_type": {"type": "string"},
+            "status": {"type": "string", "description": "pending, processing, sent, failed or skipped."},
+            "provider_status": {"type": "string", "nullable": True},
+            "scheduled_at": date_time_property("When the delivery is or was due, in UTC.", nullable=True),
+            "sent_at": date_time_property("When the delivery was sent, in UTC.", nullable=True),
+            "last_error": {"type": "string", "nullable": True},
+        },
+        "additionalProperties": True,
+    }
+
+
 def alert_explain_step_schema():
     """Build alert explain step response schema."""
     return {
@@ -570,6 +598,11 @@ def alert_group_schema(include_details=False):
         properties["notifications"] = {
             "type": "array",
             "items": alert_notification_schema(),
+        }
+        properties["user_deliveries"] = {
+            "type": "array",
+            "description": "Personal deliveries created from users' notification rules.",
+            "items": alert_user_delivery_schema(),
         }
         properties["correlations"] = alert_group_correlations_schema()
         properties["business_impacts"] = {

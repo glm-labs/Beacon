@@ -333,5 +333,13 @@
   "alert_details.manual.title_required": "必须填写事件标题。",
   "alert_details.manual.permission": "你没有为此团队创建事件的权限。",
   "alert_details.priority.current": "当前：{value}",
-  "alert_details.events.load_older": "加载更早的事件"
+  "alert_details.events.load_older": "加载更早的事件",
+  "alert_details.delivery.personal_title": "{method} 发送给 {user}",
+  "alert_details.delivery.sent_at": "已发送 {time}",
+  "alert_details.delivery.scheduled_for": "计划于 {time}",
+  "alert_details.delivery.status.pending": "待发送",
+  "alert_details.delivery.status.processing": "发送中",
+  "alert_details.delivery.status.sent": "已发送",
+  "alert_details.delivery.status.failed": "失败",
+  "alert_details.delivery.status.skipped": "已跳过，不再需要"
 }

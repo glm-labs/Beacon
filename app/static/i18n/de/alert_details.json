@@ -333,5 +333,13 @@
   "alert_details.manual.title_required": "Incident Title ist erforderlich.",
   "alert_details.manual.permission": "Sie haben keine Erlaubnis, Vorfälle für dieses Team zu erstellen.",
   "alert_details.priority.current": "Aktuell: {value}",
-  "alert_details.events.load_older": "Ältere Ereignisse laden"
+  "alert_details.events.load_older": "Ältere Ereignisse laden",
+  "alert_details.delivery.personal_title": "{method} an {user}",
+  "alert_details.delivery.sent_at": "gesendet {time}",
+  "alert_details.delivery.scheduled_for": "fällig {time}",
+  "alert_details.delivery.status.pending": "ausstehend",
+  "alert_details.delivery.status.processing": "wird gesendet",
+  "alert_details.delivery.status.sent": "gesendet",
+  "alert_details.delivery.status.failed": "fehlgeschlagen",
+  "alert_details.delivery.status.skipped": "übersprungen, nicht mehr nötig"
 }

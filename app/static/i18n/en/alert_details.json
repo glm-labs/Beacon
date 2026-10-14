@@ -333,5 +333,13 @@
   "alert_details.manual.title_required": "Incident title is required.",
   "alert_details.manual.permission": "You do not have permission to create incidents for this team.",
   "alert_details.priority.current": "Current: {value}",
-  "alert_details.events.load_older": "Load older events"
+  "alert_details.events.load_older": "Load older events",
+  "alert_details.delivery.personal_title": "{method} to {user}",
+  "alert_details.delivery.sent_at": "sent {time}",
+  "alert_details.delivery.scheduled_for": "due {time}",
+  "alert_details.delivery.status.pending": "pending",
+  "alert_details.delivery.status.processing": "sending",
+  "alert_details.delivery.status.sent": "sent",
+  "alert_details.delivery.status.failed": "failed",
+  "alert_details.delivery.status.skipped": "skipped, no longer needed"
 }

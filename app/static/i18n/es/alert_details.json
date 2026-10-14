@@ -333,5 +333,13 @@
   "alert_details.manual.title_required": "El título del incidente es obligatorio.",
   "alert_details.manual.permission": "No tienes permiso para crear incidentes para este equipo.",
   "alert_details.priority.current": "Actual: {value}",
-  "alert_details.events.load_older": "Cargar eventos anteriores"
+  "alert_details.events.load_older": "Cargar eventos anteriores",
+  "alert_details.delivery.personal_title": "{method} a {user}",
+  "alert_details.delivery.sent_at": "enviado {time}",
+  "alert_details.delivery.scheduled_for": "previsto {time}",
+  "alert_details.delivery.status.pending": "pendiente",
+  "alert_details.delivery.status.processing": "enviando",
+  "alert_details.delivery.status.sent": "enviado",
+  "alert_details.delivery.status.failed": "fallido",
+  "alert_details.delivery.status.skipped": "omitido, ya no es necesario"
 }

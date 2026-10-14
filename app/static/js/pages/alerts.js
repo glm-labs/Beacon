@@ -1570,7 +1570,7 @@ function showAlertDetails(alertId) {
             alert.events_pagination || null,
             false
         );
-        renderNotifications(alert.notifications || [], modal);
+        renderNotifications(alert.notifications || [], modal, alert.user_deliveries || []);
         prepareAlertComments(alert, modal);
 
         if (window.AlertIncidentManagement) {
@@ -2650,14 +2650,19 @@ function renderEvents(events, modal, pagination, append) {
     }
 }
 
-function renderNotifications(notifications, modal) {
+function renderNotifications(notifications, modal, userDeliveries) {
     const target = modal.find("#alert-details-notifications");
+    const personal = userDeliveries || [];
     target.empty();
 
-    if (!notifications.length) {
+    if (!notifications.length && !personal.length) {
         target.append($("<div>").addClass("help-text").text(i18n.t("alert_details.delivery.empty")));
         return;
     }
+
+    personal.forEach(function (item) {
+        target.append(renderUserDeliveryItem(item));
+    });
 
     notifications.forEach(function (item) {
         const channel = item.channel ? item.channel.name + " (" + item.channel.channel_type + ")" : "-";
@@ -2675,6 +2680,52 @@ function renderNotifications(notifications, modal) {
                 .append($("<div>").text(i18n.t("alert_details.delivery.message_id") + ": " + (item.external_message_id || "-")))
         );
     });
+}
+
+function renderUserDeliveryItem(item) {
+    /*
+     * A personal delivery from someone's notification rule (Pushover, email,
+     * voice, browser push), as opposed to a channel notification.
+     */
+    const user = item.user || {};
+    const status = String(item.status || "pending");
+    let statusText = i18n.t("alert_details.delivery.status." + status, null, status);
+
+    if (status === "failed" && item.last_error) {
+        statusText = i18n.t("alert_details.delivery.failed_prefix") + item.last_error;
+    }
+
+    const when = item.sent_at
+        ? i18n.t("alert_details.delivery.sent_at", {time: formatDateTimeMinutes(item.sent_at)})
+        : i18n.t("alert_details.delivery.scheduled_for", {time: formatDateTimeMinutes(item.scheduled_at)});
+
+    return $("<div>")
+        .addClass("event-item")
+        .append(
+            $("<strong>").text(
+                "#" + item.id + " " + i18n.t("alert_details.delivery.personal_title", {
+                    method: userDeliveryMethodLabel(item.method),
+                    user: user.display_name || user.username || "-",
+                })
+            )
+        )
+        .append($("<div>").text(userDeliveryEventLabel(item.event_type) + " / " + statusText))
+        .append($("<div>").text(when));
+}
+
+function userDeliveryMethodLabel(method) {
+    const labels = {
+        pushover: "Pushover",
+        browser_push: i18n.t("profile.rules.browser_push"),
+        voice_call: i18n.t("profile.rules.voice_call"),
+        email: i18n.t("profile.fields.email"),
+    };
+
+    return labels[method] || method || "-";
+}
+
+function userDeliveryEventLabel(eventType) {
+    return i18n.t("profile.events." + eventType, null, eventType || "-");
 }
 
 function detailItem(label, value) {
