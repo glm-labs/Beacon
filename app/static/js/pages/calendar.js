@@ -6,6 +6,7 @@ let selectedCalendarEvent = null;
 let selectedCalendarClippedStart = null;
 let selectedCalendarClippedEnd = null;
 let calendarExportFeed = null;
+let calendarNowTimer = null;
 
 const calendarWeekdaysShort = [
     i18n.t("calendar.weekdays.sun"),
@@ -556,6 +557,138 @@ function loadCalendar() {
     loadCalendarTeams(function () {
         refreshCalendar();
     });
+
+    startCalendarNowTimer();
+}
+
+
+function startCalendarNowTimer() {
+    /*
+     * Re-render once a minute so the now marker, today's column and the
+     * "on call now" line keep up with the clock without a reload.
+     */
+
+    if (calendarNowTimer) {
+        clearInterval(calendarNowTimer);
+    }
+
+    calendarNowTimer = setInterval(function () {
+        const grid = $("#calendar-grid");
+
+        if (!grid.length) {
+            clearInterval(calendarNowTimer);
+            calendarNowTimer = null;
+            return;
+        }
+
+        if (document.hidden || !calendarEventsCache.length || grid.find(":focus").length) {
+            return;
+        }
+
+        if (calendarMode === "month") {
+            renderCalendarMonth();
+        } else {
+            renderCalendarWeek();
+        }
+    }, 60000);
+}
+
+
+function isCalendarNowBetween(start, end) {
+    const now = new Date();
+
+    return !!start && !!end && start <= now && now < end;
+}
+
+
+function getCalendarCurrentEvent(calendar) {
+    /*
+     * Return the final schedule event that is on call right now for one
+     * rotation, or null. Final events of one rotation never overlap.
+     * Ignores the search box: who is on call now should not disappear
+     * because of a filter.
+     */
+
+    return calendarEventsCache.find(function (event) {
+        return getCalendarEventTeamId(event) === Number(calendar.team_id)
+            && getCalendarEventRotationId(event) === Number(calendar.rotation_id)
+            && isCalendarNowBetween(
+                parseCalendarDateTime(event.start),
+                parseCalendarDateTime(event.end)
+            );
+    }) || null;
+}
+
+
+function isCalendarNowInVisibleRange() {
+    const start = parseCalendarDate($("#calendar-start").val());
+    const end = parseCalendarDate($("#calendar-end").val());
+
+    if (!start || !end) {
+        return false;
+    }
+
+    return isCalendarNowBetween(calendarDisplayDayStart(start), calendarDisplayDayStart(end));
+}
+
+
+function renderCalendarNowOnCall(calendar) {
+    /*
+     * One line under the rotation name saying who is on call right now.
+     * Empty when the loaded range cannot tell (now is outside it).
+     */
+
+    const current = getCalendarCurrentEvent(calendar);
+
+    if (!current) {
+        if (!isCalendarNowInVisibleRange()) {
+            return $();
+        }
+
+        return $("<div>")
+            .addClass("calendar-now-oncall calendar-now-oncall-empty")
+            .text(i18n.t("calendar.now.nobody"));
+    }
+
+    const color = getCalendarUserColor(current.user_id);
+
+    return $("<div>")
+        .addClass("calendar-now-oncall")
+        .attr("style", "--calendar-user-color: " + color + ";")
+        .append($("<span>").addClass("calendar-now-oncall-dot"))
+        .append(
+            $("<span>").text(
+                i18n.t("calendar.now.on_call", {user: getCalendarUserLabel(current)})
+            )
+        )
+        .on("click", function () {
+            renderCalendarDetails(
+                current,
+                parseCalendarDateTime(current.start),
+                parseCalendarDateTime(current.end)
+            );
+        });
+}
+
+
+function renderCalendarNowMarker(dayStart, dayEnd, timezone) {
+    /*
+     * Vertical line at the current time inside today's timeline.
+     */
+
+    if (!isCalendarNowBetween(dayStart, dayEnd)) {
+        return $();
+    }
+
+    const now = new Date();
+    const position = getCalendarTimelinePosition(now, now, dayStart, dayEnd);
+
+    return $("<span>")
+        .addClass("calendar-now-marker")
+        .css("left", position.left + "%")
+        .attr("title", i18n.t("calendar.now.marker", {
+            time: formatTimeMinutesInTimezone(now, timezone),
+        }));
 }
 
 function loadCalendarTeams(callback) {
@@ -1038,11 +1171,23 @@ function renderRotationWeekGrid(calendar, days) {
     );
 
     days.forEach(function (day) {
-        header.append(
-            $("<div>")
-                .addClass("calendar-day-header")
-                .text(calendarWeekdayLabel(day))
-        );
+        const isToday = isCalendarNowBetween(calendarDisplayDayStart(day), calendarDisplayNextDayStart(day));
+        const dayHeader = $("<div>")
+            .addClass("calendar-day-header")
+            .toggleClass("calendar-day-header-today", isToday)
+            .text(calendarWeekdayLabel(day));
+
+        if (isToday) {
+            dayHeader
+                .attr("aria-current", "date")
+                .append(
+                    $("<span>")
+                        .addClass("calendar-today-badge")
+                        .text(i18n.t("calendar.now.today"))
+                );
+        }
+
+        header.append(dayHeader);
     });
 
     grid.append(header);
@@ -1069,10 +1214,16 @@ function renderRotationWeekGrid(calendar, days) {
                     .addClass("calendar-team-subtitle")
                     .text(calendar.rotation_name || i18n.t("calendar.fallback.rotation", {id: calendar.rotation_id}))
             )
+            .append(renderCalendarNowOnCall(calendar))
     );
 
     days.forEach(function (day) {
-        const cell = $("<div>").addClass("calendar-day-cell");
+        const cell = $("<div>")
+            .addClass("calendar-day-cell")
+            .toggleClass(
+                "calendar-day-cell-today",
+                isCalendarNowBetween(calendarDisplayDayStart(day), calendarDisplayNextDayStart(day))
+            );
 
         renderRotationCalendarDayTimeline(calendar, day, cell, false);
 
@@ -1114,7 +1265,12 @@ function renderRotationMonthGrid(calendar, days, rangeStart, rangeEnd) {
 
     days.forEach(function (day) {
         const inMonth = day >= rangeStart && day < rangeEnd;
-        const cell = $("<div>").addClass("calendar-month-day-cell");
+        const cell = $("<div>")
+            .addClass("calendar-month-day-cell")
+            .toggleClass(
+                "calendar-month-day-today",
+                isCalendarNowBetween(calendarDisplayDayStart(day), calendarDisplayNextDayStart(day))
+            );
 
         if (!inMonth) {
             cell.addClass("calendar-day-outside-month");
@@ -1206,14 +1362,14 @@ function renderCalendarDayTimeline(events, dayStart, dayEnd, monthMode) {
                 .text("—")
         );
 
-        return timeline;
+        return timeline.append(renderCalendarNowMarker(dayStart, dayEnd, getCalendarDisplayTimezone()));
     }
 
     events.forEach(function (event) {
         timeline.append(renderCalendarTimelineAssignment(event, dayStart, dayEnd, monthMode));
     });
 
-    return timeline;
+    return timeline.append(renderCalendarNowMarker(dayStart, dayEnd, getCalendarDisplayTimezone()));
 }
 
 
@@ -1272,6 +1428,7 @@ function renderCalendarTimelineAssignment(event, dayStart, dayEnd, monthMode) {
         .addClass("calendar-assignment calendar-assignment-timeline")
         .toggleClass("calendar-assignment-timeline-month", !!monthMode)
         .toggleClass("calendar-assignment-override", event.type === "override")
+        .toggleClass("calendar-assignment-now", isCalendarNowBetween(clippedStart, clippedEnd))
         .attr(
             "style",
             "--calendar-user-color: " + color + "; " +

@@ -73,5 +73,9 @@
   "calendar.export.regenerate_confirm_title": "Kalender-URL neu erzeugen?",
   "calendar.export.regenerate_confirm_message": "Die aktuelle ICS-Abonnement-URL funktioniert danach sofort nicht mehr. Kalenderprogramme, die sie verwenden, müssen mit der neuen URL aktualisiert werden.",
   "calendar.export.regenerate_confirm": "URL neu erzeugen",
-  "calendar.export.copy_failed": "Die URL konnte nicht kopiert werden. Markieren Sie sie und kopieren Sie sie manuell."
+  "calendar.export.copy_failed": "Die URL konnte nicht kopiert werden. Markieren Sie sie und kopieren Sie sie manuell.",
+  "calendar.now.today": "Heute",
+  "calendar.now.on_call": "Jetzt in Bereitschaft: {user}",
+  "calendar.now.nobody": "Gerade niemand in Bereitschaft",
+  "calendar.now.marker": "Jetzt {time}"
 }

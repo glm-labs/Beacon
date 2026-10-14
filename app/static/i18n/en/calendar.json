@@ -73,5 +73,9 @@
   "calendar.export.regenerate_confirm_title": "Regenerate calendar URL?",
   "calendar.export.regenerate_confirm_message": "The current ICS subscription URL will stop working immediately. Calendar clients using it must be updated with the new URL.",
   "calendar.export.regenerate_confirm": "Regenerate URL",
-  "calendar.export.copy_failed": "Could not copy the URL. Select it and copy it manually."
+  "calendar.export.copy_failed": "Could not copy the URL. Select it and copy it manually.",
+  "calendar.now.today": "Today",
+  "calendar.now.on_call": "On call now: {user}",
+  "calendar.now.nobody": "Nobody on call now",
+  "calendar.now.marker": "Now {time}"
 }

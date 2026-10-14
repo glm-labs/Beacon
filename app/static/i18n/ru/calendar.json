@@ -73,5 +73,9 @@
   "calendar.export.regenerate_confirm_title": "Пересоздать ссылку календаря?",
   "calendar.export.regenerate_confirm_message": "Текущая ссылка подписки ICS немедленно перестанет работать. Во всех календарных клиентах потребуется указать новую ссылку.",
   "calendar.export.regenerate_confirm": "Пересоздать ссылку",
-  "calendar.export.copy_failed": "Не удалось скопировать ссылку. Выделите её и скопируйте вручную."
+  "calendar.export.copy_failed": "Не удалось скопировать ссылку. Выделите её и скопируйте вручную.",
+  "calendar.now.today": "Сегодня",
+  "calendar.now.on_call": "Сейчас дежурит: {user}",
+  "calendar.now.nobody": "Сейчас никто не дежурит",
+  "calendar.now.marker": "Сейчас {time}"
 }

@@ -73,5 +73,9 @@
   "calendar.export.regenerate_confirm_title": "Régénérer l’URL du calendrier ?",
   "calendar.export.regenerate_confirm_message": "L’URL d’abonnement ICS actuelle cessera immédiatement de fonctionner. Les clients de calendrier qui l’utilisent devront être mis à jour avec la nouvelle URL.",
   "calendar.export.regenerate_confirm": "Régénérer l’URL",
-  "calendar.export.copy_failed": "Impossible de copier l’URL. Sélectionnez-la et copiez-la manuellement."
+  "calendar.export.copy_failed": "Impossible de copier l’URL. Sélectionnez-la et copiez-la manuellement.",
+  "calendar.now.today": "Aujourd’hui",
+  "calendar.now.on_call": "D’astreinte maintenant : {user}",
+  "calendar.now.nobody": "Personne d’astreinte maintenant",
+  "calendar.now.marker": "Maintenant {time}"
 }
