@@ -1,6 +1,8 @@
 (function () {
     const RULES_URL = "/api/profile/notification-rules";
+    const DEFAULTS_URL = "/api/profile/notification-rules/defaults";
     let notificationRulesCache = [];
+    let notificationRuleDefaults = null;
 
     document.addEventListener("DOMContentLoaded", function () {
         if (!document.getElementById("notification-rules-card")) {
@@ -68,6 +70,56 @@
             notificationRulesCache = asArray(rules);
             renderNotificationRulesTable();
         });
+
+        apiGet(DEFAULTS_URL, function (defaults) {
+            notificationRuleDefaults = defaults || null;
+            renderNotificationRulesTable();
+        }, function () {
+            notificationRuleDefaults = null;
+        });
+    }
+
+    function describeNotificationRuleDefaults() {
+        /*
+         * Without rules of their own a user gets the defaults from
+         * beacon.conf; say which, or which contact they are missing.
+         */
+        const defaults = notificationRuleDefaults;
+
+        if (!defaults || !defaults.configured) {
+            return i18n.t("profile.rules.none");
+        }
+
+        const rules = asArray(defaults.rules);
+
+        if (defaults.applies) {
+            return i18n.t("profile.rules.defaults_apply", {
+                rules: rules
+                    .filter(function (rule) {
+                        return rule.reaches_user;
+                    })
+                    .map(function (rule) {
+                        return i18n.t("profile.rules.default_rule_summary", {
+                            method: formatMethod(rule.method),
+                            delay: formatDelay(rule.delay_seconds),
+                            severities: formatSeverities(rule.severities)
+                        });
+                    })
+                    .join("; ")
+            });
+        }
+
+        const methods = [];
+
+        rules.forEach(function (rule) {
+            const label = formatMethod(rule.method);
+
+            if (!methods.includes(label)) {
+                methods.push(label);
+            }
+        });
+
+        return i18n.t("profile.rules.defaults_unreachable", {methods: methods.join(", ")});
     }
 
     function renderNotificationRulesTable() {
@@ -80,7 +132,7 @@
                     $("<td>")
                         .attr("colspan", "7")
                         .addClass("empty-cell")
-                        .text(i18n.t("profile.rules.none"))
+                        .text(describeNotificationRuleDefaults())
                 )
             );
             return;

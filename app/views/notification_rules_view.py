@@ -20,6 +20,13 @@ def list_profile_notification_rules():
     )
 
 
+@notification_rules_bp.route("/profile/notification-rules/defaults", methods=["GET"])
+def get_profile_notification_rule_defaults():
+    return jsonify(
+        rules.describe_default_rules(request.current_user)
+    )
+
+
 @notification_rules_bp.route("/profile/notification-rules", methods=["POST"])
 def create_profile_notification_rule():
     data, error_response = validate_body(NotificationRuleCreateSchema)

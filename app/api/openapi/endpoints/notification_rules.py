@@ -159,6 +159,45 @@ NOTIFICATION_RULE_DELETE_RESPONSE_SCHEMA = {
 }
 
 
+NOTIFICATION_RULE_DEFAULTS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "configured": {
+            "type": "boolean",
+            "description": "Whether beacon.conf defines default rules.",
+        },
+        "has_custom_rules": {
+            "type": "boolean",
+            "description": "Whether the current user has rules of their own; then the defaults never apply.",
+        },
+        "applies": {
+            "type": "boolean",
+            "description": "Whether the defaults page the current user.",
+        },
+        "rules": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "position": {"type": "integer"},
+                    "method": {
+                        "type": "string",
+                        "enum": ["browser_push", "email", "voice_call", "pushover"],
+                    },
+                    "delay_seconds": {"type": "integer", "minimum": 0},
+                    "severities": NOTIFICATION_RULE_SEVERITIES_SCHEMA,
+                    "event_types": NOTIFICATION_RULE_EVENT_TYPES_SCHEMA,
+                    "reaches_user": {
+                        "type": "boolean",
+                        "description": "False when the user lacks the contact this method needs.",
+                    },
+                },
+            },
+        },
+    },
+}
+
+
 def tags():
     """Return OpenAPI tags."""
     return [
@@ -215,6 +254,28 @@ def paths():
                 "responses": {
                     "201": response("Notification rule created.", NOTIFICATION_RULE_SCHEMA),
                     "400": response("Validation error.", ERROR_SCHEMA),
+                    "401": response("Valid JWT token is required.", ERROR_SCHEMA),
+                },
+            },
+        },
+        "/api/profile/notification-rules/defaults": {
+            "get": {
+                "tags": ["notification-rules"],
+                "summary": "Show the default notification rules for the current user",
+                "description": (
+                    "Returns the app-wide default rules from [notifications] default_rules "
+                    "in beacon.conf. They apply to every user without rules of their own; "
+                    "a default whose contact the user has not filled in (for example no "
+                    "Pushover user key) is skipped. When none can reach the user, the "
+                    "implicit browser push remains."
+                ),
+                "operationId": "getProfileNotificationRuleDefaults",
+                "security": [{"bearerAuth": []}],
+                "responses": {
+                    "200": response(
+                        "Default notification rules returned.",
+                        NOTIFICATION_RULE_DEFAULTS_SCHEMA,
+                    ),
                     "401": response("Valid JWT token is required.", ERROR_SCHEMA),
                 },
             },

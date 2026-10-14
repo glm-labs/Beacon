@@ -58,3 +58,29 @@ def test_config_values_keep_fractions_strings_and_booleans(tmp_path):
     assert "label = 1048576" in rendered
     assert "enabled = true" in rendered
     assert not SCIENTIFIC.findall(rendered)
+
+
+@pytest.mark.skipif(shutil.which("helm") is None, reason="helm is not installed")
+def test_config_lists_and_maps_render_as_one_json_line(tmp_path):
+    rendered = _render(
+        tmp_path,
+        """\
+        config:
+          main:
+            secret_key: test-secret-key-for-helm-rendering
+          notifications:
+            default_rules:
+              - method: pushover
+                delay_seconds: 600
+                severities: [medium, warning]
+          pushover:
+            sounds:
+              critical: persistent
+        """,
+    )
+
+    assert (
+        'default_rules = [{"delay_seconds":600,"method":"pushover","severities":["medium","warning"]}]'
+        in rendered
+    )
+    assert 'sounds = {"critical":"persistent"}' in rendered

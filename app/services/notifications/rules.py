@@ -17,6 +17,7 @@ from app.modules.db import alerts_repo
 from app.modules.common import utc_now
 from app.services import escalation_policies as escalation_policy_service
 from app.services.alerts.maintenance_state import is_notification_lifecycle_suppressed
+from app.settings import Config
 
 
 logger = logging.getLogger("oncall.notification_rules")
@@ -317,11 +318,119 @@ def rule_matches_group(rule, group, event_type):
     return True
 
 
+def notification_method_reaches_user(user, method):
+    """Return True when a rule with this method can actually reach the user.
+
+    Checks the same things the notifier would fail on: a Pushover user key
+    plus the app token, an email address plus SMTP, a phone number, or a
+    browser with an active push subscription.
+    """
+
+    if user is None:
+        return False
+
+    if method == NOTIFICATION_METHOD_PUSHOVER:
+        return bool(
+            str(getattr(user, "pushover_user_key", None) or "").strip()
+            and getattr(Config, "PUSHOVER_APP_TOKEN", "")
+        )
+
+    if method == NOTIFICATION_METHOD_EMAIL:
+        return bool(
+            str(getattr(user, "email", None) or "").strip()
+            and getattr(Config, "SMTP_HOST", "")
+        )
+
+    if method == NOTIFICATION_METHOD_VOICE_CALL:
+        return bool(str(getattr(user, "phone", None) or "").strip())
+
+    if method == NOTIFICATION_METHOD_BROWSER_PUSH:
+        return browser_push.has_active_user_subscriptions(user.id)
+
+    return False
+
+
+def usable_default_rules(user):
+    """Return the configured default rules that can reach this user.
+
+    A default rule for a contact the user never filled in would send
+    nothing, so it is left out; when none is left, the user keeps the
+    implicit browser push.
+    """
+
+    return [
+        rule
+        for rule in getattr(Config, "NOTIFICATION_DEFAULT_RULES", None) or []
+        if notification_method_reaches_user(user, rule.method)
+    ]
+
+
+def user_has_paging_method(user):
+    """Return True when an enabled rule of the user, or a default, can reach them.
+
+    The implicit browser push for users without rules does not count: it
+    only shows up in a browser that happens to be open.
+    """
+
+    if user is None:
+        return False
+
+    if not has_custom_user_rules(user.id):
+        return bool(usable_default_rules(user))
+
+    rules = (
+        UserNotificationRule
+        .select(UserNotificationRule.method)
+        .where(
+            (UserNotificationRule.user == user.id)
+            & (UserNotificationRule.enabled == True)  # noqa: E712
+            & (UserNotificationRule.deleted == False)  # noqa: E712
+        )
+    )
+
+    return any(notification_method_reaches_user(user, rule.method) for rule in rules)
+
+
+def describe_default_rules(user):
+    """Return the configured default rules and whether they page this user.
+
+    applies is True when the user has no rules of their own and at least
+    one default can reach them; reaches_user tells the profile page which
+    contact is missing otherwise.
+    """
+
+    has_custom_rules = has_custom_user_rules(user.id)
+    configured = [
+        dict(
+            rule.to_dict(),
+            reaches_user=notification_method_reaches_user(user, rule.method),
+        )
+        for rule in getattr(Config, "NOTIFICATION_DEFAULT_RULES", None) or []
+    ]
+
+    return {
+        "configured": bool(configured),
+        "has_custom_rules": has_custom_rules,
+        "applies": not has_custom_rules and any(rule["reaches_user"] for rule in configured),
+        "rules": configured,
+    }
+
+
 def _user_can_receive(group, user_id, event_type):
-    if _active_notification_user(user_id) is None:
+    user = _active_notification_user(user_id)
+
+    if user is None:
         return False
 
     if not has_custom_user_rules(user_id):
+        default_rules = usable_default_rules(user)
+
+        if default_rules:
+            return any(
+                rule_matches_group(rule, group, event_type)
+                for rule in default_rules
+            )
+
         return browser_push.has_active_user_subscriptions(user_id)
 
     return bool(list_matching_rules(group, event_type=event_type, user_id=user_id))
@@ -362,8 +471,24 @@ def enqueue_user_notifications(group, event_type="notification"):
 
 
 def _enqueue_user_notifications_for(group, user, event_type, now):
-    # Default profile browser push when the user has no custom rules.
     if not has_custom_user_rules(user.id):
+        default_rules = usable_default_rules(user)
+
+        # Configured defaults stand in for the rules the user never made.
+        if default_rules:
+            return _enqueue_rule_deliveries(
+                group,
+                user,
+                [
+                    rule
+                    for rule in default_rules
+                    if rule_matches_group(rule, group, event_type)
+                ],
+                event_type,
+                now,
+            )
+
+        # Default profile browser push when the user has no custom rules.
         if event_type not in DEFAULT_RULE_EVENT_TYPES:
             return 0
 
@@ -378,9 +503,19 @@ def _enqueue_user_notifications_for(group, user, event_type, now):
 
         return send_delivery(delivery)
 
+    return _enqueue_rule_deliveries(
+        group,
+        user,
+        list_matching_rules(group, event_type=event_type, user_id=user.id),
+        event_type,
+        now,
+    )
+
+
+def _enqueue_rule_deliveries(group, user, matching_rules, event_type, now):
     sent_count = 0
 
-    for rule in list_matching_rules(group, event_type=event_type, user_id=user.id):
+    for rule in matching_rules:
         scheduled_at = now + timedelta(
             seconds=max(int(rule.delay_seconds or 0), 0)
         )
@@ -388,7 +523,8 @@ def _enqueue_user_notifications_for(group, user, event_type, now):
         delivery = create_delivery(
             group=group,
             user=user,
-            rule=rule,
+            # A default rule only exists in config, so its delivery has no rule row.
+            rule=rule if isinstance(rule, UserNotificationRule) else None,
             method=rule.method,
             event_type=event_type,
             scheduled_at=scheduled_at,

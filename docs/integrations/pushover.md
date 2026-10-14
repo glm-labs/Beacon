@@ -70,6 +70,10 @@ Users**. A personal Pushover rule
 always uses the app-wide `[pushover] app_token` — there's no per-rule
 app_token field, since a personal rule has nowhere to put one.
 
+Users who never make a rule can still be paged by Pushover through
+`[notifications] default_rules`, for everyone whose profile has a Pushover
+user key. See [Default notification rules](../getting-started/configuration.md#default-notification-rules).
+
 ## Sounds
 
 Without a `sound`, Pushover plays the receiving device's default sound,

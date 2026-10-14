@@ -136,6 +136,16 @@ config:
     providers_dir: /usr/local/lib/beacon/voice_providers
     # Empty inherits main.secret_key in the rendered Helm config.
     callback_secret: ""
+  # Notification rules for users who have none of their own; without
+  # them such users only get browser push. Rendered as one JSON line.
+  # notifications:
+  #   default_rules:
+  #     - method: pushover
+  #       delay_seconds: 0
+  #       severities: [critical, high]
+  #     - method: pushover
+  #       delay_seconds: 600
+  #       severities: [medium, warning]
 
 # Name of an existing Secret holding the full config under the key
 # `beacon.conf`. When set, the `config` map above is ignored and

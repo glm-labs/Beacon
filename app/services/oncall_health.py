@@ -4,7 +4,7 @@ from typing import Iterable
 
 from peewee import DoesNotExist
 
-from app.modules.db import channels_repo, rotations_repo, routes_repo, teams_repo
+from app.modules.db import channels_repo, escalation_policies_repo, rotations_repo, routes_repo, teams_repo
 from app.services.oncall import get_current_oncall_user
 from app.modules.common import as_utc_naive_seconds, utc_now_seconds
 from app.services.serializers.common import serialize_utc_datetime
@@ -234,6 +234,72 @@ def route_uses_rotation(route, rotation) -> bool:
 
 def rotation_has_enabled_route(rotation) -> bool:
     return any(route_uses_rotation(route, rotation) for route in list_enabled_team_routes(rotation.team.id))
+
+
+def list_rotation_pageable_users(rotation, now: datetime) -> list:
+    """Return active members of the rotation's enabled layers at now."""
+    users = []
+    for layer in rotations_repo.list_rotation_layers(rotation.id, enabled_only=True):
+        for member in rotations_repo.list_rotation_layer_members(layer.id, active_only=True, at=now):
+            users.append(member.user)
+    return users
+
+
+def list_team_paging_users(team, enabled_routes) -> list:
+    """Return the users the team's enabled escalation policies or routed rotations can page."""
+    now = utc_now_seconds()
+    users_by_id = {}
+
+    def add(users):
+        for user in users:
+            if user and getattr(user, "active", False) and not getattr(user, "deleted", False):
+                users_by_id.setdefault(user.id, user)
+
+    for policy in escalation_policies_repo.list_policies(team_id=team.id, enabled_only=True):
+        for rule in escalation_policies_repo.list_rules(policy.id, enabled_only=True):
+            if rule.target_type == "team":
+                add(escalation_policies_repo.list_team_responder_users(team.id))
+            elif rule.target_type == "user":
+                add([rule.target_user])
+            elif rule.target_type == "rotation" and rule.target_rotation:
+                add(list_rotation_pageable_users(rule.target_rotation, now))
+
+    for route in enabled_routes:
+        rotation = getattr(route, "rotation", None)
+        if rotation is not None and getattr(rotation, "enabled", False) and not getattr(rotation, "deleted", False):
+            add(list_rotation_pageable_users(rotation, now))
+
+    return list(users_by_id.values())
+
+
+def check_team_paging_methods(team, enabled_routes) -> list[HealthIssue]:
+    """Flag users who can be paged but have no rule (own or default) that reaches them."""
+    from app.services.notifications.rules import user_has_paging_method
+
+    issues: list[HealthIssue] = []
+    for user in list_team_paging_users(team, enabled_routes):
+        if user_has_paging_method(user):
+            continue
+        issues.append(issue_for_team(
+            team,
+            "warning",
+            "user_has_no_paging_method",
+            "User can be paged but nothing reaches them",
+            (
+                f"{user_label(user)} can be paged by team '{team.name}' but has no "
+                "notification rule, and no default rule, that can reach them."
+            ),
+            target_type="user",
+            target_id=user.id,
+            user_id=user.id,
+            username=user.username,
+            hint=(
+                "Add a notification rule in the user's profile, fill in the contact a "
+                "default rule needs (such as the Pushover user key), or configure "
+                "[notifications] default_rules."
+            ),
+        ))
+    return issues
 
 
 def list_effective_layer_members(
@@ -853,6 +919,8 @@ def collect_team_summary_issues(team) -> list[HealthIssue]:
                 hint="Link at least one channel to the route.",
             ))
 
+    issues.extend(check_team_paging_methods(team, enabled_routes))
+
     for rotation in enabled_rotations:
         rotation_summary = get_rotation_health_summary(rotation)
 
@@ -979,6 +1047,8 @@ def check_team_oncall_health(
                 target_id=route.id,
                 hint="Link at least one channel to the route.",
             ))
+
+    issues.extend(check_team_paging_methods(team, enabled_routes))
 
     if include_rotation_issues:
         for rotation in rotations:

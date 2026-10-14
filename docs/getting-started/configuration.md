@@ -261,6 +261,35 @@ callback_secret =
 
 Voice call notifications are sent to the assigned user's profile phone number.
 
+## Default notification rules
+
+A user who has no notification rules of their own only gets browser push, which reaches nobody whose browser is closed. Give such users default rules instead, so nobody has to build rules by hand to be paged:
+
+```ini
+[notifications]
+default_rules = [{"method": "pushover", "delay_seconds": 0, "severities": ["critical", "high"]}, {"method": "pushover", "delay_seconds": 600, "severities": ["medium", "warning"]}]
+```
+
+The value is a JSON list. Each rule has the fields of a profile notification rule:
+
+| Field | Description |
+|---|---|
+| `method` | `pushover`, `email`, `voice_call` or `browser_push` |
+| `delay_seconds` | Wait before sending; acknowledge or resolve cancels it. Default `0` |
+| `severities` | Severities the rule matches; empty or absent matches all |
+| `event_types` | `notification`, `reminder`, `escalation`, `acknowledged`, `resolved`; empty or absent means the first three |
+
+How they apply:
+
+- Only to users without any rule of their own. As soon as a user creates one rule, their own rules apply and the defaults are ignored for them.
+- A default rule is skipped for a user it cannot reach: `pushover` needs the user's Pushover user key and `[pushover] app_token`, `email` needs a profile email and `[smtp] host`, `voice_call` needs a phone number, `browser_push` needs an active browser subscription.
+- When none of the defaults can reach a user, that user keeps the implicit browser push.
+- The defaults replace the implicit browser push. Add a `browser_push` rule to keep it.
+
+A malformed value stops Beacon at startup with an error naming the rule. The profile page shows which defaults apply to the signed-in user, and team on-call health warns about every user an enabled escalation policy or routed rotation can page but nothing reaches (`user_has_no_paging_method`).
+
+With the Helm chart, write the rules as YAML under `config.notifications.default_rules`; the chart renders lists and maps as JSON.
+
 ## Browser push section
 
 Browser push notifications are profile-level PWA/browser notifications. They are not configured as notification channels.
