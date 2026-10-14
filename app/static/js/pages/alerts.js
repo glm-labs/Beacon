@@ -1104,7 +1104,12 @@ function renderAlertPageRow(alert) {
             )
             .append(renderAlertCorrelationBadges(alert))
             .append(renderAlertBusinessImpactBadges(alert))
-            .append($("<div>").addClass("table-age").text(i18n.t("alerts.table.age", {value: alertDuration(alert)})))
+            .append(
+                $("<div>")
+                    .addClass("table-age")
+                    .text(i18n.t("alerts.table.age", {value: alertDuration(alert)}))
+                    .append(renderAlertSourceLink(alert))
+            )
     );
 
     row.append(
@@ -1136,6 +1141,54 @@ function renderAlertPageRow(alert) {
     row.append($("<td>").append(renderEscalationCell(alert)));
 
     return row;
+}
+
+function alertSourceEventLink(alert) {
+    /*
+     * The link back to the event in the source system (Zabbix, Grafana, ...).
+     * It arrives in the intake payload, so only http(s) is ever rendered.
+     */
+
+    const labels = alert.labels || {};
+    const value = alert.event_link || labels.event_link;
+
+    if (!value) {
+        return null;
+    }
+
+    try {
+        const parsed = new URL(String(value));
+
+        if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+            return parsed.href;
+        }
+    } catch (error) {
+        return null;
+    }
+
+    return null;
+}
+
+function renderAlertSourceLink(alert) {
+    const eventLink = alertSourceEventLink(alert);
+
+    if (!eventLink) {
+        return $();
+    }
+
+    return $("<a>")
+        .addClass("alert-source-link")
+        .attr("href", eventLink)
+        .attr("target", "_blank")
+        .attr("rel", "noopener noreferrer")
+        .text(
+            alert.source
+                ? i18n.t("alerts.table.open_source", {source: alert.source})
+                : i18n.t("alert_details.primary.open_source")
+        )
+        .on("click", function (event) {
+            event.stopPropagation();
+        });
 }
 
 function buildAlertSubtitle(alert) {
@@ -1833,7 +1886,7 @@ function renderAlertPrimaryDetails(alert, modal) {
     const target = ensureAlertPrimaryDetails(modal);
     const message = alert.message || alert.description || alert.summary || "";
     const labels = alert.labels || {};
-    const eventLink = alert.event_link || (labels && labels.event_link);
+    const eventLink = alertSourceEventLink(alert);
 
     target.empty();
 
