@@ -1,5 +1,10 @@
 
-from app.modules.db.models import AlertNotification, AlertNotificationEvent
+from app.modules.db.models import (
+    AlertNotification,
+    AlertNotificationEvent,
+    User,
+    UserNotificationDelivery,
+)
 from app.modules.common import utc_now
 
 
@@ -142,4 +147,16 @@ def list_notifications_for_group(group_id):
         .select()
         .where(AlertNotification.group == group_id)
         .order_by(AlertNotification.updated_at.desc(), AlertNotification.id.desc())
+    )
+
+
+def list_user_deliveries_for_group(group_id):
+    """Return personal (notification rule) deliveries for alert group."""
+
+    return list(
+        UserNotificationDelivery
+        .select(UserNotificationDelivery, User)
+        .join(User)
+        .where(UserNotificationDelivery.group == group_id)
+        .order_by(UserNotificationDelivery.scheduled_at.desc(), UserNotificationDelivery.id.desc())
     )

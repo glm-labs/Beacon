@@ -333,5 +333,13 @@
   "alert_details.manual.title_required": "Укажите название инцидента.",
   "alert_details.manual.permission": "У вас нет права создавать инциденты для этой команды.",
   "alert_details.priority.current": "Текущий: {value}",
-  "alert_details.events.load_older": "Загрузить более старые события"
+  "alert_details.events.load_older": "Загрузить более старые события",
+  "alert_details.delivery.personal_title": "{method} для {user}",
+  "alert_details.delivery.sent_at": "отправлено {time}",
+  "alert_details.delivery.scheduled_for": "запланировано на {time}",
+  "alert_details.delivery.status.pending": "ожидает",
+  "alert_details.delivery.status.processing": "отправляется",
+  "alert_details.delivery.status.sent": "отправлено",
+  "alert_details.delivery.status.failed": "ошибка",
+  "alert_details.delivery.status.skipped": "пропущено, больше не нужно"
 }

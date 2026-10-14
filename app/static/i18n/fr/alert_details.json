@@ -333,5 +333,13 @@
   "alert_details.manual.title_required": "Le titre de l’incident est requis.",
   "alert_details.manual.permission": "Vous n’avez pas l’autorisation de créer des incidents pour cette équipe.",
   "alert_details.priority.current": "Actuelle : {value}",
-  "alert_details.events.load_older": "Charger les événements plus anciens"
+  "alert_details.events.load_older": "Charger les événements plus anciens",
+  "alert_details.delivery.personal_title": "{method} à {user}",
+  "alert_details.delivery.sent_at": "envoyé {time}",
+  "alert_details.delivery.scheduled_for": "prévu {time}",
+  "alert_details.delivery.status.pending": "en attente",
+  "alert_details.delivery.status.processing": "envoi en cours",
+  "alert_details.delivery.status.sent": "envoyé",
+  "alert_details.delivery.status.failed": "échec",
+  "alert_details.delivery.status.skipped": "ignoré, plus nécessaire"
 }

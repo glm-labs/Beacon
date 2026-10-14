@@ -1,11 +1,11 @@
 from datetime import timedelta
 
 from app.modules.db import alerts_repo
-from app.modules.db.models import AlertGroup
+from app.modules.db.models import AlertGroup, UserNotificationDelivery
 from app.settings import Config
 from app.services.alerts.lifecycle import upsert_alert
 import app.services.alerts.notification_queue as notification_queue
-from tests.factories import create_group, create_route, create_team
+from tests.factories import create_group, create_route, create_team, create_user
 from app.modules.common import utc_now
 
 
@@ -172,6 +172,40 @@ def test_alert_group_details_include_child_alerts(client, admin_headers, db):
     }
 
     assert child_instances == {"host1", "host2"}
+
+
+def test_alert_group_details_include_personal_deliveries(client, admin_headers, db):
+    route = _route(group_by=["alertname"])
+    group = upsert_alert(_alert(route, "XidError", "gpu7")).group
+    responder = create_user(username="louis", email="louis@example.com")
+    sent_at = utc_now()
+
+    UserNotificationDelivery.create(
+        group=group,
+        user=responder,
+        method="pushover",
+        event_type="notification",
+        status="sent",
+        scheduled_at=sent_at,
+        sent_at=sent_at,
+        provider_status="sent",
+        provider_payload={"receipt": "secret-receipt"},
+    )
+
+    response = client.get(f"/api/alerts/{group.id}", headers=admin_headers)
+
+    assert response.status_code == 200
+
+    deliveries = response.get_json()["user_deliveries"]
+
+    assert len(deliveries) == 1
+    assert deliveries[0]["user"]["username"] == "louis"
+    assert deliveries[0]["method"] == "pushover"
+    assert deliveries[0]["event_type"] == "notification"
+    assert deliveries[0]["status"] == "sent"
+    assert deliveries[0]["sent_at"]
+    # Provider payloads stay server-side.
+    assert "provider_payload" not in deliveries[0]
 
 
 def test_empty_group_by_uses_dedup_key_instead_of_default_labels(db):

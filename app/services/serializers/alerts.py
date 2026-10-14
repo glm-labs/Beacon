@@ -205,6 +205,28 @@ def serialize_alert_notification(notification):
     }
 
 
+def serialize_user_notification_delivery(delivery):
+    """Serialize a personal delivery created from a user's notification rule."""
+    user = delivery.user
+
+    return {
+        "id": delivery.id,
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "display_name": user.display_name,
+        },
+        "rule_id": delivery.rule_id,
+        "method": delivery.method,
+        "event_type": delivery.event_type,
+        "status": delivery.status,
+        "provider_status": delivery.provider_status,
+        "scheduled_at": serialize_utc_datetime(delivery.scheduled_at),
+        "sent_at": serialize_utc_datetime(delivery.sent_at),
+        "last_error": delivery.last_error,
+    }
+
+
 def serialize_alert(
     alert,
     include_payload=False,
@@ -513,6 +535,7 @@ def serialize_alert_group(
     alerts=None,
     events=None,
     notifications=None,
+    user_deliveries=None,
     responders=None,
     current_user=None,
 ):
@@ -629,6 +652,10 @@ def serialize_alert_group(
         data["notifications"] = [
             serialize_alert_notification(notification)
             for notification in notifications or []
+        ]
+        data["user_deliveries"] = [
+            serialize_user_notification_delivery(delivery)
+            for delivery in user_deliveries or []
         ]
         if responders is None:
             responders = incidents_repo.list_incident_responders(group.id)

@@ -162,6 +162,7 @@ def get_alert(alert_id):
 
     alerts = alerts_repo.list_alerts_for_group(group.id)
     notifications = notifications_repo.list_notifications_for_group(group.id)
+    user_deliveries = notifications_repo.list_user_deliveries_for_group(group.id)
     events_page = None
 
     if query.events_page is not None or query.events_page_size is not None:
@@ -181,6 +182,7 @@ def get_alert(alert_id):
         alerts=alerts,
         events=events,
         notifications=notifications,
+        user_deliveries=user_deliveries,
         current_user=_request_user(),
     )
     if events_page is not None:
