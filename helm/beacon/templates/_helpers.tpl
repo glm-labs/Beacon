@@ -175,10 +175,16 @@ of a million or more in scientific notation. The default
 as `1.048576e+06`, which settings.get_int() cannot parse, so the web pod
 crashes on startup. Whole numbers are written as integers here, so any
 value can be written plainly in values.yaml.
+
+Lists and maps are written as one line of JSON, which is what the JSON
+settings read (for example [notifications] default_rules or
+[pushover] sounds); Go would otherwise print them as `[map[...]]`.
 */}}
 {{- define "beacon.iniValue" -}}
 {{- if and (kindIs "float64" .) (eq . (floor .)) -}}
 {{- int64 . -}}
+{{- else if or (kindIs "slice" .) (kindIs "map" .) -}}
+{{- toJson . -}}
 {{- else -}}
 {{- . -}}
 {{- end -}}

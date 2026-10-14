@@ -24,7 +24,7 @@ Supported target types:
 
 ## Team target
 
-A `team` rule pages a group of people together instead of one person. Every active member of the policy team with the `responder` or `manager` role receives the alert through their own notification rules, at the same time. Viewers are not paged.
+A `team` rule pages a group of people together instead of one person. Every active member of the policy team with the `responder` or `manager` role receives the alert through their own notification rules, at the same time, or through the [default notification rules](../getting-started/configuration.md#default-notification-rules) when they have none. Viewers are not paged.
 
 The alert has no assignee while it is at a team rule; the acknowledgement records who took it. Assigning the alert to someone narrows the notifications to that person. Acknowledge or resolve stops the pages for everyone, including deliveries still waiting on a rule delay.
 

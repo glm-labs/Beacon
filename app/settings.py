@@ -3,6 +3,7 @@ import configparser
 from pathlib import Path
 
 from app.config import CONFIG_FILE
+from app.services.notifications.default_rules import parse_default_notification_rules
 
 
 class _CaseSensitiveConfigParser(configparser.ConfigParser):
@@ -286,6 +287,14 @@ class Config:
     # own sound_map overrides it. A severity left out plays the receiving
     # device's default sound.
     PUSHOVER_SOUNDS = settings.get_json("pushover", "sounds", {}) or {}
+
+    # Notification rules for every user who has none of their own, as a
+    # JSON list of rules (method, delay_seconds, severities, event_types).
+    # Without it such a user only gets browser push. Validated here so a
+    # typo fails at startup; see app/services/notifications/default_rules.py.
+    NOTIFICATION_DEFAULT_RULES = parse_default_notification_rules(
+        settings.get_json("notifications", "default_rules", None)
+    )
 
     VOICE_PROVIDER = settings.get("voice", "provider", "stub")
     VOICE_CALLBACK_SECRET = settings.get("voice", "callback_secret", SECRET_KEY) or SECRET_KEY
