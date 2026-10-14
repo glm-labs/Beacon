@@ -2972,6 +2972,37 @@ body.md-theme .calendar-month-day-number {
   font-weight: 500;
 }
 
+/* Today's column and the shift that is on call right now. */
+body.md-theme .calendar-day-header.calendar-day-header-today {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--md-primary-soft);
+  color: var(--md-primary-ink);
+  font-weight: 600;
+}
+
+body.md-theme .calendar-day-cell.calendar-day-cell-today,
+body.md-theme .calendar-month-day-cell.calendar-month-day-today {
+  background: var(--md-primary-soft);
+}
+
+body.md-theme .calendar-month-day-today .calendar-month-day-number {
+  color: var(--md-primary-ink);
+  font-weight: 600;
+}
+
+body.md-theme .calendar-assignment.calendar-assignment-now {
+  border-width: 2px;
+  border-color: var(--calendar-user-color, var(--md-primary));
+  border-left-width: 4px;
+  background: color-mix(in srgb, var(--calendar-user-color, var(--md-primary)) 28%, var(--md-surface));
+}
+
+body.md-theme .calendar-assignment-now .calendar-assignment-user {
+  font-weight: 700;
+}
+
 body.md-theme .calendar-assignment-month {
   padding: 7px 9px;
 }

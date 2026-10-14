@@ -476,3 +476,63 @@
     font-size: 13.5px;
     font-weight: 600;
 }
+
+/* Now: today's column, the current time and who is on call right now. */
+.calendar-today-badge {
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: var(--md-primary);
+    color: var(--md-on-accent);
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.calendar-now-marker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 2;
+    width: 2px;
+    transform: translateX(-1px);
+    background: var(--md-danger);
+    pointer-events: auto;
+}
+
+.calendar-now-marker::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--md-danger);
+}
+
+.calendar-now-oncall {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 3px 8px;
+    border: 1px solid var(--calendar-user-color, var(--md-border));
+    border-radius: 999px;
+    background: var(--md-surface);
+    color: var(--md-text);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.calendar-now-oncall-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--calendar-user-color);
+}
+
+.calendar-now-oncall.calendar-now-oncall-empty {
+    border-color: var(--md-danger);
+    color: var(--md-danger);
+    cursor: default;
+}

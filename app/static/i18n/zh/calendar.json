@@ -73,5 +73,9 @@
   "calendar.export.regenerate_confirm_title": "重新生成日历地址？",
   "calendar.export.regenerate_confirm_message": "当前 ICS 订阅地址将立即失效。使用该地址的日历客户端必须更新为新地址。",
   "calendar.export.regenerate_confirm": "重新生成地址",
-  "calendar.export.copy_failed": "无法复制地址，请选中后手动复制。"
+  "calendar.export.copy_failed": "无法复制地址，请选中后手动复制。",
+  "calendar.now.today": "今天",
+  "calendar.now.on_call": "当前值班：{user}",
+  "calendar.now.nobody": "当前无人值班",
+  "calendar.now.marker": "现在 {time}"
 }
