@@ -167,8 +167,8 @@
 
         $("#notification-rule-modal-title").text(i18n.t("profile.rules.edit", {id: rule.id}));
         $("#notification-rule-id").val(rule.id);
-        $("#notification-rule-method").val(rule.method || "browser_push");
-        $("#notification-rule-delay").val(String(rule.delay_seconds || 0));
+        ensureSelectOption("#notification-rule-method", rule.method || "browser_push", formatMethod(rule.method));
+        ensureSelectOption("#notification-rule-delay", String(rule.delay_seconds || 0), formatDelay(rule.delay_seconds));
         $("#notification-rule-enabled").prop("checked", Boolean(rule.enabled));
 
         setCheckedValues(".notification-rule-severity", rule.severities || []);
@@ -238,7 +238,23 @@
         });
     }
 
+    function ensureSelectOption(selector, value, label) {
+        // A rule created through the API can carry a value the form does not
+        // list; add it instead of showing an empty select that saves as null.
+        const select = $(selector);
+
+        if (!select.find("option").filter(function () { return this.value === value; }).length) {
+            select.append($("<option>").val(value).text(label || value));
+        }
+
+        select.val(value);
+    }
+
     function formatMethod(method) {
+        if (method === "pushover") {
+            return i18n.t("profile.rules.pushover");
+        }
+
         if (method === "browser_push") {
             return i18n.t("profile.rules.browser_push");
         }

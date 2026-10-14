@@ -18,7 +18,7 @@ class NotificationRuleBaseSchema(ApiModel):
     """Validate user notification rule input."""
 
     method: str = Field(
-        description="Notification method: browser_push, email or voice_call."
+        description="Notification method: browser_push, email, voice_call or pushover."
     )
     delay_seconds: int = Field(default=0, ge=0)
     severities: list[str] = Field(default_factory=list)
