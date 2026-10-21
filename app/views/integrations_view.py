@@ -806,6 +806,14 @@ def pushover_callback():
 
     alert_group = acknowledge_alert(alert_id, user_id=user_id)
 
+    # A tap on a page whose alert has resolved since changes nothing (see
+    # acknowledge_alert); say so instead of claiming an acknowledge.
+    if alert_group.status == "resolved":
+        return jsonify({
+            "status": "already_resolved",
+            "alert_id": alert_group.id,
+        })
+
     return jsonify({
         "status": "acknowledged",
         "alert_id": alert_group.id,

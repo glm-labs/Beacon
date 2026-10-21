@@ -1,5 +1,6 @@
-from app.modules.db.models import UserNotificationDelivery
+from app.modules.db.models import AlertEvent, AlertGroup, UserNotificationDelivery
 from app.notifiers.pushover.actions import build_pushover_action_signature
+from app.services.alerts.actions import resolve_alert
 from app.services.notifications.rules import NOTIFICATION_METHOD_PUSHOVER
 from app.settings import Config
 from tests.factories import (
@@ -202,3 +203,52 @@ def test_callback_rejects_delivery_kind_signed_for_different_target_id(client, d
     )
 
     assert response.status_code == 403
+
+
+def test_callback_after_resolve_keeps_the_alert_resolved(client, db):
+    group = create_group(slug="infra")
+    team = create_team(group, slug="sre")
+    route = create_route(team)
+    service = create_service(team)
+    alert_group = create_impact_alert_group(team=team, service=service, route=route)
+
+    owner = create_user(username="owner", group=group)
+    owner.pushover_user_key = "uOWNER"
+    owner.save()
+    add_user_to_team(team, owner, role="manager")
+
+    delivery = UserNotificationDelivery.create(
+        group=alert_group.id,
+        user=owner.id,
+        method=NOTIFICATION_METHOD_PUSHOVER,
+        event_type="notification",
+        status="sent",
+        scheduled_at=alert_group.first_seen_at,
+    )
+
+    # The source recovers while the emergency page is still on the phone,
+    # and the responder taps Acknowledge a few seconds later.
+    resolve_alert(alert_group.id)
+
+    signature = build_pushover_action_signature(
+        Config.PUSHOVER_ACTION_SECRET, alert_group.id, delivery.id, "delivery"
+    )
+
+    response = client.post(
+        f"/api/integrations/pushover/callback"
+        f"?kind=delivery&alert_id={alert_group.id}&target_id={delivery.id}&signature={signature}",
+        data={"acknowledged": "1", "acknowledged_by": "uOWNER"},
+    )
+
+    assert response.status_code == 200
+    assert response.get_json() == {"status": "already_resolved", "alert_id": alert_group.id}
+
+    stored = AlertGroup.get_by_id(alert_group.id)
+    assert stored.status == "resolved"
+    assert stored.acknowledged_at is None
+    assert stored.acknowledged_by_id is None
+    assert (
+        AlertEvent.select()
+        .where((AlertEvent.group == alert_group.id) & (AlertEvent.event_type == "acknowledged"))
+        .count()
+    ) == 0
