@@ -84,3 +84,46 @@ def test_config_lists_and_maps_render_as_one_json_line(tmp_path):
         in rendered
     )
     assert 'sounds = {"critical":"persistent"}' in rendered
+
+
+def _checksums(rendered):
+    return re.findall(r"checksum/config: (\w+)", rendered)
+
+
+@pytest.mark.skipif(shutil.which("helm") is None, reason="helm is not installed")
+def test_existing_config_secret_has_no_checksum_by_default(tmp_path):
+    rendered = _render(
+        tmp_path,
+        """\
+        existingConfigSecret: beacon-config
+        """,
+    )
+
+    assert _checksums(rendered) == []
+
+
+@pytest.mark.skipif(shutil.which("helm") is None, reason="helm is not installed")
+def test_existing_config_secret_from_values_rolls_pods_on_a_config_change(tmp_path):
+    def checksums(sounds):
+        return _checksums(
+            _render(
+                tmp_path,
+                f"""\
+                existingConfigSecret: beacon-config
+                existingConfigSecretFromValues: true
+                config:
+                  main:
+                    secret_key: "{{{{ .secret_key }}}}"
+                  pushover:
+                    sounds: '{sounds}'
+                """,
+            )
+        )
+
+    before = checksums('{"critical": "persistent"}')
+    after = checksums('{"critical": "siren"}')
+
+    # web, scheduler, telegram and slack each carry it, all the same.
+    assert len(before) == 4 and len(set(before)) == 1
+    assert before == checksums('{"critical": "persistent"}')
+    assert set(before) != set(after)
