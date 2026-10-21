@@ -124,6 +124,8 @@ When `existingConfigSecret` is set, the `config` map is ignored and the chart re
 !!! note
     The chart adds a `checksum/config` pod annotation so config changes restart the pods automatically. With `existingConfigSecret` the chart cannot see the content, so the annotation is omitted — restart the pods yourself after changing the Secret.
 
+    If your own template renders that Secret from the `config` map, for example an ExternalSecret that fills the credentials into it, set `existingConfigSecretFromValues: true`. The annotation is then a checksum of the `config` map, so a change to it rolls the pods again. A change that reaches the Secret only from the secret store still needs a restart.
+
 ## Database
 
 ### SQLite (default)

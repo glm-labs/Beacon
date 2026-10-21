@@ -383,10 +383,14 @@ Volume mounts shared by every component.
 
 {{/*
 Pod annotation with the config checksum so config changes roll pods.
-Empty when an existing Secret is used (the chart cannot see its content).
+Empty when an existing Secret is used (the chart cannot see its content),
+unless existingConfigSecretFromValues says that Secret is rendered from the
+`config` map: then the checksum is taken over that map.
 */}}
 {{- define "beacon.configChecksum" -}}
 {{- if not .Values.existingConfigSecret -}}
 checksum/config: {{ include "beacon.config" . | sha256sum }}
+{{- else if .Values.existingConfigSecretFromValues -}}
+checksum/config: {{ toJson .Values.config | sha256sum }}
 {{- end }}
 {{- end }}
