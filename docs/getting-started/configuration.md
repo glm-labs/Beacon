@@ -346,6 +346,29 @@ The scheduler wake-up interval is separate from rotation reminder intervals. Rot
 
 Do not use a global reminder-after setting as a runtime fallback when rotations require an explicit interval.
 
+### Is the scheduler still paging?
+
+Every page goes through the scheduler: the first notification of a new alert, every delayed rule and retry, every escalation step and every overdue heartbeat. The web keeps accepting alerts without it, so `/readyz` stays green while nobody is paged. Two checks cover that:
+
+```ini
+[scheduler]
+alive_file = /var/lib/beacon/scheduler.alive
+pipeline_min_stale_seconds = 120
+```
+
+| Option | Description |
+|---|---|
+| `alive_file` | Touched every 10 seconds while the scheduler's job threads run, for a liveness probe on the file's age (the Helm chart sets one up). Empty turns it off |
+| `pipeline_min_stale_seconds` | `/healthz/pipeline` calls a paging job stale once its last finished pass is older than three of its intervals, and never sooner than this. Default `120` |
+
+`GET /healthz/pipeline` needs no login and returns 200 while `alert_group_notification_job`, `user_notification_rules_job`, `reminder_job` and `heartbeat_overdue_job` (when heartbeats are on) each finished a pass recently, and 503 otherwise, with each job's age:
+
+```json
+{"status": "stale", "jobs": {"alert_group_notification_job": {"status": "stale", "last_finished_at": "2026-10-21T08:52:10Z", "age_seconds": 612, "stale_after_seconds": 120}}}
+```
+
+Point a monitor that runs outside Beacon at it: an uptime checker, or a cron job that pings a dead man's switch only while it returns 200. Do not use it as a Kubernetes probe for the web pod: the web is fine when the scheduler is not, and taking it out of service would stop alert intake as well.
+
 ## Logging
 
 If file logging is enabled, use a writable path:

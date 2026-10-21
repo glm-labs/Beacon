@@ -2591,6 +2591,23 @@ class AppLock(BaseModel):
     updated_at = DateTimeField(default=utc_now)
 
 
+class SchedulerJobRun(BaseModel):
+    """When a scheduler job last finished a pass without an error.
+
+    One row per job, overwritten on every pass. /healthz/pipeline reads it
+    to tell an outside monitor whether pages are still being sent; see
+    app/services/scheduler_health.py.
+    """
+
+    id = AutoField()
+    job = CharField(unique=True)
+    last_finished_at = DateTimeField()
+    host = CharField(null=True)
+
+    class Meta:
+        table_name = "scheduler_job_runs"
+
+
 class LoginThrottle(BaseModel):
     """Cross-worker login failure counter without storing raw identifiers."""
 

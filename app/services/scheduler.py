@@ -1,4 +1,5 @@
 import logging
+import os
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.schedulers.base import SchedulerAlreadyRunningError, SchedulerNotRunningError
@@ -19,6 +20,7 @@ from app.services.alerts.explain_cleanup import cleanup_alert_explain_traces
 from app.services.alerts.retention import cleanup_alert_history
 from app.services.service_catalog.impact_snapshots import capture_scheduled_service_impact_snapshot
 from app.services.heartbeats.service import process_overdue_heartbeats
+from app.services.scheduler_health import record_job_run
 from app.services.silences import process_silence_lifecycle
 from app.modules.common import utc_now
 from app.services.orchestration.pending import (
@@ -52,6 +54,7 @@ def reminder_job():
         logger.info("reminder job started")
 
         count = send_unacked_reminders()
+        record_job_run("reminder_job")
 
         logger.info(
             "reminder job finished",
@@ -182,6 +185,7 @@ def user_notification_rules_job():
         logger.info("user notification rules job started")
 
         count = process_due_user_notifications()
+        record_job_run("user_notification_rules_job")
 
         logger.info(
             "user notification rules job finished",
@@ -227,6 +231,7 @@ def alert_group_notification_job():
         result = process_due_alert_group_notifications(
             limit=int(getattr(Config, "ALERT_GROUP_NOTIFICATION_BATCH_SIZE", 100))
         )
+        record_job_run("alert_group_notification_job")
 
         logger.info(
             "alert group notification job finished",
@@ -504,6 +509,7 @@ def heartbeat_overdue_job():
         result = process_overdue_heartbeats(
             limit=int(getattr(Config, "HEARTBEAT_CHECK_BATCH_SIZE", 100))
         )
+        record_job_run("heartbeat_overdue_job")
 
         logger.info(
             "heartbeat overdue job finished",
@@ -653,6 +659,38 @@ def orchestration_webhook_job():
             db.close()
 
 
+_alive_file_warned = False
+
+
+def scheduler_alive_job():
+    """Touch [scheduler] alive_file to show the job threads still run.
+
+    A liveness probe that checks the file's age restarts a scheduler whose
+    threads are all stuck, which nothing else would notice. It does not
+    touch the database: a database outage is not fixed by a restart.
+    """
+    global _alive_file_warned
+
+    path = getattr(Config, "SCHEDULER_ALIVE_FILE", "")
+    if not path:
+        return False
+
+    try:
+        with open(path, "a"):
+            os.utime(path, None)
+    except OSError:
+        if not _alive_file_warned:
+            logger.warning(
+                "scheduler alive file cannot be written",
+                extra={"extra": {"path": path}},
+                exc_info=True,
+            )
+            _alive_file_warned = True
+        return False
+
+    return True
+
+
 def start_scheduler():
     """
     Start the background scheduler.
@@ -667,6 +705,17 @@ def start_scheduler():
         return _scheduler
 
     _scheduler = BackgroundScheduler()
+    _scheduler.add_job(
+        scheduler_alive_job,
+        "interval",
+        seconds=10,
+        max_instances=1,
+        coalesce=True,
+        next_run_time=utc_now(),
+        id="scheduler_alive_job",
+        replace_existing=True,
+    )
+
     _scheduler.add_job(
         reminder_job,
         "interval",

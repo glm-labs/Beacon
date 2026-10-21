@@ -173,6 +173,17 @@ class Config:
     )
 
     SCHEDULER_LOCK_TTL_SECONDS = settings.get_int("scheduler", "lock_ttl_seconds", 120)
+    # Touched by the scheduler every few seconds while its job threads run,
+    # for a liveness probe that checks the file's age (the Helm chart's
+    # scheduler.livenessProbe). Empty turns it off.
+    SCHEDULER_ALIVE_FILE = settings.get(
+        "scheduler", "alive_file", "/var/lib/beacon/scheduler.alive"
+    )
+    # /healthz/pipeline reports a paging job as stale once its last finished
+    # pass is older than three of its intervals, and never sooner than this.
+    SCHEDULER_PIPELINE_MIN_STALE_SECONDS = settings.get_int(
+        "scheduler", "pipeline_min_stale_seconds", 120
+    )
     ORCHESTRATION_PENDING_CHECK_INTERVAL_SECONDS = settings.get_int(
         "orchestration", "pending_check_interval_seconds", 10
     )
