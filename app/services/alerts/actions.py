@@ -1,5 +1,6 @@
 from app.modules.db import alerts_repo, users_repo
 from app.modules.db.models import AlertGroup
+from app.notifiers.pushover.emergency import cancel_emergency_pages
 from app.services.alerts.correlation import refresh_alert_group_correlations_safely
 from app.services.incidents.stakeholders import notify_stakeholders
 from app.services.integrations.writebacks.registry import notify_source_of_acknowledgement
@@ -58,6 +59,9 @@ def acknowledge_alert(alert_id, user_id=None):
         user_id=user_id,
     )
 
+    if old_status == "firing":
+        cancel_emergency_pages(group, "acknowledged")
+
     notify_source_of_acknowledgement(
         group,
         users_repo.get_user(user_id) if user_id else None,
@@ -108,6 +112,9 @@ def resolve_alert(
         message="Alert group resolved",
         user_id=user_id,
     )
+
+    if old_status == "firing":
+        cancel_emergency_pages(group, "resolved")
 
     refresh_alert_group_correlations_safely(group, reason="manual_resolve")
 

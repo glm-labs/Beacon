@@ -136,6 +136,29 @@ drops (event_type `acknowledged`/`resolved` always sends at priority -1,
 never re-triggering emergency behavior), but the underlying alert is only
 resolved the normal way — the source clears, or a person resolves it.
 
+## Stopping the other phones
+
+Tapping Acknowledge stops the message it belongs to, and no other.
+Everyone a team rule or a rotation pages gets a message of their own, and
+each one keeps
+repeating every `retry` seconds until its own recipient taps it or
+`expire` passes. So Beacon tags every emergency message with its alert
+(`beacon-alert-<id>`), and the moment the alert stops firing it cancels the
+retries of every message with that tag through Pushover's
+`receipts/cancel_by_tag`:
+
+- acknowledged anywhere: the Pushover button, the UI, the API, Slack, ...;
+- resolved, by the source's recovery or by a person;
+- snoozed.
+
+That is one request per app token that sent the alert an emergency
+message: the app-wide `[pushover] app_token` for notification rules, and
+each Pushover channel's own token. The alert timeline shows "Stopped N
+emergency Pushover page(s)". When the request fails, the acknowledge,
+resolve or snooze still stands, and the timeline records
+`pushover_emergency_cancel_failed`: those messages then repeat until they
+are acknowledged on the phone or expire.
+
 ## Acknowledging back to the source system
 
 Some alert sources have their own escalation/nagging that doesn't know

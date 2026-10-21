@@ -38,6 +38,7 @@ from app.services.orchestration.pending import (
 )
 from app.services.incidents.stakeholders import notify_stakeholders
 from app.services.maintenance import get_maintenance_decision
+from app.notifiers.pushover.emergency import cancel_emergency_pages
 from app.services.notifications.delivery import notify_alert
 from app.services.routing.routing import (
     build_group_key,
@@ -607,6 +608,11 @@ def _handle_existing_alert(
         trace.notification_scheduled(reason="update")
     else:
         trace.notification_not_needed(group)
+
+    # Outside the branches above on purpose: a page sent before a
+    # maintenance window started still repeats on the phone.
+    if old_group_status == "firing" and group.status == "resolved":
+        cancel_emergency_pages(group, "resolved")
 
     trace.updated(
         group=group,
