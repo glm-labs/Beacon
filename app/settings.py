@@ -295,6 +295,16 @@ class Config:
     NOTIFICATION_DEFAULT_RULES = parse_default_notification_rules(
         settings.get_json("notifications", "default_rules", None)
     )
+    # A personal delivery that fails (a DNS error, a timeout, a 5xx from
+    # the provider) is tried again this many times, waiting
+    # delivery_retry_seconds, then twice that, and so on. 0 gives up on the
+    # first failure. Acknowledge or resolve cancels the attempts left.
+    NOTIFICATION_DELIVERY_RETRIES = max(
+        settings.get_int("notifications", "delivery_retries", 3), 0
+    )
+    NOTIFICATION_DELIVERY_RETRY_SECONDS = max(
+        settings.get_int("notifications", "delivery_retry_seconds", 30), 1
+    )
 
     VOICE_PROVIDER = settings.get("voice", "provider", "stub")
     VOICE_CALLBACK_SECRET = settings.get("voice", "callback_secret", SECRET_KEY) or SECRET_KEY

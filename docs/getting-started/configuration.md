@@ -290,6 +290,23 @@ A malformed value stops Beacon at startup with an error naming the rule. The pro
 
 With the Helm chart, write the rules as YAML under `config.notifications.default_rules`; the chart renders lists and maps as JSON.
 
+### Retrying a failed delivery
+
+A personal delivery by Pushover, email or voice call that fails (a DNS error, a timeout, a 5xx from the provider) is tried again before it is given up:
+
+```ini
+[notifications]
+delivery_retries = 3
+delivery_retry_seconds = 30
+```
+
+| Option | Description |
+|---|---|
+| `delivery_retries` | Further attempts after the first one fails. Default `3`; `0` gives up on the first failure |
+| `delivery_retry_seconds` | Wait before the first retry. Each following wait doubles: 30, 60 and 120 seconds by default |
+
+The scheduler sends the retries, so it must be running. An acknowledge or resolve cancels the attempts that are left, just like a delayed rule. Each failed attempt is on the alert timeline as `<event>_<method>_retry`, naming the person, and the final give-up as `<event>_<method>_failed`. Browser push and channels are not retried.
+
 ## Browser push section
 
 Browser push notifications are profile-level PWA/browser notifications. They are not configured as notification channels.

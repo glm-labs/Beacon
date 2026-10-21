@@ -730,6 +730,7 @@ def send_delivery(delivery):
             return send_browser_push_delivery(delivery)
 
         if delivery.method in DIRECT_NOTIFIERS:
+            delivery.attempts = (delivery.attempts or 0) + 1
             result = send_direct_notifier_delivery(delivery, group)
         else:
             mark_delivery_failed(
@@ -739,7 +740,10 @@ def send_delivery(delivery):
             return 0
 
     except Exception as exc:
-        mark_delivery_failed(delivery, str(exc))
+        if delivery.method in DIRECT_NOTIFIERS:
+            _retry_or_fail_delivery(delivery, exc)
+        else:
+            mark_delivery_failed(delivery, str(exc))
         return 0
 
     delivery.status = "sent"
@@ -825,6 +829,68 @@ def mark_delivery_skipped(delivery, reason):
         .where(UserNotificationDelivery.id == delivery.id)
         .execute()
     )
+
+
+def _retry_or_fail_delivery(delivery, error):
+    """Try a failed direct delivery again later, or give up on it.
+
+    A page that hits a DNS error or a timeout is not lost on the first try:
+    it goes back to pending with a later scheduled_at, so
+    process_due_user_notifications sends it again, and an acknowledge or
+    resolve cancels it like any other pending delivery. Each wait doubles,
+    starting at [notifications] delivery_retry_seconds. Every failed attempt
+    and the final give-up are on the alert timeline under the person's name,
+    because a page that never arrived is the one thing a responder needs to
+    find there afterwards.
+    """
+    attempts = delivery.attempts or 1
+    allowed = 1 + Config.NOTIFICATION_DELIVERY_RETRIES
+    user = User.get_or_none(User.id == delivery.user_id)
+    recipient = user.username if user else f"user #{delivery.user_id}"
+    log_extra = {
+        "extra": {
+            "alert_group_id": delivery.group_id,
+            "delivery_id": delivery.id,
+            "method": delivery.method,
+            "event_type": delivery.event_type,
+            "attempt": attempts,
+            "error": str(error),
+        }
+    }
+
+    if attempts < allowed:
+        delay = Config.NOTIFICATION_DELIVERY_RETRY_SECONDS * (2 ** (attempts - 1))
+        now = utc_now()
+
+        delivery.status = "pending"
+        delivery.scheduled_at = now + timedelta(seconds=delay)
+        delivery.last_error = str(error)
+        delivery.updated_at = now
+        delivery.save()
+
+        alerts_repo.create_alert_event(
+            group_id=delivery.group_id,
+            event_type=f"{delivery.event_type}_{delivery.method}_retry",
+            message=(
+                f"{delivery.method} to {recipient} failed "
+                f"(attempt {attempts} of {allowed}): {error}. "
+                f"Trying again in {delay} s."
+            ),
+        )
+        logger.warning("user notification delivery failed, retrying", extra=log_extra)
+        return
+
+    mark_delivery_failed(delivery, error)
+
+    alerts_repo.create_alert_event(
+        group_id=delivery.group_id,
+        event_type=f"{delivery.event_type}_{delivery.method}_failed",
+        message=(
+            f"{delivery.method} to {recipient} failed after {attempts} "
+            f"attempt(s), giving up: {error}"
+        ),
+    )
+    logger.error("user notification delivery failed, giving up", extra=log_extra)
 
 
 def mark_delivery_failed(delivery, error):

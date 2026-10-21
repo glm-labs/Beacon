@@ -113,7 +113,7 @@ def test_process_due_user_notifications_sends_due_email_delivery(db, monkeypatch
     assert "DiskFull" in notifier.calls[0]["text"]
 
 
-def test_direct_notifier_failure_marks_delivery_failed(db, monkeypatch):
+def test_direct_notifier_failure_marks_delivery_failed_without_retries(db, monkeypatch):
     user, alert_group = _create_assigned_group("release-email-fail-user")
     rule = rules.create_user_rule(
         user,
@@ -128,6 +128,7 @@ def test_direct_notifier_failure_marks_delivery_failed(db, monkeypatch):
     monkeypatch.setitem(
         rules.DIRECT_NOTIFIERS, rules.NOTIFICATION_METHOD_EMAIL, notifier
     )
+    monkeypatch.setattr(rules.Config, "NOTIFICATION_DELIVERY_RETRIES", 0)
 
     assert rules.process_due_user_notifications() == 0
 
