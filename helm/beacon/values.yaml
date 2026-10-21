@@ -146,6 +146,10 @@ config:
   #     - method: pushover
   #       delay_seconds: 600
   #       severities: [medium, warning]
+  #   # A failed personal delivery is tried again this many times,
+  #   # waiting 30 s, then 60, then 120. 0 gives up at once.
+  #   delivery_retries: 3
+  #   delivery_retry_seconds: 30
 
 # Name of an existing Secret holding the full config under the key
 # `beacon.conf`. When set, the `config` map above is ignored and

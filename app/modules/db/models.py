@@ -2814,6 +2814,9 @@ class UserNotificationDelivery(BaseModel):
     provider_payload = JSONTextField(null=True)
 
     last_error = TextField(null=True)
+    # Send attempts so far; a failed send is retried while this is below
+    # 1 + [notifications] delivery_retries.
+    attempts = IntegerField(default=0)
 
     created_at = DateTimeField(default=utc_now)
     updated_at = DateTimeField(default=utc_now)
