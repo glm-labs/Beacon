@@ -63,6 +63,22 @@ spec:
             {{- with .Values.scheduler.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
+          {{- with .Values.scheduler.livenessProbe }}
+          {{- if .enabled }}
+          livenessProbe:
+            exec:
+              command:
+                - python
+                - -c
+                - >-
+                  import os, sys, time;
+                  sys.exit(0 if time.time() - os.path.getmtime({{ .path | toJson }}) < {{ int .maxAgeSeconds }} else 1)
+            initialDelaySeconds: {{ int .initialDelaySeconds }}
+            periodSeconds: {{ int .periodSeconds }}
+            timeoutSeconds: {{ int .timeoutSeconds }}
+            failureThreshold: {{ int .failureThreshold }}
+          {{- end }}
+          {{- end }}
           {{- with .Values.scheduler.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

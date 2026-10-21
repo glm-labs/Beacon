@@ -201,6 +201,18 @@ scheduler:
   enabled: true
   strategy:
     type: Recreate
+  # Restarts the scheduler when its job threads stop running: it touches
+  # [scheduler] alive_file every 10 s, and the probe fails once the file
+  # is older than maxAgeSeconds. A database outage does not trip it. Keep
+  # `path` equal to alive_file when you change that.
+  livenessProbe:
+    enabled: true
+    path: /var/lib/beacon/scheduler.alive
+    maxAgeSeconds: 90
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
   resources: {}
   podAnnotations: {}
   podLabels: {}

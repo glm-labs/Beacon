@@ -204,6 +204,18 @@ The web deployment is wired to the unauthenticated probe endpoints:
 
 A startup probe allows up to five minutes for the first boot, which covers migrations on a fresh database.
 
+The scheduler has no HTTP port. Its liveness probe checks the age of the file the scheduler touches every 10 seconds (`[scheduler] alive_file`), so a scheduler whose job threads are stuck is restarted; a database outage does not trip it:
+
+```yaml
+scheduler:
+  livenessProbe:
+    enabled: true
+    path: /var/lib/beacon/scheduler.alive   # keep equal to [scheduler] alive_file
+    maxAgeSeconds: 90
+```
+
+Whether pages still go out is a question for a monitor outside the cluster: `/healthz/pipeline` returns 503 when the paging jobs stop finishing. See [Scheduler settings](configuration.md#is-the-scheduler-still-paging).
+
 ## Access
 
 By default the Service is `ClusterIP`. For a quick look:

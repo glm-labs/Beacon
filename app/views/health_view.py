@@ -15,6 +15,13 @@ Conventions follow the Kubernetes naming style:
   and all on-disk migrations have been applied. Otherwise returns 503
   so the load balancer stops routing traffic until the process is
   fully usable.
+
+- /healthz/pipeline: for monitors outside Beacon, not for Kubernetes.
+  Returns 200 only when the scheduler jobs that send pages have each
+  finished a pass recently (app/services/scheduler_health.py). A stopped
+  or stuck scheduler leaves /healthz and /readyz green while nobody is
+  paged; this one turns 503. Never use it as a web pod probe: the web pod
+  is fine, and taking it out of service would also stop alert intake.
 """
 
 import logging
@@ -27,6 +34,7 @@ from app.modules.db.migrations import (
     get_applied_migrations,
     get_migration_files,
 )
+from app.services.scheduler_health import pipeline_status
 
 
 logger = logging.getLogger("oncall.health")
@@ -34,7 +42,7 @@ logger = logging.getLogger("oncall.health")
 health_bp = Blueprint("health", __name__)
 
 
-HEALTH_PATHS = ("/healthz", "/readyz")
+HEALTH_PATHS = ("/healthz", "/readyz", "/healthz/pipeline")
 
 
 @health_bp.route("/healthz", methods=["GET"])
@@ -106,6 +114,41 @@ def readyz():
             logger.warning("readyz migration check failed", exc_info=True)
 
         return jsonify(response), http_status
+    finally:
+        if db_was_closed and not db.is_closed():
+            try:
+                db.close()
+            except Exception:
+                pass
+
+
+@health_bp.route("/healthz/pipeline", methods=["GET"])
+def healthz_pipeline():
+    """
+    Paging pipeline check. Returns 200 when every scheduler job that sends
+    pages finished a pass within its staleness window, 503 otherwise,
+    with the age of each job so the monitor's alert can say which one.
+    """
+    db = init_database()
+    db_was_closed = db.is_closed()
+
+    try:
+        try:
+            if db_was_closed:
+                db.connect(reuse_if_open=True)
+            healthy, jobs = pipeline_status()
+        except Exception:
+            logger.warning("pipeline health check failed", exc_info=True)
+            return jsonify({
+                "status": "error",
+                "database": "error",
+                "database_error": "database check failed",
+            }), 503
+
+        return jsonify({
+            "status": "ok" if healthy else "stale",
+            "jobs": jobs,
+        }), 200 if healthy else 503
     finally:
         if db_was_closed and not db.is_closed():
             try:
