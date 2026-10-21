@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from app.modules.common import utc_now
 from app.modules.db import alerts_repo, incidents_repo
 from app.modules.db.models import AlertEvent, AlertGroup, UserNotificationDelivery
-from app.services.alerts.actions import acknowledge_alert
+from app.services.alerts.actions import acknowledge_alert, resolve_alert
 from app.services.alerts.lifecycle import upsert_alert
 import app.services.alerts.lifecycle as alert_lifecycle
 from app.services.alerts import notification_queue, reminders as alert_reminders
@@ -462,3 +462,28 @@ def test_notify_alert_rechecks_firing_status_before_delivery(db, monkeypatch):
         stale_firing_group,
         event_type="reminder",
     ) == 0
+
+
+def test_acknowledge_after_resolve_is_a_no_op(db, monkeypatch):
+    _group, _team, route = _incident_key_route()
+    result = upsert_alert(_alert_payload(route, dedup_key="ack-after-resolve-1"))
+
+    resolve_alert(result.group.id)
+    resolved = AlertGroup.get_by_id(result.group.id)
+
+    writebacks = []
+    monkeypatch.setattr(
+        "app.services.alerts.actions.notify_source_of_acknowledgement",
+        lambda group, user: writebacks.append(group.id),
+    )
+
+    returned = acknowledge_alert(result.group.id)
+
+    stored = AlertGroup.get_by_id(result.group.id)
+    assert returned.status == "resolved"
+    assert stored.status == "resolved"
+    assert stored.resolved_at == resolved.resolved_at
+    assert stored.acknowledged_at is None
+    assert _event_count(stored.id, "acknowledged") == 0
+    # The source already sent its recovery; nothing is written back to it.
+    assert writebacks == []

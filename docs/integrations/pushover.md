@@ -125,6 +125,11 @@ What actually happens on a critical alert:
    device — the acknowledge still goes through, just unattributed. A page
    that gets acknowledged by someone Beacon can't name still beats one
    that nags for a full hour because the tap didn't count.
+5. A tap that arrives after the alert resolved changes nothing: the alert
+   stays resolved, nothing is written back to the source, and the callback
+   answers `already_resolved`. The page can still be on the phone after
+   the recovery, and acknowledging it would reopen an alert that no
+   recovery will close again.
 
 Acknowledging is not resolving: the notification's priority immediately
 drops (event_type `acknowledged`/`resolved` always sends at priority -1,

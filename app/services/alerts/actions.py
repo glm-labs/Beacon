@@ -40,6 +40,14 @@ def acknowledge_alert(alert_id, user_id=None):
         _cancel_acknowledged_notification_work(group_before)
         return group_before
 
+    # So is an acknowledge that arrives after the resolve. A page stays on
+    # the phone after its alert resolved, and the Pushover Acknowledge
+    # button calls back whenever someone taps it. Acknowledging here would
+    # turn a resolved group back into an open one that no recovery will
+    # ever close again, because the source already sent its recovery.
+    if old_status == "resolved":
+        return group_before
+
     group = alerts_repo.acknowledge_alert_group(alert_id, user_id=user_id)
     _cancel_acknowledged_notification_work(group)
 
