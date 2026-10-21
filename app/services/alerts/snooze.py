@@ -17,6 +17,7 @@ from datetime import timedelta
 
 from app.modules.common import utc_now
 from app.modules.db import alerts_repo
+from app.notifiers.pushover.emergency import cancel_emergency_pages
 from app.services import escalation_policies as escalation_policy_service
 from app.services.notifications.rules import cancel_pending_group_deliveries
 
@@ -99,6 +100,8 @@ def snooze_alert(alert_id, *, minutes, user_id=None, reason=None):
         message=_snoozed_event_message(minutes, until, reason),
         user_id=user_id,
     )
+
+    cancel_emergency_pages(group, "snoozed")
 
     return group
 

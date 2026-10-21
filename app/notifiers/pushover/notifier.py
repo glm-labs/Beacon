@@ -21,12 +21,15 @@ Acknowledge button in the notification itself and keeps re-alerting every
 this app's own acknowledge_alert() -- see app/views/integrations_view.py,
 pushover_callback() -- so a Disaster-severity page can be acknowledged
 without opening Beacon at all, using the exact same code path a Slack or
-Mattermost button click would use.
+Mattermost button click would use. The message is also tagged with its
+alert group, so the retries on everyone else's phone stop when the alert
+stops firing -- see app/notifiers/pushover/emergency.py.
 """
 
 from app.modules.db.models import NotificationChannel
 from app.notifiers.base import BaseNotifier
 from app.notifiers.pushover.actions import build_pushover_action_signature
+from app.notifiers.pushover.emergency import emergency_tag
 from app.notifiers.pushover.sounds import normalize_sound_map
 from app.services.alerts.priority import format_alert_title_with_priority
 from app.services.links import build_alert_web_url
@@ -107,6 +110,9 @@ class PushoverNotifier(BaseNotifier):
         if priority == 2:
             payload["retry"] = self._retry_seconds(config)
             payload["expire"] = self._expire_seconds(config)
+            # Lets Beacon stop every recipient's retries at once when the
+            # alert stops firing; see app/notifiers/pushover/emergency.py.
+            payload["tags"] = emergency_tag(alert.id)
 
             callback_url = self._callback_url(channel, alert)
             if callback_url:
@@ -127,10 +133,14 @@ class PushoverNotifier(BaseNotifier):
                 "pushover rejected the message: " + ", ".join(str(e) for e in errors)
             )
 
+        provider_payload = {"pushover_request_id": body.get("request")}
+        if body.get("receipt"):
+            provider_payload["pushover_receipt"] = body.get("receipt")
+
         return {
             "provider": self.name,
             "provider_status": "sent",
-            "provider_payload": {"pushover_request_id": body.get("request")},
+            "provider_payload": provider_payload,
         }
 
     def _title_for(self, alert, event_type):
